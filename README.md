@@ -6,6 +6,8 @@ Para produzir os clips com Gemini Omni Flash, use [GUIOES_ATC_GEMINI_OMNI_FLASH.
 
 Para criar as duas vozes personalizadas em português angolano, use [PROMPTS_VOZES_ANGOLA_PT-PT.md](producao/vozes/PROMPTS_VOZES_ANGOLA_PT-PT.md). O ficheiro inclui uma voz feminina para Helena, uma voz masculina para Miguel, texto de teste e critérios de aprovação.
 
+Para criar as personagens no Google Flow, use [GOOGLE_FLOW_MIGUEL_HELENA.md](producao/vozes/GOOGLE_FLOW_MIGUEL_HELENA.md). O documento tem os textos separados para **Character info** e **Customise performance** de Helena e Miguel.
+
 As demonstrações em vídeo e o manual Word continuam a ser os originais. O manual online inclui agora referências visuais reais e identifica as ilustrações remanescentes.
 
 ---
