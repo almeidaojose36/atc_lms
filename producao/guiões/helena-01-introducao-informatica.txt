@@ -1,0 +1,4 @@
+Olá! Sou a Helena, a sua guia virtual da ATC. Dou-lhe as boas-vindas ao curso de Informática na Ótica do Utilizador.
+Vamos começar pelo essencial: conhecer o computador, distinguir hardware de software e dar os primeiros passos no Windows onze. Depois, vamos aprender a organizar ficheiros, utilizar a Internet e trabalhar com mais segurança.
+Não precisa de dominar tudo à primeira. Veja cada demonstração, faça uma pausa e experimente no seu computador. Consulte o manual sempre que precisar e, no final de cada módulo, responda ao questionário.
+Na primeira aula, vamos conhecer as partes do computador e explorar o ambiente de trabalho. Vamos começar?

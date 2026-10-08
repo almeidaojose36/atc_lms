@@ -1,0 +1,407 @@
+{
+  "course": "Informática na Ótica do Utilizador",
+  "subtitle": "Utilização do computador, Windows 11, Internet e segurança básica",
+  "version": "1.1 — referências visuais reais",
+  "date": "outubro de 2026",
+  "hours_class": 15,
+  "hours_video": 2,
+  "producer": "Almeida José",
+  "reviewer": "[Formador ATC]",
+  "intro": "Este manual acompanha as vídeo-aulas e as sessões presenciais do curso Informática na Ótica do Utilizador. Cada módulo corresponde a um capítulo e termina com um exercício prático e um questionário.",
+  "modules": [
+    {
+      "num": 1,
+      "title": "O computador e o Windows 11",
+      "intro": "Neste módulo vai conhecer as partes do computador e dar os primeiros passos no Windows 11. No final, será capaz de ligar o computador, orientar-se no ambiente de trabalho, trabalhar com janelas e encerrar o computador em segurança.",
+      "video": "Aula 1.1 · Conhecer o computador e o Windows 11 (2 min)",
+      "objectives": [
+        "Distinguir hardware de software e dar exemplos de cada um.",
+        "Ligar o computador e iniciar sessão no Windows 11.",
+        "Identificar os ícones, a barra de tarefas, o botão Iniciar e a área de notificação.",
+        "Abrir, minimizar, maximizar e fechar uma janela.",
+        "Encerrar o computador corretamente."
+      ],
+      "sections": [
+        {
+          "title": "1.1 Hardware e software",
+          "blocks": [
+            {
+              "p": "Um computador tem duas partes que trabalham sempre em conjunto: o hardware e o software."
+            },
+            {
+              "table": [
+                [
+                  "Parte",
+                  "O que é",
+                  "Exemplos"
+                ],
+                [
+                  "Hardware",
+                  "A parte física do computador: tudo o que pode tocar.",
+                  "Monitor, teclado, rato, unidade central, impressora"
+                ],
+                [
+                  "Software",
+                  "Os programas que dão instruções ao hardware.",
+                  "Windows 11, Word, Excel, navegador de Internet"
+                ]
+              ]
+            },
+            {
+              "p": "O software mais importante é o **sistema operativo**. É ele que gere o hardware, os ficheiros e os outros programas. Neste curso usamos o **Windows 11**."
+            },
+            {
+              "figure": "computador-real.jpg",
+              "caption": "Equipamento real: monitores, teclado e rato. Fotografia de Matheus Bertelli / Pexels. O software visível na fotografia não é o Windows utilizado nas demonstrações.",
+              "source": "https://www.pexels.com/photo/black-computer-monitor-and-keyboard-on-black-table-7172656/"
+            },
+            {
+              "note": "Um telemóvel também é um computador: o ecrã tátil e a bateria são hardware; o Android ou o iOS são o sistema operativo."
+            }
+          ]
+        },
+        {
+          "title": "1.2 Ligar o computador e iniciar sessão",
+          "blocks": [
+            {
+              "p": "Quando liga o computador, o Windows mostra primeiro o **ecrã de bloqueio**, com a hora e a data. Para entrar, siga estes passos:"
+            },
+            {
+              "steps": [
+                "Prima o botão de ligar da unidade central (ou do portátil).",
+                "Aguarde até aparecer o ecrã de bloqueio.",
+                "Clique em qualquer ponto do ecrã ou prima uma tecla.",
+                "Escreva o seu **PIN** ou a sua **palavra-passe**.",
+                "Prima **Enter**."
+              ]
+            },
+            {
+              "figure": "fig_login.jpg",
+              "caption": "Ilustração da demonstração — Ecrã de início de sessão do Windows 11 (não é uma captura real)."
+            },
+            {
+              "warn": "Nunca partilhe o seu PIN ou a sua palavra-passe. Se alguém a souber, altere-a em Definições > Contas > Opções de início de sessão."
+            }
+          ]
+        },
+        {
+          "title": "1.3 O ambiente de trabalho",
+          "blocks": [
+            {
+              "p": "Depois de iniciar sessão, vê o **ambiente de trabalho**. É o ponto de partida para todo o trabalho no Windows."
+            },
+            {
+              "figure": "fig_desktop.jpg",
+              "caption": "Ilustração da demonstração — As quatro partes do ambiente de trabalho (não é uma captura real)."
+            },
+            {
+              "table": [
+                [
+                  "Parte",
+                  "Para que serve"
+                ],
+                [
+                  "Ícones",
+                  "Dão acesso rápido a programas, pastas e ficheiros. Faça duplo clique para abrir."
+                ],
+                [
+                  "Barra de tarefas",
+                  "Mostra os programas abertos e os afixados. Fica na parte de baixo do ecrã."
+                ],
+                [
+                  "Botão Iniciar",
+                  "Abre o menu Iniciar. Tem o logótipo do Windows."
+                ],
+                [
+                  "Área de notificação",
+                  "Mostra a hora, a data, o estado da rede e o volume do som."
+                ]
+              ]
+            },
+            {
+              "tip": "Para ver o ambiente de trabalho com todas as janelas abertas, prima Windows + D. Prima de novo para voltar."
+            }
+          ]
+        },
+        {
+          "title": "1.4 O menu Iniciar",
+          "blocks": [
+            {
+              "p": "O menu Iniciar reúne as **aplicações afixadas**, os **ficheiros recomendados** (os que usou recentemente) e o **botão de energia**."
+            },
+            {
+              "steps": [
+                "Clique no botão Iniciar ou prima a tecla **Windows** do teclado.",
+                "Para procurar um programa, comece a escrever o nome, por exemplo **Word**.",
+                "Clique no resultado em **Melhor correspondência** para o abrir."
+              ]
+            },
+            {
+              "figure": "fig_start.jpg",
+              "caption": "Ilustração da demonstração — Pesquisa no menu Iniciar (não é uma captura real)."
+            },
+            {
+              "tip": "Não precisa de clicar na caixa de pesquisa: com o menu Iniciar aberto, basta começar a escrever."
+            }
+          ]
+        },
+        {
+          "title": "1.5 Trabalhar com janelas",
+          "blocks": [
+            {
+              "p": "Cada programa abre numa **janela**. No canto superior direito de todas as janelas há três botões:"
+            },
+            {
+              "table": [
+                [
+                  "Botão",
+                  "Nome",
+                  "O que faz"
+                ],
+                [
+                  "—",
+                  "Minimizar",
+                  "Esconde a janela na barra de tarefas. O programa continua aberto."
+                ],
+                [
+                  "☐",
+                  "Maximizar",
+                  "A janela ocupa o ecrã inteiro. Clique de novo para restaurar o tamanho."
+                ],
+                [
+                  "✕",
+                  "Fechar",
+                  "Fecha a janela e termina o programa."
+                ]
+              ]
+            },
+            {
+              "figure": "fig_window.jpg",
+              "caption": "Ilustração da demonstração — Botões de uma janela (Bloco de Notas) (não é uma captura real)."
+            },
+            {
+              "tip": "Para passar de uma janela para outra, use Alt + Tab."
+            }
+          ]
+        },
+        {
+          "title": "1.6 Encerrar o computador",
+          "blocks": [
+            {
+              "p": "No final do trabalho, encerre sempre o computador pelo Windows. Desligar diretamente da tomada pode danificar ficheiros."
+            },
+            {
+              "steps": [
+                "Guarde e feche os ficheiros abertos.",
+                "Abra o menu **Iniciar**.",
+                "Clique no botão de **energia**.",
+                "Escolha **Encerrar**."
+              ]
+            },
+            {
+              "figure": "fig_shutdown.jpg",
+              "caption": "Ilustração da demonstração — Encerrar a partir do menu Iniciar (não é uma captura real)."
+            },
+            {
+              "warn": "Guarde sempre os seus ficheiros antes de encerrar. O trabalho que não foi guardado perde-se."
+            },
+            {
+              "note": "Suspender poupa energia e permite retomar o trabalho rapidamente. Reiniciar desliga e volta a ligar, por exemplo depois de uma atualização."
+            }
+          ]
+        },
+        {
+          "title": "1.7 Reconhecer o Windows real",
+          "blocks": [
+            {
+              "p": "Estas imagens provêm da documentação oficial da Microsoft. Os nomes nas capturas estão em inglês e o aspeto corresponde à versão documentada pela Microsoft; o seu Windows 11 pode apresentar diferenças. As imagens foram mantidas integrais."
+            },
+            {
+              "figure": "windows11-pastas.png",
+              "caption": "Captura real do Explorador de Ficheiros do Microsoft Windows 11. Used with permission from Microsoft.",
+              "source": "https://support.microsoft.com/en-us/windows/experience/fileexplorer/file-explorer-in-windows"
+            },
+            {
+              "p": "No painel esquerdo, identifique as pastas Ambiente de Trabalho (Desktop), Transferências (Downloads), Documentos (Documents), Imagens (Pictures), Música (Music) e Vídeos (Videos). Experimente localizar estas pastas no seu computador."
+            },
+            {
+              "figure": "windows11-explorador.png",
+              "caption": "Captura oficial: menu de contexto e opção de afixar no Acesso rápido. Used with permission from Microsoft.",
+              "source": "https://support.microsoft.com/en-us/windows/experience/fileexplorer/file-explorer-in-windows"
+            },
+            {
+              "p": "Para abrir o Explorador de Ficheiros, use Windows + E. O ícone seguinte identifica o Explorador na barra de tarefas."
+            },
+            {
+              "figure": "icone-explorador.png",
+              "caption": "Ícone do Explorador de Ficheiros — identifica a aplicação para gerir ficheiros e pastas. Used with permission from Microsoft.",
+              "source": "https://support.microsoft.com/en-us/windows/experience/fileexplorer/file-explorer-in-windows"
+            },
+            {
+              "figure": "icone-windows.png",
+              "caption": "Símbolo da tecla Windows, usada no atalho Windows + E. Used with permission from Microsoft.",
+              "source": "https://support.microsoft.com/en-us/windows/experience/fileexplorer/file-explorer-in-windows"
+            }
+          ]
+        },
+        {
+          "title": "1.8 Reconhecer os programas",
+          "blocks": [
+            {
+              "p": "Estes são ícones originais da família Microsoft Office de 2018–2025. A versão instalada pode mostrar ícones mais recentes. Identifique o programa pelo nome completo, não apenas pela cor."
+            },
+            {
+              "figure": "word-original.svg",
+              "caption": "Microsoft Word — Criar e editar documentos de texto. Ícone histórico original. Used with permission from Microsoft.",
+              "source": "https://commons.wikimedia.org/wiki/File:Microsoft_Office_Word_%282019%E2%80%932025%29.svg"
+            },
+            {
+              "figure": "excel-original.svg",
+              "caption": "Microsoft Excel — Organizar dados, calcular e criar gráficos. Ícone histórico original. Used with permission from Microsoft.",
+              "source": "https://commons.wikimedia.org/wiki/File:Microsoft_Office_Excel_%282019%E2%80%932025%29.svg"
+            },
+            {
+              "figure": "powerpoint-original.svg",
+              "caption": "Microsoft PowerPoint — Preparar apresentações com diapositivos. Ícone histórico original. Used with permission from Microsoft.",
+              "source": "https://commons.wikimedia.org/wiki/File:Microsoft_Office_PowerPoint_%282019%E2%80%932025%29.svg"
+            },
+            {
+              "figure": "outlook-original.svg",
+              "caption": "Microsoft Outlook — Gerir correio eletrónico, contactos e calendário. Ícone histórico original. Used with permission from Microsoft.",
+              "source": "https://commons.wikimedia.org/wiki/File:Microsoft_Office_Outlook_%282018%E2%80%932024%29.svg"
+            }
+          ]
+        }
+      ],
+      "exercise": {
+        "title": "Exercício 1.1 – Primeiros passos no Windows 11",
+        "file": "Nenhum (usa apenas o Windows)",
+        "minutes": 15,
+        "tasks": [
+          "Ligue o computador e inicie sessão com o seu PIN ou palavra-passe.",
+          "Identifique no ambiente de trabalho: um ícone, a barra de tarefas, o botão Iniciar e a área de notificação.",
+          "Abra o menu Iniciar, escreva Bloco de Notas e abra a aplicação.",
+          "Escreva o seu nome na janela do Bloco de Notas.",
+          "Maximize a janela, depois restaure-a e minimize-a. Volte a abri-la a partir da barra de tarefas.",
+          "Feche o Bloco de Notas sem guardar (clique em Não guardar).",
+          "Encerre o computador a partir do menu Iniciar."
+        ]
+      },
+      "summary": [
+        "O hardware é a parte física do computador; o software são os programas.",
+        "O Windows 11 é o sistema operativo: gere o computador e os outros programas.",
+        "O ambiente de trabalho tem ícones, barra de tarefas, botão Iniciar e área de notificação.",
+        "Os botões de uma janela permitem minimizar, maximizar e fechar.",
+        "Encerre sempre o computador pelo menu Iniciar, depois de guardar o trabalho."
+      ],
+      "quiz": [
+        {
+          "q": "Qual dos seguintes é um exemplo de hardware?",
+          "options": [
+            "O teclado",
+            "O Windows 11",
+            "O Word",
+            "O navegador de Internet"
+          ],
+          "answer": 0
+        },
+        {
+          "q": "O que é o sistema operativo?",
+          "options": [
+            "Um jogo instalado no computador",
+            "O programa que gere o computador e os outros programas",
+            "Uma peça dentro da unidade central",
+            "Um tipo de ficheiro"
+          ],
+          "answer": 1
+        },
+        {
+          "q": "Onde fica a barra de tarefas no Windows 11?",
+          "options": [
+            "No canto superior direito",
+            "No meio do ecrã",
+            "Na parte de baixo do ecrã",
+            "Dentro do menu Iniciar"
+          ],
+          "answer": 2
+        },
+        {
+          "q": "Que tecla abre o menu Iniciar?",
+          "options": [
+            "Enter",
+            "Tecla Windows",
+            "Shift",
+            "Esc"
+          ],
+          "answer": 1
+        },
+        {
+          "q": "O que acontece quando clica em Minimizar?",
+          "options": [
+            "O programa fecha",
+            "A janela ocupa o ecrã inteiro",
+            "A janela fica escondida na barra de tarefas e o programa continua aberto",
+            "O computador encerra"
+          ],
+          "answer": 2
+        },
+        {
+          "q": "Qual é a forma correta de desligar o computador?",
+          "options": [
+            "Desligar o cabo da tomada",
+            "Iniciar > botão de energia > Encerrar",
+            "Fechar todas as janelas",
+            "Premir Alt + Tab"
+          ],
+          "answer": 1
+        },
+        {
+          "q": "A área de notificação mostra:",
+          "options": [
+            "A hora, a rede e o som",
+            "Os ficheiros recomendados",
+            "Os ícones do ambiente de trabalho",
+            "A lista de todas as aplicações"
+          ],
+          "answer": 0
+        },
+        {
+          "q": "Antes de encerrar o computador, deve:",
+          "options": [
+            "Desligar o monitor",
+            "Guardar os ficheiros abertos",
+            "Abrir o Bloco de Notas",
+            "Maximizar todas as janelas"
+          ],
+          "answer": 1
+        }
+      ]
+    }
+  ],
+  "glossary": [
+    [
+      "Ambiente de trabalho",
+      "Ecrã principal do Windows, com os ícones e a barra de tarefas."
+    ],
+    [
+      "Hardware",
+      "Componentes físicos do computador."
+    ],
+    [
+      "Janela",
+      "Área retangular onde cada programa é apresentado."
+    ],
+    [
+      "PIN",
+      "Código numérico pessoal para iniciar sessão."
+    ],
+    [
+      "Sistema operativo",
+      "Software que gere o computador; por exemplo, o Windows 11."
+    ],
+    [
+      "Software",
+      "Programas e aplicações do computador."
+    ]
+  ]
+}

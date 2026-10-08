@@ -1,0 +1,4 @@
+dados/*-shm
+dados/*-wal
+__pycache__/
+*.pyc

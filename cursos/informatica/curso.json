@@ -1,0 +1,46 @@
+{
+  "slug": "informatica",
+  "title": "Informática na Ótica do Utilizador",
+  "subtitle": "Utilização do computador, Windows 11, Internet e segurança básica",
+  "description": "Curso para quem está a começar: conhecer o computador, trabalhar no Windows 11, organizar ficheiros, navegar na Internet e proteger-se online. Vídeo-aulas curtas, manual do formando e questionário em cada módulo.",
+  "status": "publicado",
+  "order": 1,
+  "hours_video": 2,
+  "hours_class": 15,
+  "cover": "capa.jpg",
+  "modules": [
+    {
+      "num": 1,
+      "title": "O computador e o Windows 11",
+      "intro": "Neste módulo vai conhecer as partes do computador e dar os primeiros passos no Windows 11.",
+      "manual_json": "manual/modulo-1.json",
+      "manual_docx": "manual/Manual_Informatica_Modulo1.docx",
+      "manual_figures": "manual/figures",
+      "lessons": [
+        {
+          "slug": "aula-1-1",
+          "title": "Aula 1.1 · Conhecer o computador e o Windows 11",
+          "video": "video/aula-1-1.mp4",
+          "subtitles": "video/aula-1-1.vtt",
+          "subtitles_on": false,
+          "poster": "video/aula-1-1.jpg",
+          "summary": "Hardware e software, iniciar sessão, o ambiente de trabalho, janelas e encerrar o computador."
+        },
+        {
+          "slug": "aula-1-2",
+          "title": "Aula 1.2 · Ficheiros e pastas (exemplo)",
+          "video": "video/aula-1-2.mp4",
+          "subtitles": "video/aula-1-2.srt",
+          "subtitles_on": true,
+          "poster": "video/aula-1-2.jpg",
+          "summary": "Exemplo curto gerado automaticamente a partir de um guião JSON."
+        }
+      ],
+      "quiz": {
+        "title": "Questionário do Módulo 1",
+        "gift": "quiz/modulo-1.gift.txt",
+        "pass_mark": 70
+      }
+    }
+  ]
+}

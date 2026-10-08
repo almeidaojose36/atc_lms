@@ -1,0 +1,17 @@
+$CATEGORY: $course$/Informática na Ótica do Utilizador/Módulo 1
+
+::M1-Q1:: Qual dos seguintes é um exemplo de hardware? { =O teclado ~O Windows 11 ~O Word ~O navegador de Internet }
+
+::M1-Q2:: O que é o sistema operativo? { ~Um jogo instalado no computador =O programa que gere o computador e os outros programas ~Uma peça dentro da unidade central ~Um tipo de ficheiro }
+
+::M1-Q3:: Onde fica a barra de tarefas no Windows 11? { ~No canto superior direito ~No meio do ecrã =Na parte de baixo do ecrã ~Dentro do menu Iniciar }
+
+::M1-Q4:: Que tecla abre o menu Iniciar? { ~Enter =Tecla Windows ~Shift ~Esc }
+
+::M1-Q5:: O que acontece quando clica em Minimizar? { ~O programa fecha ~A janela ocupa o ecrã inteiro =A janela fica escondida na barra de tarefas e o programa continua aberto ~O computador encerra }
+
+::M1-Q6:: Qual é a forma correta de desligar o computador? { ~Desligar o cabo da tomada =Iniciar > botão de energia > Encerrar ~Fechar todas as janelas ~Premir Alt + Tab }
+
+::M1-Q7:: A área de notificação mostra\: { =A hora, a rede e o som ~Os ficheiros recomendados ~Os ícones do ambiente de trabalho ~A lista de todas as aplicações }
+
+::M1-Q8:: Antes de encerrar o computador, deve\: { ~Desligar o monitor =Guardar os ficheiros abertos ~Abrir o Bloco de Notas ~Maximizar todas as janelas }

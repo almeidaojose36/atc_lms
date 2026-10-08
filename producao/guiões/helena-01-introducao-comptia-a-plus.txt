@@ -1,0 +1,4 @@
+Olá! Sou a Helena, a sua guia virtual da ATC. Dou-lhe as boas-vindas ao curso de CompTIA A+.
+Neste curso, vamos explorar os fundamentos do suporte informático: hardware, sistemas operativos e resolução de problemas. A prática vai ajudar a relacionar os conceitos com situações do dia a dia.
+Em cada exercício, comece por observar o problema, recolher informação e testar uma hipótese de cada vez. Use um ambiente de prática e siga as orientações do formador.
+Esta formação apoia a sua preparação. A certificação CompTIA depende de exames próprios, externos à ATC. Vamos começar?

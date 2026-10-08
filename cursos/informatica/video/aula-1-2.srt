@@ -1,0 +1,36 @@
+1
+00:00:00,600 --> 00:00:03,015
+Aula 1.2: ficheiros e pastas.
+
+2
+00:00:05,600 --> 00:00:09,666
+Um ficheiro guarda um trabalho, como um documento, uma folha de cálculo ou uma fotografia.
+
+3
+00:00:10,016 --> 00:00:13,598
+As pastas servem para organizar os ficheiros, tal como as pastas de um arquivo.
+
+4
+00:00:13,948 --> 00:00:16,258
+Vamos ver tudo isto no Explorador de Ficheiros.
+
+5
+00:00:17,758 --> 00:00:20,452
+Para criar uma pasta, abra o Explorador de Ficheiros.
+
+6
+00:00:20,802 --> 00:00:22,392
+Clique em Novo e escolha Pasta.
+
+7
+00:00:22,742 --> 00:00:24,704
+Escreva o nome da pasta e prima Enter.
+
+8
+00:00:25,054 --> 00:00:28,491
+Dica: o atalho Control, Shift e N também cria uma pasta nova.
+
+9
+00:00:29,991 --> 00:00:32,011
+Pratique com o exercício 1.2 do manual.
+

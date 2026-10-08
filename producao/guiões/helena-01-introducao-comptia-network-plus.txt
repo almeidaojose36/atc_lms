@@ -1,0 +1,4 @@
+Olá! Sou a Helena, a sua guia virtual da ATC. Dou-lhe as boas-vindas ao curso de CompTIA Network+.
+Neste curso, vamos explorar como os dispositivos comunicam numa rede. Vamos estudar os fundamentos, a configuração e a resolução de problemas, com atenção à segurança.
+Procure compreender o caminho da informação e pratique os exercícios num ambiente de laboratório. Quando surgir uma dificuldade, volte aos conceitos e teste uma hipótese de cada vez.
+Esta formação apoia a sua preparação. A certificação CompTIA depende de exames próprios, externos à ATC. Vamos começar?

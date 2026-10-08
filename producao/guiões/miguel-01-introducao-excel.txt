@@ -1,0 +1,4 @@
+Olá! Sou o Miguel, o seu guia virtual da ATC. Dou-lhe as boas-vindas ao curso de Microsoft Excel.
+Neste curso, vamos transformar dados em informação útil. Começaremos pelas folhas de cálculo e avançaremos para fórmulas, funções e gráficos.
+Não precisa de decorar tudo. O importante é perceber o que pretende calcular, escolher a ferramenta certa e confirmar o resultado. Ao longo das aulas, faça uma pausa e pratique os exemplos no seu computador.
+No final de cada módulo, use o questionário para identificar o que já domina e o que precisa de rever. Vamos começar?

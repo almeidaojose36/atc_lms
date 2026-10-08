@@ -1,0 +1,92 @@
+[
+  {
+    "file": "computador-real.jpg",
+    "source": "https://www.pexels.com/photo/black-computer-monitor-and-keyboard-on-black-table-7172656/",
+    "download": "https://images.pexels.com/photos/7172656/pexels-photo-7172656.jpeg?auto=compress&cs=tinysrgb&w=1600",
+    "author": "Matheus Bertelli",
+    "license": "Pexels License",
+    "terms": "https://www.pexels.com/license/",
+    "note": "Fotografia real de equipamento. Não usar como captura instrucional do Windows.",
+    "checked": "2026-10-08"
+  },
+  {
+    "file": "windows11-explorador.png",
+    "source": "https://support.microsoft.com/en-us/windows/experience/fileexplorer/file-explorer-in-windows",
+    "download": "https://support.microsoft.com/en-us/windows/media/quick-access-option-in-file-explorer.png",
+    "author": "Microsoft",
+    "license": "Microsoft copyrighted content guidelines",
+    "terms": "https://www.microsoft.com/en-us/legal/intellectualproperty/copyright/permissions",
+    "note": "Captura oficial: preservar a imagem integral, apenas redimensionar. Used with permission from Microsoft. Uso documental; não é royalty-free.",
+    "checked": "2026-10-08"
+  },
+  {
+    "file": "windows11-pastas.png",
+    "source": "https://support.microsoft.com/en-us/windows/experience/fileexplorer/file-explorer-in-windows",
+    "download": "https://support.microsoft.com/en-us/windows/media/file-explorer-known-folders-png.png",
+    "author": "Microsoft",
+    "license": "Microsoft copyrighted content guidelines",
+    "terms": "https://www.microsoft.com/en-us/legal/intellectualproperty/copyright/permissions",
+    "note": "Captura oficial: preservar a imagem integral, apenas redimensionar. Used with permission from Microsoft. Uso documental; não é royalty-free.",
+    "checked": "2026-10-08"
+  },
+  {
+    "file": "icone-explorador.png",
+    "source": "https://support.microsoft.com/en-us/windows/experience/fileexplorer/file-explorer-in-windows",
+    "download": "https://support.microsoft.com/en-us/windows/media/fileexplorer.png",
+    "author": "Microsoft",
+    "license": "Microsoft copyrighted content guidelines — icons",
+    "terms": "https://www.microsoft.com/en-us/legal/intellectualproperty/copyright/permissions",
+    "note": "Ícone original para explicar a sua função em documentação do produto. Não usar como decoração ou marca ATC.",
+    "checked": "2026-10-08"
+  },
+  {
+    "file": "icone-windows.png",
+    "source": "https://support.microsoft.com/en-us/windows/experience/fileexplorer/file-explorer-in-windows",
+    "download": "https://support.microsoft.com/en-us/windows/media/windowslogo.png",
+    "author": "Microsoft",
+    "license": "Microsoft copyrighted content guidelines — icons",
+    "terms": "https://www.microsoft.com/en-us/legal/intellectualproperty/copyright/permissions",
+    "note": "Ícone original da tecla Windows para instrução contextual. Não é licença genérica de marca.",
+    "checked": "2026-10-08"
+  },
+  {
+    "file": "word-original.svg",
+    "source": "https://commons.wikimedia.org/wiki/File:Microsoft_Office_Word_%282019%E2%80%932025%29.svg",
+    "download": "https://upload.wikimedia.org/wikipedia/commons/1/19/Microsoft_Office_Word_%282019%E2%80%932025%29.svg?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=original",
+    "author": "Microsoft Corporation",
+    "license": "Commons labels PD-textlogo; trademark restrictions still apply",
+    "terms": "https://www.microsoft.com/en-us/legal/intellectualproperty/copyright/permissions",
+    "note": "Iconografia histórica 2019–2025, não a versão mais recente. Referência documental sobre a função do produto. Não usar como marca ATC ou indicação de parceria.",
+    "checked": "2026-10-08"
+  },
+  {
+    "file": "excel-original.svg",
+    "source": "https://commons.wikimedia.org/wiki/File:Microsoft_Office_Excel_%282019%E2%80%932025%29.svg",
+    "download": "https://upload.wikimedia.org/wikipedia/commons/e/e3/Microsoft_Office_Excel_%282019%E2%80%932025%29.svg?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=original",
+    "author": "Microsoft Corporation",
+    "license": "Commons labels PD-textlogo; trademark restrictions still apply",
+    "terms": "https://www.microsoft.com/en-us/legal/intellectualproperty/copyright/permissions",
+    "note": "Iconografia histórica 2019–2025, não a versão mais recente. Referência documental sobre a função do produto. Não usar como marca ATC ou indicação de parceria.",
+    "checked": "2026-10-08"
+  },
+  {
+    "file": "powerpoint-original.svg",
+    "source": "https://commons.wikimedia.org/wiki/File:Microsoft_Office_PowerPoint_%282019%E2%80%932025%29.svg",
+    "download": "https://upload.wikimedia.org/wikipedia/commons/2/25/Microsoft_Office_PowerPoint_%282019%E2%80%932025%29.svg?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=original",
+    "author": "Microsoft Corporation",
+    "license": "Commons labels PD-textlogo; trademark restrictions still apply",
+    "terms": "https://www.microsoft.com/en-us/legal/intellectualproperty/copyright/permissions",
+    "note": "Iconografia histórica 2019–2025, não a versão mais recente. Referência documental sobre a função do produto. Não usar como marca ATC ou indicação de parceria.",
+    "checked": "2026-10-08"
+  },
+  {
+    "file": "outlook-original.svg",
+    "source": "https://commons.wikimedia.org/wiki/File:Microsoft_Office_Outlook_%282018%E2%80%932024%29.svg",
+    "download": "https://upload.wikimedia.org/wikipedia/commons/4/45/Microsoft_Office_Outlook_%282018%E2%80%932024%29.svg?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=original",
+    "author": "Microsoft Corporation",
+    "license": "Commons labels PD-textlogo; trademark restrictions still apply",
+    "terms": "https://www.microsoft.com/en-us/legal/intellectualproperty/copyright/permissions",
+    "note": "Iconografia histórica 2018–2024, não a versão mais recente. Referência documental sobre a função do produto. Não usar como marca ATC ou indicação de parceria.",
+    "checked": "2026-10-08"
+  }
+]

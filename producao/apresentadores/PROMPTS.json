@@ -1,0 +1,12 @@
+[
+  {
+    "name": "Helena",
+    "method": "Built-in image generation",
+    "prompt": "Use case: photorealistic-natural. Create one high-resolution vertical 2:3 studio portrait for a professional e-learning talking-head avatar named Helena, a fictional Black African woman around 32 years old, deep brown skin, natural African facial features, neatly styled shoulder-length twists tucked behind shoulders, dark brown eyes, navy tailored blazer over ivory blouse, tiny understated gold stud earrings. Front-facing square shoulders, direct camera eye contact, gentle confident closed-mouth smile, lips clearly visible, natural realistic skin texture. Waist-up portrait, whole head and shoulders with generous headroom, hands outside frame, centered symmetrical composition suitable for image-to-video lip sync. Soft balanced studio key and fill lighting, warm light grey seamless background, premium but approachable Angolan training-centre presentation. No text, no logos, no props, no other people, no watermark. Fictional original identity, not a celebrity."
+  },
+  {
+    "name": "Miguel",
+    "method": "Built-in image generation",
+    "prompt": "Use case: photorealistic-natural. Create one high-resolution vertical 2:3 studio portrait for a professional e-learning talking-head avatar named Miguel, a fictional Black African man around 35 years old, deep brown skin, natural African facial features, short neat black textured hair, neatly trimmed short beard, dark brown eyes, navy tailored blazer over an ivory open-collar shirt, no tie. Front-facing square shoulders, direct camera eye contact, gentle confident closed-mouth smile, lips clearly visible, natural realistic skin texture. Waist-up portrait, whole head and shoulders with generous headroom, hands outside frame, centered symmetrical composition suitable for image-to-video lip sync. Soft balanced studio key and fill lighting, warm light grey seamless background, premium but approachable Angolan training-centre presentation. No text, no logos, no props, no other people, no watermark. Fictional original identity, not a celebrity."
+  }
+]
