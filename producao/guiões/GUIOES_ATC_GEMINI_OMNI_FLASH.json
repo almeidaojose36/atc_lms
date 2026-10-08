@@ -1,0 +1,17 @@
+{
+  "engine": "Gemini Omni Flash",
+  "max_clip_seconds": 10,
+  "target_clip_seconds": "7-9",
+  "language": "pt-PT",
+  "presenters": ["helena", "miguel"],
+  "source": "GUIOES_ATC_GEMINI_OMNI_FLASH.md",
+  "scene_rule": "Cada scene é uma geração independente; shots são os planos que devem caber dentro da mesma cena.",
+  "output": {"video": "1920x1080 H.264", "audio": "AAC", "captions": "gerar externamente a partir da locução final"},
+  "identity_prompt": "Use o retrato de referência do apresentador selecionado; manter identidade, rosto, cabelo, pele, blazer e fundo em todos os clipes.",
+  "presenter_variants": {"helena": {"name": "Helena", "guide": "a sua guia virtual"}, "miguel": {"name": "Miguel", "guide": "o seu guia virtual"}},
+  "notes": [
+    "O texto e os shots completos estão no ficheiro Markdown para leitura humana e copy/paste.",
+    "Não juntar cenas numa chamada; renderizar uma cena por ficheiro.",
+    "As duas variantes têm exactamente a mesma locução e os mesmos shots."
+  ]
+}

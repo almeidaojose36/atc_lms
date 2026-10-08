@@ -2,6 +2,8 @@
 
 Esta versão inclui personalização de perfil, escolha da Helena ou do Miguel por curso, retratos originais, guiões PT-PT e suporte para os futuros vídeos por apresentador. Ver [pacote de produção](producao/LEIA-ME.md) e [guiões](producao/guiões/GUIOES_ATC_PT-PT.md).
 
+Para produzir os clips com Gemini Omni Flash, use [GUIOES_ATC_GEMINI_OMNI_FLASH.md](producao/guiões/GUIOES_ATC_GEMINI_OMNI_FLASH.md). Cada cena é uma chamada independente de 7–9 segundos e nunca ultrapassa 10 segundos; os planos de cada cena já estão descritos no mesmo bloco.
+
 As demonstrações em vídeo e o manual Word continuam a ser os originais. O manual online inclui agora referências visuais reais e identifica as ilustrações remanescentes.
 
 ---

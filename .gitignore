@@ -2,3 +2,4 @@ dados/*-shm
 dados/*-wal
 __pycache__/
 *.pyc
+.DS_Store

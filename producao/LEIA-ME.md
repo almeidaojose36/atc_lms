@@ -6,11 +6,19 @@
 - `../static/presenters/miguel.png`: retrato original do Miguel, personagem africana fictícia, 1024 × 1536.
 - `apresentadores/PROMPTS.json`: prompts completos, gerados com a ferramenta de imagem integrada.
 - `guiões/GUIOES_ATC_PT-PT.md`: texto completo e direção de voz.
+- `guiões/GUIOES_ATC_GEMINI_OMNI_FLASH.md`: versão de produção dividida em cenas de 7–9 segundos, nunca acima de 10 segundos; cada cena inclui a locução exacta e todos os planos que cabem nesse clipe.
+- `guiões/GUIOES_ATC_GEMINI_OMNI_FLASH.json`: manifesto técnico para a produção.
 - `guiões/*.txt`: 16 textos prontos para copiar — boas-vindas ao LMS e introduções dos sete cursos, em versão Helena e Miguel.
 - `visuais/`: fotografia real, duas capturas oficiais do Explorador do Windows 11, dois ícones funcionais e quatro ícones originais históricos do Microsoft Office.
 - `visuais/fontes.json`: origem, autor, termos e limites de uso de cada imagem.
 
 Os retratos são ficheiros de imagem, não vídeos. Os textos foram preparados para narração, mas ainda não foram sintetizados nem cronometrados com uma voz final.
+
+## Gemini Omni Flash: regra de geração
+
+Use `GUIOES_ATC_GEMINI_OMNI_FLASH.md` para gerar os clips. Cada cabeçalho é uma chamada separada. Copie a locução desse cabeçalho para o campo de fala, copie os planos para a direcção visual e use apenas o retrato do apresentador escolhido como referência. O alvo é 7–9 segundos; nunca ultrapassar 10 segundos. Não peça ao modelo para gerar uma sequência de vários cabeçalhos numa só chamada.
+
+Depois de gerar, descarregue cada clip com um nome estável, reveja a duração real e monte os clips pela ordem dos códigos: `LMS-01`, `LMS-02`, `LMS-03`, `LMS-04`; ou `INF-01` a `INF-05`, conforme o curso. Gere as legendas fora do vídeo a partir da locução final. Se o Gemini alterar uma palavra, corrija a legenda e regenere o clip para manter a correspondência áudio-texto.
 
 ## Usar os vídeos depois de os produzir
 
