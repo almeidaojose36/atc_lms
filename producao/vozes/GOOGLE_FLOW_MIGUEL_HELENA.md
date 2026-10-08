@@ -74,3 +74,32 @@ Para Miguel: `{NOME}` = `Miguel`; `{GUIA}` = `o seu guia virtual`.
 ## Escolha da voz base
 
 No seletor de voz do Flow, escolha uma voz que já tenha a textura e o género pretendidos e use o campo de performance acima para orientar o português angolano. O nome da voz base pode mudar entre contas e versões do Flow; a consistência deve vir do mesmo voice asset aprovado, do mesmo prompt de performance e da mesma velocidade. Não é preciso escolher uma voz cujo nome pareça angolano: o sotaque deve ser avaliado pelo áudio, não pelo nome do asset.
+
+## Recomendação com base nas vozes visíveis no Flow
+
+### Helena: Despina — recomendada
+
+No menu mostrado, **Despina** aparece como “Female, smooth, mid pitch”. É a melhor combinação para Helena: feminina, suave, adulta e suficientemente neutra para receber a orientação de português angolano no campo **Customise performance**. A voz deve soar acolhedora e profissional sem ficar aguda ou infantil.
+
+**Alternativa:** **Erinome**, que aparece como “Female, clear, mid pitch”. Use-a se Despina não articular bem “Windows onze”, “ficheiros” ou “palavra-passe”. Erinome pode dar uma entrega ligeiramente mais instrutiva e nítida.
+
+**Não escolher como primeira opção:** Acherner, por ser “soft, high pitch”; Autonoe, por ser “bright”; ou Leda, por ser “youthful”. Podem fazer Helena parecer demasiado jovem, aguda ou publicitária para uma formadora adulta.
+
+### Miguel: Iapetus — recomendado
+
+No menu mostrado, **Iapetus** aparece como “Male, clear, mid-low pitch”. É a melhor combinação para Miguel: voz masculina clara, adulta e de registo médio-grave, adequada a explicações técnicas sem ficar pesada.
+
+**Alternativa:** **Alnilam**, que aparece como “Male, firm, mid-low pitch”. Use-a se quiser Miguel com uma presença um pouco mais firme e institucional, mantendo o prompt de performance para suavizar a entrega.
+
+**Não escolher como primeira opção:** Charon, por ser “informative, lower pitch”, se a voz ficar demasiado grave; Puck, por ser “upbeat”; ou Fenrir, por ser “excitable, younger pitch”. Esses perfis podem afastar-se do tom calmo e paciente do formador.
+
+## Como decidir entre a recomendação e a alternativa
+
+1. Selecione **Despina** para Helena e **Iapetus** para Miguel.
+2. Cole o texto curto de teste deste documento no campo de diálogo.
+3. Cole o respetivo prompt **Customise performance**.
+4. Gere uma amostra de cada voz com exactamente o mesmo texto.
+5. Escolha a voz que articula melhor o português angolano, mesmo que a textura original seja ligeiramente diferente da descrição.
+6. Só depois compare a alternativa. Não compare vozes com textos diferentes.
+
+Os nomes e as descrições observados nas imagens são referências da lista visível em 8 de outubro de 2026; o catálogo do Flow pode mudar. A recomendação é por adequação vocal, não uma garantia de sotaque angolano. O sotaque deve ser confirmado ouvindo a amostra e ajustando o campo **Customise performance**.

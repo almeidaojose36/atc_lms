@@ -1,5 +1,12 @@
 # Prompts de voz ATC — português angolano
 
+## Vozes base recomendadas no Google Flow
+
+- Helena: **Despina** — “Female, smooth, mid pitch”. Alternativa: **Erinome** — “Female, clear, mid pitch”.
+- Miguel: **Iapetus** — “Male, clear, mid-low pitch”. Alternativa: **Alnilam** — “Male, firm, mid-low pitch”.
+
+Estas escolhas são recomendações a partir da lista visível nas imagens fornecidas. O sotaque angolano não é garantido pelo nome da voz; deve ser orientado no prompt e confirmado numa amostra com o mesmo texto de teste.
+
 Use cada prompt como uma voz separada. As vozes são personagens originais da ATC, não imitações de pessoas reais. O objetivo é português falado em Angola, com dicção clara para formação profissional. A pronúncia deve soar angolana, sem caricatura e sem misturar automaticamente com português do Brasil ou com um sotaque europeu excessivamente marcado.
 
 ## Voz feminina — Helena
