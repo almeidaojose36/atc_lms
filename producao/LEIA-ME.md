@@ -8,6 +8,7 @@
 - `guiões/GUIOES_ATC_PT-PT.md`: texto completo e direção de voz.
 - `guiões/GUIOES_ATC_GEMINI_OMNI_FLASH.md`: versão de produção dividida em cenas de 7–9 segundos, nunca acima de 10 segundos; cada cena inclui a locução exacta e todos os planos que cabem nesse clipe.
 - `guiões/GUIOES_ATC_GEMINI_OMNI_FLASH.json`: manifesto técnico para a produção.
+- `vozes/PROMPTS_VOZES_ANGOLA_PT-PT.md`: prompts para criar as vozes femininas e masculinas de Helena e Miguel, incluindo texto de teste e critérios de aprovação.
 - `guiões/*.txt`: 16 textos prontos para copiar — boas-vindas ao LMS e introduções dos sete cursos, em versão Helena e Miguel.
 - `visuais/`: fotografia real, duas capturas oficiais do Explorador do Windows 11, dois ícones funcionais e quatro ícones originais históricos do Microsoft Office.
 - `visuais/fontes.json`: origem, autor, termos e limites de uso de cada imagem.

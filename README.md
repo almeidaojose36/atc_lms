@@ -4,6 +4,8 @@ Esta versão inclui personalização de perfil, escolha da Helena ou do Miguel p
 
 Para produzir os clips com Gemini Omni Flash, use [GUIOES_ATC_GEMINI_OMNI_FLASH.md](producao/guiões/GUIOES_ATC_GEMINI_OMNI_FLASH.md). Cada cena é uma chamada independente de 7–9 segundos e nunca ultrapassa 10 segundos; os planos de cada cena já estão descritos no mesmo bloco.
 
+Para criar as duas vozes personalizadas em português angolano, use [PROMPTS_VOZES_ANGOLA_PT-PT.md](producao/vozes/PROMPTS_VOZES_ANGOLA_PT-PT.md). O ficheiro inclui uma voz feminina para Helena, uma voz masculina para Miguel, texto de teste e critérios de aprovação.
+
 As demonstrações em vídeo e o manual Word continuam a ser os originais. O manual online inclui agora referências visuais reais e identifica as ilustrações remanescentes.
 
 ---
