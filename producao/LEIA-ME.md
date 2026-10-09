@@ -13,6 +13,7 @@
 - `guiões/*.txt`: 16 textos prontos para copiar — boas-vindas ao LMS e introduções dos sete cursos, em versão Helena e Miguel.
 - `visuais/`: fotografia real, duas capturas oficiais do Explorador do Windows 11, dois ícones funcionais e quatro ícones originais históricos do Microsoft Office.
 - `visuais/manual-avatares/`: 69 imagens de referência dos apresentadores para composição dos manuais, preservadas por sessão de exportação.
+- `cursos/informatica/manual/figures/fig-1-2-sign-in-options-atc.png` e `fig-1-4-start-menu-atc.png`: variantes localizadas para o exemplo do formando, com Helena Manuel e ficheiros de treino ATC.
 - `visuais/fontes.json`: origem, autor, termos e limites de uso de cada imagem.
 
 Os retratos são ficheiros de imagem, não vídeos. Os textos foram preparados para narração, mas ainda não foram sintetizados nem cronometrados com uma voz final.
