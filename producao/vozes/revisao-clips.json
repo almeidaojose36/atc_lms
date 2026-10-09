@@ -1,0 +1,17 @@
+{
+  "fonte": "Avatar Clip Review (marcações do produtor, 2026-10-09)",
+  "sotaque_brasileiro": ["H3", "H6", "H9", "M2", "M3", "M4", "M8"],
+  "ecra_real_lms": ["H1", "H5", "H6", "H8", "H9", "M1", "M2", "M4", "M7"],
+  "manter_apoio": ["H2", "H3", "H4", "M3"],
+  "outra_correcao": ["H7", "M5", "M6", "M8"],
+  "notas": {
+    "H3": "Verificar se as peças de computador mostradas são realistas",
+    "H4": "Adicionar motion graphic com o nome e o título",
+    "H7": "Não tem b-roll; ver se faz sentido acrescentar",
+    "H8": "Repete palavras; remover a repetição",
+    "H9": "O rato está bem; o texto do ecrã é lixo",
+    "M5": "Adicionar motion graphic com o nome e o título",
+    "M6": "Não tem b-roll; ver se faz sentido acrescentar",
+    "M8": "Ecrã do questionário desenhado com texto ilegível"
+  }
+}
