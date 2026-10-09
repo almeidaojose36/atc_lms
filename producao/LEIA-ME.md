@@ -24,6 +24,15 @@ Depois de gerar, descarregue cada clip com um nome estável, reveja a duração 
 
 ## Usar os vídeos depois de os produzir
 
+Os exports recebidos do Google Flow estão preservados em `producao/videos/avatar-video/Helena/` e `producao/videos/avatar-video/Miguel/`. Os dois clips de boas-vindas escolhidos para a integração imediata são também copiados para:
+
+```
+cursos/informatica/apresentadores/helena-introducao.mp4
+cursos/informatica/apresentadores/miguel-introducao.mp4
+```
+
+Os restantes exports permanecem no arquivo de produção até serem associados a uma aula específica e revistos com a locução final.
+
 Criar os ficheiros seguintes para Informática (não é necessário reimportar o curso):
 
 ```
