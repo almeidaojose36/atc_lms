@@ -13,10 +13,12 @@ import json, pathlib, re, subprocess, sys, tempfile
 
 RAIZ = pathlib.Path(__file__).resolve().parents[1]
 ORIGEM = RAIZ / "videos" / "avatar-video"
-DESTINO = RAIZ / "videos" / "avatar-video-voz-texto"
+import os
+GRUPO = int(os.environ.get("GRUPO", "0"))          # palavras por segmento (0 = uma oração inteira)
+DESTINO = RAIZ / "videos" / os.environ.get("DESTINO", "avatar-video-voz-texto")
 VOZES = {"Helena": ("JGnWZj684pcXmK2SxYIv", True), "Miguel": ("FbFkkfp4Iv6U5Q1WC4C2", False)}
 API = "https://api.elevenlabs.io/v1"
-TEMPO_MIN, TEMPO_MAX = 0.75, 1.30   # limites do ajuste de velocidade por oração
+TEMPO_MIN, TEMPO_MAX = (0.80, 1.25) if GRUPO else (0.75, 1.30)   # limites do ajuste de velocidade por oração
 
 def run(*a, **k): return subprocess.run([str(x) for x in a], check=True, **k)
 
@@ -39,14 +41,25 @@ def oracoes(texto):
     return [len(p.split()) for p in partes], re.sub(r"\s+", " ", texto).strip()
 
 def montar(orig_w, tts_w, contagens, tts_audio, orig_dur, dst_wav):
-    filtros, rotulos, i = [], [], 0
-    for n, c in enumerate(contagens):
-        o = orig_w[i:i + c]; t = tts_w[i:i + c]; i += c
-        o0, o1, t0, t1 = o[0]["start"], o[-1]["end"], t[0]["start"], t[-1]["end"]
+    # segmentos: (primeira palavra, última palavra+1); com GRUPO, cada oração parte-se em grupos curtos
+    segs, i = [], 0
+    for c in contagens:
+        j = i
+        while j < i + c:
+            k = min(j + GRUPO, i + c) if GRUPO else i + c
+            if GRUPO and i + c - k == 1: k = i + c      # evita grupos de uma só palavra no fim
+            segs.append((j, k)); j = k
+        i += c
+    filtros, rotulos = [], []
+    for n, (p, q) in enumerate(segs):
+        o0, o1, t0, t1 = orig_w[p]["start"], orig_w[q-1]["end"], tts_w[p]["start"], tts_w[q-1]["end"]
         r = max(TEMPO_MIN, min(TEMPO_MAX, (t1 - t0) / max(o1 - o0, 0.05)))
-        a, b = max(t0 - 0.04, 0), t1 + 0.06
+        # cortes a meio do intervalo entre palavras, para não partir sons
+        a = (tts_w[p-1]["end"] + t0) / 2 if p > 0 else max(t0 - 0.04, 0)
+        b = (t1 + tts_w[q]["start"]) / 2 if q < len(tts_w) else t1 + 0.06
+        atraso = max(o0 - (t0 - a) / r, 0)
         filtros.append(f"[0:a]atrim={a:.3f}:{b:.3f},asetpts=PTS-STARTPTS,atempo={r:.4f},"
-                       f"adelay={int(o0*1000)}|{int(o0*1000)}[s{n}]")
+                       f"adelay={int(atraso*1000)}|{int(atraso*1000)}[s{n}]")
         rotulos.append(f"[s{n}]")
     filtros.append("".join(rotulos) + f"amix=inputs={len(rotulos)}:normalize=0,apad=whole_dur={orig_dur:.3f}[out]")
     run("ffmpeg", "-y", "-loglevel", "error", "-i", tts_audio, "-filter_complex", ";".join(filtros),
