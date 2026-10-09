@@ -1,0 +1,104 @@
+{
+ "H5": {
+  "origem": "Personalizing_user_profile_and_p…_20261009082620.mp4",
+  "voz": "avatar-video-novas-vozes",
+  "brolls_lms": true,
+  "grafismo": false
+ },
+ "H8": {
+  "origem": "Reviewing_course_manual_and_tasks_20261009083219.mp4",
+  "voz": "avatar-video-novas-vozes",
+  "brolls_lms": true,
+  "grafismo": false
+ },
+ "H1": {
+  "origem": "Choosing_first_course_and_training_20261009082720.mp4",
+  "voz": "avatar-video-novas-vozes",
+  "brolls_lms": true,
+  "grafismo": false
+ },
+ "H2": {
+  "origem": "Computer_course_video_production…_1080p_20261009083009.mp4",
+  "voz": "avatar-video-novas-vozes",
+  "brolls_lms": false,
+  "grafismo": false
+ },
+ "H3": {
+  "origem": "Computer_parts_and_workstation_i…_20261009083324.mp4",
+  "voz": "avatar-video-novas-vozes",
+  "brolls_lms": false,
+  "grafismo": false
+ },
+ "H4": {
+  "origem": "Helena_introducing_ATC_learning_…_20261009081638.mp4",
+  "voz": "avatar-video-novas-vozes",
+  "brolls_lms": false,
+  "grafismo": true
+ },
+ "H6": {
+  "origem": "Presenter_explaining_online_lear…_1080p_20261009082534.mp4",
+  "voz": "avatar-video-novas-vozes",
+  "brolls_lms": true,
+  "grafismo": false
+ },
+ "H7": {
+  "origem": "Presenter_welcoming_to_computer_…_20261009082824.mp4",
+  "voz": "avatar-video-novas-vozes",
+  "brolls_lms": false,
+  "grafismo": true
+ },
+ "H9": {
+  "origem": "Video_demonstration_instruction_…_1080p_20261009083134.mp4",
+  "voz": "avatar-video-voz-texto-v2",
+  "brolls_lms": true,
+  "grafismo": false
+ },
+ "M1": {
+  "origem": "Apresentador_explicando_platafor…_1080p_20261009100545.mp4",
+  "voz": "avatar-video-novas-vozes",
+  "brolls_lms": true,
+  "grafismo": false
+ },
+ "M2": {
+  "origem": "Choosing_first_course_and_practice_20261009100840.mp4",
+  "voz": "avatar-video-novas-vozes",
+  "brolls_lms": true,
+  "grafismo": false
+ },
+ "M3": {
+  "origem": "Computador_introdução_aula_abertura_1080p_20261009101250.mp4",
+  "voz": "avatar-video-voz-texto-v2",
+  "brolls_lms": false,
+  "grafismo": false
+ },
+ "M4": {
+  "origem": "Course_contents_and_video_instru…_20261009101112.mp4",
+  "voz": "avatar-video-voz-texto-v2",
+  "brolls_lms": true,
+  "grafismo": false
+ },
+ "M5": {
+  "origem": "Guide_welcoming_users_to_platform_20261009101341.mp4",
+  "voz": "avatar-video-novas-vozes",
+  "brolls_lms": false,
+  "grafismo": true
+ },
+ "M6": {
+  "origem": "Presenter_welcoming_in_video_course_20261009100959.mp4",
+  "voz": "avatar-video-novas-vozes",
+  "brolls_lms": false,
+  "grafismo": true
+ },
+ "M7": {
+  "origem": "User_profile_customization_setup_1080p_20261009100731.mp4",
+  "voz": "avatar-video-novas-vozes",
+  "brolls_lms": true,
+  "grafismo": false
+ },
+ "M8": {
+  "origem": "Video_demonstration_instruction_…_1080p_20261009101202.mp4",
+  "voz": "avatar-video-voz-texto-v2",
+  "brolls_lms": true,
+  "grafismo": false
+ }
+}
