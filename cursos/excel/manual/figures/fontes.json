@@ -1,0 +1,35 @@
+{
+  "source_page": "https://support.microsoft.com/pt-pt/excel/get-started/what-is-excel",
+  "source_page_title": "O que é o Excel? — Suporte da Microsoft",
+  "accessed": "2026-10-10",
+  "official_reuse_guidance": "https://www.microsoft.com/en-us/legal/intellectualproperty/copyright/permissions",
+  "microsoft_screenshots": [
+    {
+      "file": "microsoft-introduzir-dados.png",
+      "direct_source": "https://support.microsoft.com/pt-pt/excel/media/qs-excel-enter-data.png",
+      "description": "Captura de ecrã do Microsoft Excel sobre introdução de dados.",
+      "modifications": "Nenhuma; ficheiro original preservado.",
+      "credit_required_by_guidance": "Used with permission from Microsoft.",
+      "notes": "Reproduzida integralmente para instrução, sem recorte ou alteração. Verificar os termos Microsoft antes de distribuição comercial impressa ou redistribuição fora deste manual de formação."
+    },
+    {
+      "file": "microsoft-preencher-serie.png",
+      "direct_source": "https://support.microsoft.com/pt-pt/excel/media/qs-excel-fill.png",
+      "description": "Captura de ecrã do Microsoft Excel sobre a alça de preenchimento e séries.",
+      "modifications": "Nenhuma; ficheiro original preservado.",
+      "credit_required_by_guidance": "Used with permission from Microsoft.",
+      "notes": "Reproduzida integralmente para instrução, sem recorte ou alteração. Verificar os termos Microsoft antes de distribuição comercial impressa ou redistribuição fora deste manual de formação."
+    }
+  ],
+  "excluded_asset": {
+    "file": "create-a-workbook.png",
+    "reason": "A imagem representa o ecrã inicial/abertura do produto, uma categoria excluída pelas orientações publicadas da Microsoft para capturas de ecrã; não foi incluída no curso."
+  },
+  "atc_original_assets": [
+    "animar-estrutura.svg",
+    "animar-criar-livro.svg",
+    "animar-introduzir-dados.svg",
+    "animar-preencher-serie.svg"
+  ],
+  "atc_original_assets_notes": "Esquemas pedagógicos originais em português europeu. Não são capturas do Microsoft Excel nem reproduções fiéis da interface."
+}

@@ -1,0 +1,17 @@
+$CATEGORY: $course$/Microsoft Excel/Módulo 1
+
+::EX1-Q1:: Para que serve principalmente o Microsoft Excel? { ~Editar vídeos profissionais =Organizar dados em folhas de cálculo, efetuar cálculos e apresentar informação ~Criar apenas documentos de texto ~Gerir palavras-passe }
+
+::EX1-Q2:: O que identifica a referência C4? { ~A folha número 4 =A célula na coluna C e linha 4 ~O quarto livro aberto ~O intervalo entre C e 4 }
+
+::EX1-Q3:: Qual é uma forma de confirmar a entrada de um valor e avançar para outra célula? { ~Alt =Enter ou Tab ~Esc ~Ctrl+P }
+
+::EX1-Q4:: Para continuar uma série como Jan, Fev, Mar, o que deve fazer? { ~Selecionar apenas uma célula vazia =Introduzir os dois primeiros elementos, selecioná-los e arrastar a alça de preenchimento ~Escrever todos os meses numa única célula ~Premir Ctrl+N repetidamente }
+
+::EX1-Q5:: Qual dos exemplos é um livro do Excel? { ~Uma única célula como A1 =Um ficheiro de trabalho que pode conter várias folhas ~Um gráfico impresso ~A barra de fórmulas }
+
+::EX1-Q6:: Qual é uma forma de realçar automaticamente valores que cumprem uma regra? { ~A tecla Tab =Formatação condicional ~O nome do ficheiro ~Uma nova folha em branco }
+
+::EX1-Q7:: Verdadeiro ou falso: uma folha de cálculo é organizada em linhas e colunas. {T}
+
+::EX1-Q8:: Ao introduzir dados fictícios para praticar, deve: { ~Usar dados pessoais verdadeiros =Usar exemplos fictícios e confirmar os valores ~Partilhar o ficheiro publicamente ~Desativar o guardado }

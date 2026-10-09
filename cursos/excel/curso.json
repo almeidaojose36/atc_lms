@@ -1,1 +1,23 @@
-{ "slug": "excel", "title": "Microsoft Excel", "subtitle": "Folhas de cálculo, fórmulas, funções e gráficos", "status": "em_breve", "order": 3, "hours_video": 3, "modules": [] }
+{
+  "slug": "excel",
+  "title": "Microsoft Excel",
+  "subtitle": "Folhas de cálculo, fórmulas, funções e gráficos",
+  "description": "Aprenda a criar livros, organizar dados, calcular e comunicar resultados com folhas de cálculo. Este módulo introdutório combina manual online, exemplos animados e prática guiada.",
+  "status": "em_breve",
+  "order": 3,
+  "hours_video": 3,
+  "modules": [
+    {
+      "num": 1,
+      "title": "Primeiros passos no Excel",
+      "intro": "Conheça os livros e as folhas de cálculo, crie um livro, introduza dados e utilize o preenchimento automático com exemplos de formação da ATC.",
+      "manual_json": "manual/modulo-1.json",
+      "manual_figures": "manual/figures",
+      "quiz": {
+        "title": "Questionário do Módulo 1 · Primeiros passos no Excel",
+        "gift": "quiz/modulo-1.gift.txt",
+        "pass_mark": 70
+      }
+    }
+  ]
+}
