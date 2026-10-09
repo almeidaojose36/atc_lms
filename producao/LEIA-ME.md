@@ -12,6 +12,7 @@
 - `vozes/GOOGLE_FLOW_MIGUEL_HELENA.md`: texto pronto para os campos **Character info** e **Customise performance** do Google Flow, para ambas as personagens.
 - `guiões/*.txt`: 16 textos prontos para copiar — boas-vindas ao LMS e introduções dos sete cursos, em versão Helena e Miguel.
 - `visuais/`: fotografia real, duas capturas oficiais do Explorador do Windows 11, dois ícones funcionais e quatro ícones originais históricos do Microsoft Office.
+- `visuais/manual-avatares/`: 69 imagens de referência dos apresentadores para composição dos manuais, preservadas por sessão de exportação.
 - `visuais/fontes.json`: origem, autor, termos e limites de uso de cada imagem.
 
 Os retratos são ficheiros de imagem, não vídeos. Os textos foram preparados para narração, mas ainda não foram sintetizados nem cronometrados com uma voz final.
