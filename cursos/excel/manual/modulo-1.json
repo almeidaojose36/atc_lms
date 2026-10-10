@@ -7,7 +7,7 @@
   "hours_video": 0.5,
   "producer": "Almeida José",
   "reviewer": "Formador ATC",
-  "intro": "Este módulo apresenta o Microsoft Excel através de tarefas simples: criar um livro, preencher células e continuar uma série. As capturas de ecrã da Microsoft são reproduzidas sem alterações; os exemplos animados da ATC são esquemas pedagógicos simplificados.",
+  "intro": "Este módulo apresenta o Microsoft Excel através de tarefas simples: criar um livro, preencher células e continuar uma série. Inclui capturas próprias de exemplos ATC e esquemas pedagógicos ATC.",
   "modules": [
     {
       "num": 1,
@@ -90,9 +90,6 @@
             {
               "figure": "animar-criar-livro.svg",
               "caption": "Esquema animado ATC: criar um livro e começar na célula A1."
-            },
-            {
-              "note": "O artigo de suporte da Microsoft mostra uma captura do ecrã inicial do Excel. Essa captura foi consultada para preparar este passo, mas não é reproduzida neste manual."
             }
           ]
         },
@@ -101,11 +98,6 @@
           "blocks": [
             {
               "p": "Selecione uma célula vazia, escreva o conteúdo e prima **Enter** ou **Tab**. Enter confirma a entrada e normalmente avança para a célula seguinte na coluna; Tab confirma e avança para a célula à direita. Pode escrever palavras, datas ou números."
-            },
-            {
-              "figure": "microsoft-introduzir-dados.png",
-              "caption": "Captura original do Microsoft Excel: introdução de texto e navegação entre células com Enter e Tab. Used with permission from Microsoft.",
-              "source": "https://support.microsoft.com/pt-pt/excel/get-started/what-is-excel"
             },
             {
               "figure": "animar-introduzir-dados.svg",
@@ -130,11 +122,6 @@
           "blocks": [
             {
               "p": "Quando reconhece um padrão, o Excel pode continuar uma série. Para criar uma sequência mensal, escreva **Jan** e **Fev** em duas células adjacentes, selecione ambas e arraste a **alça de preenchimento** — o pequeno quadrado no canto inferior direito da seleção — na direção pretendida."
-            },
-            {
-              "figure": "microsoft-preencher-serie.png",
-              "caption": "Captura original do Microsoft Excel: prolongar meses e anos através da alça de preenchimento. Used with permission from Microsoft.",
-              "source": "https://support.microsoft.com/pt-pt/excel/get-started/what-is-excel"
             },
             {
               "figure": "animar-preencher-serie.svg",
@@ -205,7 +192,7 @@
             },
             {
               "figure": "amostra-excel-base.jpg",
-              "caption": "Captura própria ATC · Microsoft Excel para a Web · Português (Portugal). Used with permission from Microsoft."
+              "caption": "Captura própria ATC · Microsoft Excel para a Web · Português (Portugal)."
             },
             {
               "steps": [
@@ -227,7 +214,7 @@
             },
             {
               "figure": "amostra-excel-formulas.jpg",
-              "caption": "Captura própria ATC · Microsoft Excel para a Web · Português (Portugal). Used with permission from Microsoft."
+              "caption": "Captura própria ATC · Microsoft Excel para a Web · Português (Portugal)."
             },
             {
               "steps": [

@@ -1,35 +1,31 @@
 {
-  "source_page": "https://support.microsoft.com/pt-pt/excel/get-started/what-is-excel",
-  "source_page_title": "O que é o Excel? — Suporte da Microsoft",
-  "accessed": "2026-10-10",
-  "official_reuse_guidance": "https://www.microsoft.com/en-us/legal/intellectualproperty/copyright/permissions",
-  "microsoft_screenshots": [
+  "source": "Capturas próprias ATC e esquemas pedagógicos ATC",
+  "captures": [
     {
-      "file": "microsoft-introduzir-dados.png",
-      "direct_source": "https://support.microsoft.com/pt-pt/excel/media/qs-excel-enter-data.png",
-      "description": "Captura de ecrã do Microsoft Excel sobre introdução de dados.",
-      "modifications": "Nenhuma; ficheiro original preservado.",
-      "credit_required_by_guidance": "Used with permission from Microsoft.",
-      "notes": "Reproduzida integralmente para instrução, sem recorte ou alteração. Verificar os termos Microsoft antes de distribuição comercial impressa ou redistribuição fora deste manual de formação."
+      "course": "excel",
+      "file": "cursos/excel/manual/figures/amostra-excel-base.jpg",
+      "captured": "2026-10-10",
+      "sha256": "ea9504f0d896c5abc24ed7872858510fc2904602fc11ba7c713cee0ce444c9ff",
+      "method": "Screenshot through the existing signed-in in-app browser",
+      "changes": "None: full viewport preserved. Branding and instructional steps placed outside the image.",
+      "document": "ATC fictional training exercise; no private document URLs stored.",
+      "capture_view": "Workbook zoom 200% during capture; restored to 100% afterward."
     },
     {
-      "file": "microsoft-preencher-serie.png",
-      "direct_source": "https://support.microsoft.com/pt-pt/excel/media/qs-excel-fill.png",
-      "description": "Captura de ecrã do Microsoft Excel sobre a alça de preenchimento e séries.",
-      "modifications": "Nenhuma; ficheiro original preservado.",
-      "credit_required_by_guidance": "Used with permission from Microsoft.",
-      "notes": "Reproduzida integralmente para instrução, sem recorte ou alteração. Verificar os termos Microsoft antes de distribuição comercial impressa ou redistribuição fora deste manual de formação."
+      "course": "excel",
+      "file": "cursos/excel/manual/figures/amostra-excel-formulas.jpg",
+      "captured": "2026-10-10",
+      "sha256": "1302b0ea0c6a9b6dcec059bcd8eaaabb5ac1d552b0e7f11e03b4066e45faa1be",
+      "method": "Screenshot through the existing signed-in in-app browser",
+      "changes": "None: full viewport preserved. Branding and instructional steps placed outside the image.",
+      "document": "ATC fictional training exercise; no private document URLs stored.",
+      "capture_view": "Workbook zoom 200% during capture; restored to 100% afterward."
     }
   ],
-  "excluded_asset": {
-    "file": "create-a-workbook.png",
-    "reason": "A imagem representa o ecrã inicial/abertura do produto, uma categoria excluída pelas orientações publicadas da Microsoft para capturas de ecrã; não foi incluída no curso."
-  },
-  "atc_original_assets": [
+  "diagrams": [
     "animar-estrutura.svg",
     "animar-criar-livro.svg",
     "animar-introduzir-dados.svg",
     "animar-preencher-serie.svg"
-  ],
-  "atc_original_assets_notes": "Esquemas pedagógicos originais em português europeu. Não são capturas do Microsoft Excel nem reproduções fiéis da interface."
+  ]
 }
