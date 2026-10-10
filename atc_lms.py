@@ -471,7 +471,7 @@ def bar(pct):
     return f'<div class="bar" role="progressbar" aria-valuenow="{pct}" aria-valuemin="0" aria-valuemax="100"><span style="width:{pct}%"></span></div>'
 
 
-def page(title, body, user=None, csrf="", wide=False, flash="", profile=None, presenter=None):
+def page(title, body, user=None, csrf="", wide=False, flash="", profile=None, presenter=None, here="/"):
     if user:
         user = dict(user)
         user["name"] = (profile or {}).get("display_name") or user["name"]
@@ -490,7 +490,7 @@ def page(title, body, user=None, csrf="", wide=False, flash="", profile=None, pr
                    f'<form class="logout" method="post" action="/sair">{csrf_field(csrf)}<button class="linkbtn">Sair da conta →</button></form></aside>')
     chip = ""
     if user and presenter in PRESENTERS:
-        chip = (f'<a class="guide-chip" href="/apresentador?seguinte=/" title="Mudar de guia"><img src="/static/presenters/{presenter}.png" alt="">'
+        chip = (f'<a class="guide-chip" href="/apresentador?seguinte={urllib.parse.quote(safe_next(here), safe="/")}" title="Mudar de guia"><img src="/static/presenters/{presenter}.png" alt="">'
                 f'<span><small>O seu guia</small><b>{PRESENTERS[presenter]["name"]}</b></span></a>')
     flash_html = f'<div class="flash" role="status">{flash}</div>' if flash else ""
     header = (f'<div class="workspace-label">Área de aprendizagem <span>/</span> <b>{h(title)}</b></div>{chip}<a class="account-link" href="/conta">{h(user["name"].split()[0])} <span class="avatar avatar-{h(profile_color)}">{h(user["name"][:1].upper())}</span></a>' if user else brand)
@@ -703,7 +703,8 @@ class Handler(BaseHTTPRequestHandler):
     # -- ajudas para as páginas --------------------------------------------
     def render(self, title, body, **kw):
         return page(title, body, self.user, self.csrf, profile=learner_profile(self),
-                    presenter=selected_presenter(self) if self.user else None, **kw)
+                    presenter=selected_presenter(self) if self.user else None,
+                    here=urllib.parse.urlsplit(self.path).path, **kw)
 
     def is_staff(self):
         return self.user and self.user["role"] in ("admin", "formador")
