@@ -977,11 +977,23 @@ def course_page(r, slug):
     hours = " · ".join(x for x in [f'{fmt_h(c["hours_video"])} h de vídeo' if c["hours_video"] else "",
                                    f'{fmt_h(c["hours_class"])} h presenciais' if c["hours_class"] else ""] if x)
     staff = (f' <a class="btn ghost" href="/admin/relatorio/{slug}">Relatório de turma</a>' if r.is_staff() else "")
+    sample = ""
+    if slug == "informatica" and (COURSES_DIR / slug / "video/amostra-windows-atc.mp4").is_file():
+        sample = '''<section class="card module" id="amostra-windows">
+<span class="eyebrow">AMOSTRA ATC · 32 SEGUNDOS</span><h2>Primeiros passos no Windows</h2>
+<p>Explore os ecrãs personalizados com Helena e Miguel. Quatro cenas de 8 segundos, com legendas em português europeu.</p>
+<video controls playsinline preload="none" style="width:100%;max-height:640px;border-radius:12px"
+poster="/media/informatica/video/amostra-windows-atc.png" aria-label="Amostra ATC: primeiros passos no Windows">
+<source src="/media/informatica/video/amostra-windows-atc.mp4" type="video/mp4">
+O seu navegador não suporta vídeo.</video>
+<p class="muted">Simulação pedagógica com imagens editadas. Amostra sem áudio, preparada para as vozes dos formadores.</p>
+<div class="actions"><a class="btn ghost" href="/media/informatica/video/amostra-windows-atc.mp4?descarregar=1">Descarregar amostra</a>
+<a class="btn ghost" href="/media/informatica/video/amostra-windows-atc.vtt?descarregar=1">Descarregar legendas</a></div></section>'''
     return r.render(c["title"], f"""<p class="crumbs"><a href="/">Os meus cursos</a></p>
 {presenter_banner(r, c)}<section class="hero"><div><h1>{h(c['title'])}</h1><p class="lead">{h(c['subtitle'])}</p><p>{h(c['description'])}</p>
 <p class="muted">{hours}</p><div class="actions">{cont}{staff}</div></div>
 <aside class="card"><h3>O seu progresso</h3>{bar(p['pct'])}<p><b>{p['pct']}%</b> · {p['lessons_done']}/{p['lessons']} aulas ·
-{p['quizzes_done']}/{p['quizzes']} questionários</p>{cert_html}</aside></section>{''.join(out)}""")
+{p['quizzes_done']}/{p['quizzes']} questionários</p>{cert_html}</aside></section>{sample}{''.join(out)}""")
 
 
 def lesson_media(slug, lesson, presenter):

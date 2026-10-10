@@ -1,0 +1,10 @@
+{
+  "duration": 8,
+  "assertions": [
+    {
+      "kind": "appearsBy",
+      "selector": "#scene-01-sessao h1",
+      "bySec": 0.5
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+node_modules/
+.hyperframes/
+snapshots/
+render.log
+.check-result.json
+.media/
+.thumbnails/
