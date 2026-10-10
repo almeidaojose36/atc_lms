@@ -408,7 +408,7 @@ def main():
         fc.append(f"[{n}:a]adelay={ms}|{ms},aformat=channel_layouts=stereo[v{k}]"); rotulos.append(f"[v{k}]"); n += 1
     for j, f in enumerate(falas):
         ms = int((inicios[f["k"]] + f["t"]) * 1000); entradas += ["-i", webm_para(f["src"])]
-        fc.append(f"[{n}:a]atrim=0:{f['dur']:.2f},afade=t=out:st={f['dur'] - 0.25:.2f}:d=0.25,volume=1.1,"
+        fc.append(f"[{n}:a]atrim=0:{f['dur']:.2f},afade=t=out:st={f['dur'] - 0.25:.2f}:d=0.25,volume=0.8,equalizer=f=2500:t=q:w=1:g=-1.5,"
                   f"adelay={ms}|{ms},aformat=sample_rates=44100:channel_layouts=stereo[g{j}]"); rotulos.append(f"[g{j}]"); n += 1
         print("guia fala", pathlib.Path(f["src"]).name, f"aos {ms / 1000:.1f}s", flush=True)
     fc.append("".join(rotulos) + f"amix=inputs={len(rotulos)}:normalize=0,apad=whole_dur={total:.2f},asplit=2[voz][chave]")
