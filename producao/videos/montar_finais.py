@@ -19,7 +19,8 @@ NOMES = {"H": "Helena", "M": "Miguel"}
 
 # pasta da versão com a voz escolhida (STS = avatar-video-novas-vozes, texto = avatar-video-voz-texto-v2)
 VOZ_BASE = {c: "avatar-video-novas-vozes" for c in "H1 H2 H3 H4 H5 H6 H7 H8 M1 M2 M5 M6 M7".split()}
-VOZ_BASE.update({c: "avatar-video-voz-texto-v2" for c in "H9 M3 M4 M8".split()})
+VOZ_BASE.update({c: "avatar-video-voz-texto-v2" for c in "H9 M3 M4".split()})
+VOZ_BASE.update({c: "avatar-video-voz-texto-v3" for c in "H1 H3 H6 M2 M8".split()})  # ritmo ajustado, sem gaguez
 
 # (início, fim, [(gravação, de, até), ...]) substitui esse intervalo por ecrãs reais do LMS
 # (início, fim, [(gravação, de, até), ...], entrada, saída): substitui esse intervalo por ecrãs reais do LMS.

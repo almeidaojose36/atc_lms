@@ -13,7 +13,7 @@
  },
  "H1": {
   "origem": "Choosing_first_course_and_training_20261009082720.mp4",
-  "voz": "avatar-video-novas-vozes",
+  "voz": "avatar-video-voz-texto-v3",
   "brolls_lms": true,
   "grafismo": false
  },
@@ -25,7 +25,7 @@
  },
  "H3": {
   "origem": "Computer_parts_and_workstation_i…_20261009083324.mp4",
-  "voz": "avatar-video-novas-vozes",
+  "voz": "avatar-video-voz-texto-v3",
   "brolls_lms": false,
   "grafismo": false
  },
@@ -37,7 +37,7 @@
  },
  "H6": {
   "origem": "Presenter_explaining_online_lear…_1080p_20261009082534.mp4",
-  "voz": "avatar-video-novas-vozes",
+  "voz": "avatar-video-voz-texto-v3",
   "brolls_lms": true,
   "grafismo": false
  },
@@ -61,7 +61,7 @@
  },
  "M2": {
   "origem": "Choosing_first_course_and_practice_20261009100840.mp4",
-  "voz": "avatar-video-novas-vozes",
+  "voz": "avatar-video-voz-texto-v3",
   "brolls_lms": true,
   "grafismo": false
  },
@@ -97,7 +97,7 @@
  },
  "M8": {
   "origem": "Video_demonstration_instruction_…_1080p_20261009101202.mp4",
-  "voz": "avatar-video-voz-texto-v2",
+  "voz": "avatar-video-voz-texto-v3",
   "brolls_lms": true,
   "grafismo": false
  }

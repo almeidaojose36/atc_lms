@@ -9,7 +9,7 @@ para a sincronização labial ficar o mais próxima possível.
 
 Resultados: producao/videos/avatar-video-voz-texto/<Apresentador>/
 """
-import json, pathlib, re, subprocess, sys, tempfile
+import json, os, pathlib, re, subprocess, sys, tempfile
 import numpy as np
 
 RAIZ = pathlib.Path(__file__).resolve().parents[1]
@@ -87,8 +87,31 @@ def dur(f):
     return float(run("ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", f,
                      capture_output=True, text=True).stdout)
 
-for nome, (voz, isolar) in VOZES.items():
-    for src in sorted((ORIGEM / nome).glob("*.mp4")):
+ALVOS = os.environ.get("ALVOS", "").split()   # ex.: ALVOS="H1 H3" para limitar a clips
+CODIGOS = {}
+for _q, _p in (("H", "Helena"), ("M", "Miguel")):
+    for _i, _f in enumerate(sorted((ORIGEM / _p).glob("*.mp4")), 1):
+        CODIGOS[f"{_q}{_i}"] = _f
+
+def sem_repeticoes(texto, palavras):
+    """Remove gaguez (palavra repetida seguida, ex. «e, e»), mantendo a última, no texto e nas marcas de tempo."""
+    texto = re.sub(r"\[[^\]]*\]", " ", texto)
+    toks = texto.split()
+    if len(toks) != len(palavras): return re.sub(r"\s+", " ", texto).strip(), palavras
+    norm = [re.sub(r"\W+", "", t).lower() for t in toks]
+    ficar = [i for i in range(len(toks)) if not (i + 1 < len(toks) and norm[i] and norm[i] == norm[i + 1])]
+    return " ".join(toks[i] for i in ficar), [palavras[i] for i in ficar]
+
+def sintetizar(texto, voz, saida, velocidade=None):
+    corpo = {"text": texto, "model_id": "eleven_multilingual_v2", "language_code": "pt"}
+    if velocidade: corpo["voice_settings"] = {"speed": round(velocidade, 2)}
+    curl(f"{API}/text-to-speech/{voz}?output_format=mp3_44100_128", saida, json_body=corpo)
+
+for cid, src in CODIGOS.items():
+    if ALVOS and cid not in ALVOS: continue
+    nome = {"H": "Helena", "M": "Miguel"}[cid[0]]
+    voz, isolar = VOZES[nome]
+    if True:
         dst = DESTINO / nome / src.name
         if dst.exists(): continue
         dst.parent.mkdir(parents=True, exist_ok=True)
@@ -96,9 +119,16 @@ for nome, (voz, isolar) in VOZES.items():
             t = pathlib.Path(t)
             run("ffmpeg", "-y", "-loglevel", "error", "-i", src, "-vn", "-ac", "1", "-b:a", "64k", t / "o.mp3")
             texto_o, orig_w = scribe(t / "o.mp3")
-            contagens, texto = oracoes(texto_o)
-            curl(f"{API}/text-to-speech/{voz}?output_format=mp3_44100_128", t / "t.mp3",
-                 json_body={"text": texto, "model_id": "eleven_multilingual_v2", "language_code": "pt"})
+            texto, orig_w = sem_repeticoes(texto_o, orig_w)
+            contagens, texto = oracoes(texto)
+            sintetizar(texto, voz, t / "t.mp3")
+            _, tts_w = scribe(t / "t.mp3")
+            # ajusta o ritmo da própria voz ao da fala original (em vez de esticar o áudio à força)
+            if tts_w and orig_w:
+                r = (tts_w[-1]["end"] - tts_w[0]["start"]) / max(orig_w[-1]["end"] - orig_w[0]["start"], 0.5)
+                if abs(r - 1) > 0.06:
+                    sintetizar(texto, voz, t / "t.mp3", velocidade=max(0.8, min(1.2, r)))
+                    print(f"  ritmo {cid}: {r:.2f} -> velocidade {max(0.8, min(1.2, r)):.2f}", flush=True)
             audio = t / "t.mp3"
             if isolar:
                 curl(f"{API}/audio-isolation", t / "i.mp3", f"audio={'@'}{audio}")
@@ -112,4 +142,4 @@ for nome, (voz, isolar) in VOZES.items():
             run("ffmpeg", "-y", "-loglevel", "error", "-i", src, "-i", t / "final.wav", "-map", "0:v", "-map", "1:a",
                 "-c:v", "copy", "-af", "loudnorm=I=-16:TP=-1.5:LRA=11", "-c:a", "aac", "-b:a", "192k",
                 "-shortest", dst)
-        print("ok", nome, src.name, flush=True)
+        print("ok", cid, src.name, flush=True)

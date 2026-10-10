@@ -1,0 +1,27 @@
+{
+ "ronda": 2,
+ "data": "2026-10-10",
+ "aprovados": [
+  "H2",
+  "H4",
+  "H5",
+  "H7",
+  "H8",
+  "H9",
+  "M1",
+  "M3",
+  "M4",
+  "M5",
+  "M6",
+  "M7"
+ ],
+ "sotaque_errado": [
+  "H1",
+  "H3",
+  "H6",
+  "M2"
+ ],
+ "nota": {
+  "M8": "narração apressada no fim (sem veredicto)"
+ }
+}
