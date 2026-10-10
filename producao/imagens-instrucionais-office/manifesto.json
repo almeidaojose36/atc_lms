@@ -1,0 +1,58 @@
+[
+  {
+    "course": "word",
+    "file": "cursos/word/manual/figures/amostra-word-base.jpg",
+    "captured": "2026-10-10",
+    "sha256": "9ee22714de1d32b2a168ac752d3e007036b9f1f0c138992a41b7855300795ba7",
+    "method": "Screenshot through the existing signed-in in-app browser",
+    "changes": "None: full viewport preserved. Branding and instructional steps placed outside the image.",
+    "document": "ATC fictional training exercise; no private document URLs stored."
+  },
+  {
+    "course": "word",
+    "file": "cursos/word/manual/figures/amostra-word-inserir.jpg",
+    "captured": "2026-10-10",
+    "sha256": "80dea63ebd645b33d4b4690c61c04461405b6b51ca6c59c45deac93256e45668",
+    "method": "Screenshot through the existing signed-in in-app browser",
+    "changes": "None: full viewport preserved. Branding and instructional steps placed outside the image.",
+    "document": "ATC fictional training exercise; no private document URLs stored."
+  },
+  {
+    "course": "excel",
+    "file": "cursos/excel/manual/figures/amostra-excel-base.jpg",
+    "captured": "2026-10-10",
+    "sha256": "ea9504f0d896c5abc24ed7872858510fc2904602fc11ba7c713cee0ce444c9ff",
+    "method": "Screenshot through the existing signed-in in-app browser",
+    "changes": "None: full viewport preserved. Branding and instructional steps placed outside the image.",
+    "document": "ATC fictional training exercise; no private document URLs stored.",
+    "capture_view": "Workbook zoom 200% during capture; restored to 100% afterward."
+  },
+  {
+    "course": "excel",
+    "file": "cursos/excel/manual/figures/amostra-excel-formulas.jpg",
+    "captured": "2026-10-10",
+    "sha256": "1302b0ea0c6a9b6dcec059bcd8eaaabb5ac1d552b0e7f11e03b4066e45faa1be",
+    "method": "Screenshot through the existing signed-in in-app browser",
+    "changes": "None: full viewport preserved. Branding and instructional steps placed outside the image.",
+    "document": "ATC fictional training exercise; no private document URLs stored.",
+    "capture_view": "Workbook zoom 200% during capture; restored to 100% afterward."
+  },
+  {
+    "course": "powerpoint",
+    "file": "cursos/powerpoint/manual/figures/amostra-powerpoint-titulo.jpg",
+    "captured": "2026-10-10",
+    "sha256": "d7c003c2fad9a0666f85a28fd8d88ae75e941b989c1275ae1c86447f1564deac",
+    "method": "Screenshot through the existing signed-in in-app browser",
+    "changes": "None: full viewport preserved. Branding and instructional steps placed outside the image.",
+    "document": "ATC fictional training exercise; no private document URLs stored."
+  },
+  {
+    "course": "powerpoint",
+    "file": "cursos/powerpoint/manual/figures/amostra-powerpoint-objetivos.jpg",
+    "captured": "2026-10-10",
+    "sha256": "3f092d65fa853bb139190262a860f116b40117e4d80d9995512dd96b7e008e8a",
+    "method": "Screenshot through the existing signed-in in-app browser",
+    "changes": "None: full viewport preserved. Branding and instructional steps placed outside the image.",
+    "document": "ATC fictional training exercise; no private document URLs stored."
+  }
+]

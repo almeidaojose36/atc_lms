@@ -1,0 +1,50 @@
+{
+  "title": "Aprender com exemplos · Microsoft Word",
+  "intro": "Duas tarefas guiadas com capturas reais das aplicações para a Web. Os comandos podem variar na aplicação instalada.",
+  "sections": [
+    {
+      "title": "Organizar um relatório profissional",
+      "blocks": [
+        {
+          "p": "O separador Base reúne os comandos de formatação e os estilos do documento."
+        },
+        {
+          "figure": "amostra-word-base.jpg",
+          "caption": "Captura própria ATC · Microsoft Word para a Web · Português (Portugal). Used with permission from Microsoft."
+        },
+        {
+          "steps": [
+            "Escreva o título e os dados da sessão.",
+            "Aplique um estilo de título à primeira linha e aos subtítulos.",
+            "Organize as atividades numa lista curta."
+          ]
+        },
+        {
+          "tip": "Verifique se o relatório tem um título, secções e atividades fáceis de localizar."
+        }
+      ]
+    },
+    {
+      "title": "Encontrar os elementos para inserir",
+      "blocks": [
+        {
+          "p": "O separador Inserir permite acrescentar tabelas, imagens e números de página."
+        },
+        {
+          "figure": "amostra-word-inserir.jpg",
+          "caption": "Captura própria ATC · Microsoft Word para a Web · Português (Portugal). Used with permission from Microsoft."
+        },
+        {
+          "steps": [
+            "Abra o separador Inserir.",
+            "Localize os comandos Tabela e Imagem.",
+            "Escolha o comando adequado ao elemento que pretende adicionar."
+          ]
+        },
+        {
+          "tip": "A captura mostra os comandos disponíveis; nenhum elemento novo foi inserido neste exemplo."
+        }
+      ]
+    }
+  ]
+}

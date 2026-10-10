@@ -1,0 +1,50 @@
+{
+  "title": "Aprender com exemplos · Microsoft PowerPoint",
+  "intro": "Duas tarefas guiadas com capturas reais das aplicações para a Web. Os comandos podem variar na aplicação instalada.",
+  "sections": [
+    {
+      "title": "Apresentar o tema no primeiro diapositivo",
+      "blocks": [
+        {
+          "p": "O título e uma frase de apoio orientam o público."
+        },
+        {
+          "figure": "amostra-powerpoint-titulo.jpg",
+          "caption": "Captura própria ATC · Microsoft PowerPoint para a Web · Português (Portugal). Used with permission from Microsoft."
+        },
+        {
+          "steps": [
+            "Selecione a primeira miniatura à esquerda.",
+            "Escreva um título que identifique o tema.",
+            "Acrescente uma frase curta que explique o propósito."
+          ]
+        },
+        {
+          "tip": "O diapositivo apresenta Formação Digital ATC e uma mensagem de apoio."
+        }
+      ]
+    },
+    {
+      "title": "Organizar os objetivos da apresentação",
+      "blocks": [
+        {
+          "p": "O segundo diapositivo comunica três objetivos em frases curtas."
+        },
+        {
+          "figure": "amostra-powerpoint-objetivos.jpg",
+          "caption": "Captura própria ATC · Microsoft PowerPoint para a Web · Português (Portugal). Used with permission from Microsoft."
+        },
+        {
+          "steps": [
+            "Selecione a segunda miniatura.",
+            "Use um título informativo: Objetivos da formação.",
+            "Liste apenas os objetivos essenciais, com uma ideia por linha."
+          ]
+        },
+        {
+          "tip": "Confirme que o título e os três objetivos são legíveis e seguem uma ordem clara."
+        }
+      ]
+    }
+  ]
+}
