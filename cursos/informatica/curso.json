@@ -7,7 +7,7 @@
   "order": 1,
   "hours_video": 2,
   "hours_class": 15,
-  "cover": "capa.jpg",
+  "cover": "capa.svg",
   "modules": [
     {
       "num": 1,

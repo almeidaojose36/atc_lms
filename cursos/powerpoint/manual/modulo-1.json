@@ -24,6 +24,7 @@
         {
           "title": "1.1 Começar pela mensagem",
           "blocks": [
+            {"figure": "office-replica-powerpoint.png", "caption": "Ícone de identificação do Microsoft PowerPoint, réplica visual fornecida para este curso."},
             {"p": "Uma apresentação começa com uma pergunta: **o que deve o público compreender ou fazer no final?** Escreva essa resposta numa frase curta. Use-a para decidir que informação incluir e que informação pode ficar de fora."},
             {"table": [["Parte", "Objetivo", "Exemplo de conteúdo"], ["Abertura", "Apresentar o tema e orientar o público.", "Título, contexto e objetivo"], ["Desenvolvimento", "Explicar as ideias com uma ordem lógica.", "Três passos, dados ou exemplos"], ["Conclusão", "Reforçar a mensagem e indicar o próximo passo.", "Resumo e ação recomendada"]]},
             {"figure": "animar-estrutura.svg", "caption": "Esquema animado ATC: três partes organizam a mensagem de uma apresentação."},

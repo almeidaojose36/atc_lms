@@ -24,6 +24,7 @@
         {
           "title": "1.1 O que é o Excel?",
           "blocks": [
+            {"figure": "office-replica-excel.png", "caption": "Ícone de identificação do Microsoft Excel, réplica visual fornecida para este curso."},
             {"p": "O **Microsoft Excel** é uma aplicação de folhas de cálculo. Uma folha está organizada em **colunas** (identificadas por letras) e **linhas** (identificadas por números). O cruzamento de uma coluna com uma linha forma uma **célula**."},
             {"table": [["Termo", "Significado", "Exemplo"], ["Livro", "Ficheiro de trabalho do Excel; pode conter várias folhas.", "Registo de despesas.xlsx"], ["Folha", "Uma página de células dentro do livro.", "Janeiro"], ["Célula", "Espaço onde se introduz um valor ou uma fórmula.", "B4 é a coluna B, linha 4"], ["Intervalo", "Conjunto de uma ou mais células.", "B2:B8"]]},
             {"p": "O Excel ajuda a efetuar cálculos, pode sugerir gráficos adequados aos dados e permite realçar tendências com barras de dados, escalas de cores e conjuntos de ícones. Os resultados dependem dos dados e das fórmulas introduzidas; confirme sempre se fazem sentido."},
