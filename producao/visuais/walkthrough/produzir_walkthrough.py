@@ -34,6 +34,17 @@ def webm_para(url):
     if m: return WEBM / f"informatica-{m[1]}-{m[2]}.webm"
     if url.endswith("/media/informatica/video/aula-1-1.mp4"): return WEBM / "informatica-video-aula-1-1.webm"
 
+POSTERS = TMP / "posters"
+
+def preparar_posters():
+    POSTERS.mkdir(exist_ok=True)
+    for w in WEBM.glob("*.webm"):
+        run("ffmpeg", "-y", "-loglevel", "error", "-ss", "0.8", "-i", w, "-frames:v", "1", "-q:v", "3", POSTERS / f"{w.stem}.jpg")
+
+def interceptar_poster(route):
+    f = POSTERS / route.request.url.rsplit("/", 1)[-1]
+    route.fulfill(status=200, body=f.read_bytes(), headers={"Content-Type": "image/jpeg"}) if f.is_file() else route.continue_()
+
 def interceptar(route):
     alvo = webm_para(route.request.url)
     if alvo and alvo.is_file():
@@ -41,15 +52,18 @@ def interceptar(route):
     else:
         route.continue_()
 
-INIT_VIDEO = """document.addEventListener('DOMContentLoaded',()=>{
+INIT_VIDEO = r"""document.addEventListener('DOMContentLoaded',()=>{
   document.querySelectorAll('source[type="video/mp4"]').forEach(s=>s.type='video/webm');
+  const nome=u=>{let m=u.match(/plataforma\/(helena|miguel)\/([a-z0-9-]+)\.mp4/);if(m)return`plataforma-${m[1]}-${m[2]}`;
+    m=u.match(/informatica\/apresentadores\/(helena|miguel)\/([a-z0-9-]+)\.mp4/);if(m)return`informatica-${m[1]}-${m[2]}`;
+    if(/informatica\/video\/aula-1-1\.mp4/.test(u))return'informatica-video-aula-1-1';};
   document.querySelectorAll('video').forEach(v=>{v.muted=true;v.preload='auto';
-    v.addEventListener('loadeddata',()=>{if(v.paused&&v.currentTime===0&&!v.dataset.falar)v.currentTime=0.8},{once:true});v.load()});});"""
+    const s=v.querySelector('source');const n=s&&nome(s.getAttribute('src')||'');if(n)v.poster='/__poster/'+n+'.jpg';v.load()});});"""
 
 class Gravador:
     """Movimentos suaves do rato, pontos a destacar (zoom) e momentos em que o guia fala (áudio do clip)."""
     def __init__(self, pg, t0):
-        self.pg, self.t0, self.x, self.y, self.focos, self.falas, self.cortes = pg, t0, VW / 2, VH / 2, [], [], []
+        self.pg, self.t0, self.x, self.y, self.focos, self.falas, self.cortes, self.dv = pg, t0, VW / 2, VH / 2, [], [], [], 0.0
     def t(self): return time.time() - self.t0
     def mover(self, x, y, ms=750):
         n = max(int(ms / 16), 8); x0, y0 = self.x, self.y
@@ -84,9 +98,11 @@ class Gravador:
         b = self.pg.locator(sel).first.bounding_box(); self.rolar(b["y"] + b["height"] / 2 - y_alvo, ms); self.esperar(150)
     def tocar(self, i=0):
         self.pg.evaluate("(i)=>{const v=document.querySelectorAll('video')[i]; if(v){v.muted=true; v.play()}}", i)
+    def util(self): return self.t() - sum(b - a for a, b in self.cortes)
     def falar(self, i, segundos):
-        """O guia fala: o clip toca desde o início e o áudio original entra na montagem neste instante."""
-        src = self.pg.evaluate("""(i)=>{const v=document.querySelectorAll('video')[i]; v.dataset.falar=1; v.pause(); v.currentTime=0;
+        """O guia fala depois de a locução terminar: o clip toca desde o início e o áudio original entra na montagem."""
+        while self.util() < self.dv + 1.0: self.esperar(40)
+        src = self.pg.evaluate("""(i)=>{const v=document.querySelectorAll('video')[i]; v.pause(); if(v.currentTime>0)v.currentTime=0;
                                    v.muted=true; v.play(); return v.currentSrc}""", i)
         self.falas.append({"t": self.t(), "src": src, "dur": segundos})
     def esperar(self, ms): self.pg.wait_for_timeout(ms)
@@ -106,7 +122,8 @@ def s2(g):   # escolha do guia: passar pela Helena e pelo Miguel, escolher o Mig
     g.mover(*g.centro(".presenter-option >> nth=0"), ms=1000); g.esperar(1400)
     g.mover(*g.centro(".presenter-option >> nth=1"), ms=1000); g.esperar(1200)
     g.clicar(".presenter-option >> nth=1", zoom=1.3, segura=1.6); g.esperar(900)
-    g.submeter(".presenter-submit .btn"); g.tocar(0); g.foco(".guide-clips", zoom=1.25, segura=2.2, antes=0.2); g.esperar(2800)
+    g.submeter(".presenter-submit .btn"); g.foco(".guide-clips", zoom=1.3, segura=12.0, antes=0.2)
+    g.mover(*g.centro(".guide-clip >> nth=0"), ms=800); g.falar(0, 8.8); g.esperar(9300)
 
 def s3(g):   # montagem rápida: boas-vindas, perfil, passeio, escolha do curso
     g.ir("/comecar/boas-vindas"); g.tocar(0); g.esperar(500)
@@ -138,21 +155,25 @@ def s5(g):   # manual: deslizar pelas imagens do passo a passo (com o Miguel)
 
 def s6(g):   # destaque: mudar de guia; manual e aula voltam a aparecer com a Helena
     g.ir("/cursos/informatica/modulo/1/manual"); g.rolar_ate(FIG_GUIA.format("miguel"), 420, ms=500)
-    g.foco(FIG_GUIA.format("miguel"), zoom=1.25, segura=1.4, antes=0.1); g.esperar(1500)
+    g.foco(FIG_GUIA.format("miguel"), zoom=1.25, segura=1.4, antes=0.1)
+    g.pg.locator(FIG_GUIA.format("miguel")).first.screenshot(path=str(TMP / "troca-miguel.png")); g.esperar(1200)
     g.submeter(".guide-chip", zoom=1.35)
     g.foco(".presenter-options", zoom=1.2, segura=2.6, antes=0.2); g.esperar(300)
     g.clicar(".presenter-option >> nth=0", zoom=1.3, segura=1.4); g.esperar(700)
     g.submeter(".presenter-submit .btn"); g.esperar(200)
     g.rolar_ate(FIG_GUIA.format("helena"), 420, ms=1000)
-    g.foco(FIG_GUIA.format("helena"), zoom=1.3, segura=2.4); g.esperar(2900)
+    g.foco(FIG_GUIA.format("helena"), zoom=1.3, segura=2.4)
+    g.pg.locator(FIG_GUIA.format("helena")).first.screenshot(path=str(TMP / "troca-helena.png")); g.esperar(2600)
+
+def s6b(g):  # a Helena fala na aula, logo a seguir à troca
     g.ir("/cursos/informatica/aula/aula-1-1"); g.esperar(200)
     g.mover(*g.centro(".guide-clip >> nth=0"), ms=700)
     g.foco(".guide-clip >> nth=0", zoom=1.35, segura=6.2, antes=0.1); g.falar(0, 6.3); g.esperar(7000)
 
-ROTEIRO = {"s1": s1, "s2": s2, "s3": s3, "s4": s4, "s5": s5, "s6": s6}
+ROTEIRO = {"s1": s1, "s2": s2, "s3": s3, "s4": s4, "s5": s5, "s6": s6, "s6b": s6b}
 
 def gravar():
-    resultado = {}
+    resultado = {}; preparar_posters()
     with sync_playwright() as p:
         b = p.chromium.launch(executable_path=CHROME, args=["--no-sandbox", "--autoplay-policy=no-user-gesture-required"])
         estado = None
@@ -162,8 +183,9 @@ def gravar():
                       record_video_dir=str(pasta), record_video_size={"width": VW * DSF, "height": VH * DSF})
             if estado: kw["storage_state"] = estado
             ctx = b.new_context(**kw); ctx.add_init_script(CURSOR_JS); ctx.add_init_script(INIT_VIDEO)
-            ctx.route(re.compile(r".*\.mp4(\?.*)?$"), interceptar)
+            ctx.route(re.compile(r".*\.mp4(\?.*)?$"), interceptar); ctx.route(re.compile(r".*/__poster/.*"), interceptar_poster)
             t0 = time.time(); pg = ctx.new_page(); g = Gravador(pg, t0)
+            vo = AQUI / "locucao" / f"{s['id']}.mp3"; g.dv = dur(vo) if s["texto"] else 0.0
             pg.mouse.move(VW / 2, VH / 2)
             ROTEIRO[s["id"]](g)
             estado = ctx.storage_state(); video = pg.video; ctx.close()
@@ -280,10 +302,7 @@ small{display:block;margin-top:34px;font:500 26px MS,sans-serif;color:#D5DEE6;op
 .risco{width:0;height:6px;background:#DA6D24;border-radius:3px;margin-top:26px;animation:w .9s ease-out 1.5s forwards}
 @keyframes in{to{opacity:1;transform:none}}@keyframes up{to{opacity:1;transform:none}}@keyframes w{to{width:220px}}"""
 
-def gravar_cartao(titulo, subtitulo, nota, destino, segundos):
-    html = (f"<html><head><style>{FONTES}{CSS_FUNDO}</style></head><body><div class='bg'></div><div class='luz l1'></div><div class='luz l2'></div>"
-            f"<div class='luz l3'></div><div class='c'><img src='file://{RAIZ}/static/logo-600.png'><h1>{titulo}</h1><p>{subtitulo}</p>"
-            f"<div class='risco'></div><small>{nota}</small></div></body></html>")
+def gravar_html(html, destino, segundos):
     pagina = TMP / f"{destino.stem}.html"; pagina.write_text(html, encoding="utf-8")
     pasta = TMP / f"{destino.stem}-rec"; pasta.mkdir()
     with sync_playwright() as p:
@@ -294,9 +313,40 @@ def gravar_cartao(titulo, subtitulo, nota, destino, segundos):
     run("ffmpeg", "-y", "-loglevel", "error", "-ss", "0.45", "-i", webm, "-t", f"{segundos:.2f}", "-r", str(FPS),
         "-c:v", "libx264", "-crf", "17", "-pix_fmt", "yuv420p", destino)
 
+CSS_TROCA = """.c{gap:0}.titulo{font:700 64px/1.1 RS,serif;margin:0 0 46px;opacity:0;transform:translateY(24px);animation:up .7s ease-out .15s forwards}
+.lados{display:flex;align-items:center;gap:56px}
+.lado{width:700px;background:#fff;border-radius:22px;padding:22px;box-shadow:0 24px 60px rgba(0,0,0,.35);opacity:0}
+.lado img.fig{width:100%;height:360px;object-fit:cover;object-position:50% 30%;border-radius:12px;display:block}
+.rot{display:flex;align-items:center;gap:16px;margin-top:18px;color:#0B2137;font:700 32px MS,sans-serif}
+.rot img{width:64px;height:64px;border-radius:50%;object-fit:cover;object-position:50% 8%;border:3px solid #DA6D24}
+.rot small{display:block;font:600 20px MS,sans-serif;color:#8a7a6a;letter-spacing:.08em;text-transform:uppercase}
+.a{animation:esq .7s cubic-bezier(.2,1,.3,1) .45s forwards}.b{animation:dir .7s cubic-bezier(.2,1,.3,1) 1.25s forwards,brilho 1.6s ease-in-out 2.1s infinite alternate}
+.seta{font:700 90px MS,sans-serif;color:#F08A3E;opacity:0;animation:pulso .5s ease-out .95s forwards}
+@keyframes esq{from{opacity:0;transform:translateX(-80px) scale(.94)}to{opacity:1;transform:none}}
+@keyframes dir{from{opacity:0;transform:translateX(80px) scale(.94)}to{opacity:1;transform:none}}
+@keyframes pulso{from{opacity:0;transform:scale(.4)}to{opacity:1;transform:none}}
+@keyframes brilho{to{box-shadow:0 24px 60px rgba(0,0,0,.35),0 0 0 8px rgba(218,109,36,.85)}}
+.a{filter:saturate(.75)}"""
+
+def gravar_troca(destino, segundos):
+    """Ecrã dividido: antes (Miguel) e agora (Helena), para mostrar que toda a plataforma muda com um clique."""
+    def lado(cls, guia, nome, quando):
+        return (f"<div class='lado {cls}'><img class='fig' src='{(TMP / f'troca-{guia}.png').as_uri()}'>"
+                f"<div class='rot'><img src='file://{RAIZ}/static/presenters/{guia}.png'><div><small>{quando}</small>{nome}</div></div></div>")
+    html = (f"<html><head><style>{FONTES}{CSS_FUNDO}{CSS_TROCA}</style></head><body><div class='bg'></div><div class='luz l1'></div>"
+            f"<div class='luz l2'></div><div class='c'><div class='titulo'>Um clique. Toda a plataforma muda.</div><div class='lados'>"
+            f"{lado('a', 'miguel', 'Miguel', 'Antes')}<div class='seta'>→</div>{lado('b', 'helena', 'Helena', 'Agora')}</div></div></body></html>")
+    gravar_html(html, destino, segundos)
+
+def gravar_cartao(titulo, subtitulo, nota, destino, segundos):
+    html = (f"<html><head><style>{FONTES}{CSS_FUNDO}</style></head><body><div class='bg'></div><div class='luz l1'></div><div class='luz l2'></div>"
+            f"<div class='luz l3'></div><div class='c'><img src='file://{RAIZ}/static/logo-600.png'><h1>{titulo}</h1><p>{subtitulo}</p>"
+            f"<div class='risco'></div><small>{nota}</small></div></body></html>")
+    gravar_html(html, destino, segundos)
+
 # ---------- montagem ----------
 TRANS = 0.7
-TIPOS = ["circleopen", "smoothleft", "smoothleft", "smoothup", "smoothleft", "zoomin", "fadeblack"]
+TIPOS = ["circleopen", "smoothleft", "smoothleft", "smoothup", "smoothleft", "zoomin", "fade", "fade", "fadeblack"]
 MUSICA = AQUI / "musica" / "fundo.mp3"
 
 def main():
@@ -305,7 +355,8 @@ def main():
     gravar_cartao("ATC Formação", "O seu percurso de aprendizagem, passo a passo", "Angbu Training Centre · Luanda", abertura, 3.4)
     pecas, vozes, falas = [abertura], [], []
     for k, s in enumerate(SECOES):
-        vo = AQUI / "locucao" / f"{s['id']}.mp3"; dv = dur(vo); vozes.append(vo)
+        vo = AQUI / "locucao" / f"{s['id']}.mp3"; dv = dur(vo) if s["texto"] else 0.0
+        if s["texto"]: vozes.append((len(pecas), vo))
         if s["id"] not in gravacoes:            # fecho: cartão com o lema e o logótipo
             fim = TMP / "fim.mp4"
             gravar_cartao("Aprender hoje.", "Ir mais longe amanhã.", "Comece hoje o seu percurso com a ATC Formação", fim, dv + 2.2)
@@ -317,7 +368,7 @@ def main():
         if fs:   # o guia fala: acelera só o que vem antes; a fala fica em velocidade real (sincronização labial)
             pre = min(f["t"] for f in fs) - 0.4; antes = min(max(dv + 0.8, pre / 1.8), pre); fator = pre / antes
             alvo = min(antes + dr - pre, antes + max(f["t"] + f["dur"] for f in fs) - pre + 0.5)
-            falas += [dict(f, k=k, t=antes + f["t"] - pre) for f in fs]
+            falas += [dict(f, k=len(pecas), t=antes + f["t"] - pre) for f in fs]
             fc = (f"[0:v]split[a][b];[a]trim=0:{pre:.3f},setpts=(PTS-STARTPTS)/{fator:.4f}[a1];"
                   f"[b]trim=start={pre:.3f},setpts=PTS-STARTPTS[b1];[a1][b1]concat=n=2:v=1,"
                   f"tpad=stop_mode=clone:stop_duration=6,trim=duration={alvo:.3f},setpts=PTS-STARTPTS[v0]")
@@ -335,6 +386,8 @@ def main():
         run("ffmpeg", "-y", "-loglevel", "error", *entradas, "-filter_complex", fc, "-map", ultimo, "-t", f"{alvo:.3f}",
             "-c:v", "libx264", "-crf", "17", "-pix_fmt", "yuv420p", "-r", str(FPS), peca)
         pecas.append(peca)
+        if s["id"] == "s6":   # ecrã dividido antes/depois logo a seguir à troca de guia
+            troca = TMP / "troca.mp4"; gravar_troca(troca, 4.2); pecas.append(troca)
         print(s["id"], f"gravação {dr:.1f}s -> {alvo:.1f}s (x{fator:.2f}), locução {dv:.1f}s, falas {len(fs)}", flush=True)
     # transições entre todas as peças
     duracoes = [dur(p) for p in pecas]; inicios = [0.0]
@@ -350,11 +403,11 @@ def main():
     # e música por baixo, a baixar sempre que alguém fala
     entradas, fc, n = ["-i", video, "-stream_loop", "1", "-i", MUSICA], [], 2
     rotulos = []
-    for k, vo in enumerate(vozes):
-        ms = int((inicios[k + 1] + 0.6) * 1000); entradas += ["-i", vo]
+    for k, (i_peca, vo) in enumerate(vozes):
+        ms = int((inicios[i_peca] + 0.6) * 1000); entradas += ["-i", vo]
         fc.append(f"[{n}:a]adelay={ms}|{ms},aformat=channel_layouts=stereo[v{k}]"); rotulos.append(f"[v{k}]"); n += 1
     for j, f in enumerate(falas):
-        ms = int((inicios[f["k"] + 1] + f["t"]) * 1000); entradas += ["-i", webm_para(f["src"])]
+        ms = int((inicios[f["k"]] + f["t"]) * 1000); entradas += ["-i", webm_para(f["src"])]
         fc.append(f"[{n}:a]atrim=0:{f['dur']:.2f},afade=t=out:st={f['dur'] - 0.25:.2f}:d=0.25,volume=1.1,"
                   f"adelay={ms}|{ms},aformat=sample_rates=44100:channel_layouts=stereo[g{j}]"); rotulos.append(f"[g{j}]"); n += 1
         print("guia fala", pathlib.Path(f["src"]).name, f"aos {ms / 1000:.1f}s", flush=True)

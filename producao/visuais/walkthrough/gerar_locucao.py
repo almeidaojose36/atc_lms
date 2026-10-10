@@ -7,7 +7,7 @@ VOZ = "JGnWZj684pcXmK2SxYIv"
 API = "https://api.elevenlabs.io/v1"
 ids = set(sys.argv[1:])
 for s in json.loads((AQUI / "locucao.json").read_text(encoding="utf-8")):
-    if ids and s["id"] not in ids: continue
+    if not s["texto"] or (ids and s["id"] not in ids): continue
     r = requests.post(f"{API}/text-to-speech/{VOZ}?output_format=mp3_44100_192", timeout=120, json={
         "text": s["texto"], "model_id": "eleven_multilingual_v2", "language_code": "pt",
         "voice_settings": {"stability": 0.5, "similarity_boost": 0.8, "style": 0.15, "speed": 1.05}})
