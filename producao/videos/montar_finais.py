@@ -26,17 +26,20 @@ VOZ_BASE.update({c: "avatar-video-voz-texto-v3" for c in "H1 H3 H6 M2 M8".split(
 # (início, fim, [(gravação, de, até), ...], entrada, saída): substitui esse intervalo por ecrãs reais do LMS.
 # "corte" = mudança seca (quando o plano original também muda de forma seca); "fade" = dissolução de 0,2 s.
 CORTES = {
-    "H1": [(1.0, 7.5, [("catalogo", .8, 3.3), ("catalogo", 4.0, 5.5), ("catalogo", 10.0, 12.5)], "fade", "fade")],
+    "H1": [(0.0, 10.0, [("catalogo", .8, 3.8), ("catalogo", 4.0, 6.0), ("catalogo", 8.0, 9.0), ("catalogo", 10.0, 13.8)], "corte", "corte")],
     "M2": [(0.5, 10.0, [("catalogo", .8, 3.8), ("catalogo", 4.0, 6.0), ("catalogo", 8.0, 9.0), ("catalogo", 10.0, 12.5)], "fade", "fade")],
     "H5": [(1.2, 9.0, [("perfil", .6, 5.6), ("perfil", 8.2, 11.0)], "fade", "fade")],
     "M7": [(1.2, 9.0, [("perfil", .6, 5.6), ("perfil", 8.2, 11.0)], "fade", "fade")],
-    "H6": [(2.85, 6.05, [("visao", .8, 2.3), ("visao", 2.9, 4.4)], "corte", "corte")],
+    "H6": [(2.9, 6.05, [("visao", .8, 2.3), ("visao", 2.9, 4.4)], "corte", "corte")],
     "M1": [(3.1, 7.4, [("visao", .8, 3.0), ("visao", 3.0, 5.2)], "corte", "fade")],
     "H8": [(0.75, 5.95, [("manual", 1.0, 3.7), ("manual", 4.2, 7.0)], "corte", "corte")],
+    "M9": [(0.0, 6.0, [("manual", 1.0, 3.7), ("manual", 4.2, 7.2)], "corte", "corte")],
     "M4": [(2.0, 8.0, [("curso", .8, 3.4), ("curso", 3.4, 6.0)], "fade", "corte")],
-    "H9": [(4.5, 10.0, [("aula", .8, 5.3)], "fade", "corte")],
+    "H9": [(4.5, 8.42, [("aula", .8, 5.3)], "fade", "corte")],
     "M8": [(4.5, 10.0, [("aula", .8, 5.3)], "fade", "corte")],
 }
+# gaguez a remover (clip -> frase repetida; remove a primeira ocorrência, no áudio e no vídeo)
+GAGUEZ = {"M3": ["seu", "funcionamento"]}
 # grafismo (nome/título): clip -> (palavra que dispara, título, subtítulo, duração)
 GRAFISMOS = {
     "H4": ("Helena", "Helena", "Guia virtual · ATC Angbu Training Centre", 7.0),
@@ -48,7 +51,12 @@ GRAFISMOS = {
 def run(*a, **k): return subprocess.run([str(x) for x in a], check=True, **k)
 def dur(f): return float(run("ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", f, capture_output=True, text=True).stdout)
 
+# clips regenerados no Flow com sotaque português e convertidos com converter_regenerados.py
+REGENERADOS = "H1 H3 H6 H9 M2 M3 M4 M8 M9".split()
+
 def base_path(cid):
+    if cid in REGENERADOS:
+        return V / "avatar-video-regenerado-voz" / f"{cid}.mp4", f"regenerado/{cid}"
     quem = NOMES[cid[0]]
     origem = sorted((V / "avatar-video" / quem).glob("*.mp4"))[int(cid[1:]) - 1].name
     return V / VOZ_BASE[cid] / quem / origem, origem
@@ -88,6 +96,18 @@ def fragmento(segs, alvo, destino):
 def montar(cid):
     base, origem = base_path(cid)
     destino = FINAL / f"{cid}.mp4"
+    if cid in GAGUEZ:
+        w = palavras(base); fr = GAGUEZ[cid]; txt = [re.sub(r"\W+", "", x["text"]).lower() for x in w]
+        pos = [i for i in range(len(txt) - len(fr) + 1) if txt[i:i + len(fr)] == fr]
+        if len(pos) >= 2:
+            ta, tb = w[pos[0]]["start"] - 0.03, w[pos[1]]["start"] - 0.03
+            limpo = FINAL / f"_{cid}_sem_gaguez.mp4"
+            run("ffmpeg", "-y", "-loglevel", "error", "-i", base, "-filter_complex",
+                f"[0:v]trim=0:{ta:.3f},setpts=PTS-STARTPTS[v0];[0:v]trim={tb:.3f},setpts=PTS-STARTPTS[v1];"
+                f"[0:a]atrim=0:{ta:.3f},asetpts=PTS-STARTPTS,afade=t=out:st={ta-0.03:.3f}:d=0.03[a0];"
+                f"[0:a]atrim={tb:.3f},asetpts=PTS-STARTPTS,afade=t=in:d=0.03[a1];[v0][a0][v1][a1]concat=n=2:v=1:a=1[v][a]",
+                "-map", "[v]", "-map", "[a]", "-c:v", "libx264", "-crf", "14", "-c:a", "aac", "-b:a", "192k", limpo)
+            print(f"{cid}: removida repetição {ta:.2f}-{tb:.2f}", flush=True); base = limpo
     entradas, filt, ultimo, n = ["-i", base], [], "[0:v]", 1
     corte_fim = None
     if cid == "H8":   # remove a repetição final: "todas as tarefas realizadas" dito duas vezes
@@ -131,9 +151,9 @@ def montar(cid):
     return origem
 
 if __name__ == "__main__":
-    ids = sys.argv[1:] or [f"H{i}" for i in range(1, 10)] + [f"M{i}" for i in range(1, 9)]
+    ids = sys.argv[1:] or [f"H{i}" for i in range(1, 10)] + [f"M{i}" for i in range(1, 10)]
     mapa = json.loads((FINAL / "mapa.json").read_text()) if (FINAL / "mapa.json").exists() else {}
     for cid in ids:
-        mapa[cid] = {"origem": montar(cid), "voz": VOZ_BASE[cid], "brolls_lms": bool(CORTES.get(cid)), "grafismo": cid in GRAFISMOS}
+        mapa[cid] = {"origem": montar(cid), "voz": VOZ_BASE.get(cid, "regenerado"), "brolls_lms": bool(CORTES.get(cid)), "grafismo": cid in GRAFISMOS}
         print("ok", cid, flush=True)
     (FINAL / "mapa.json").write_text(json.dumps(mapa, ensure_ascii=False, indent=1))

@@ -12,7 +12,7 @@
   "grafismo": false
  },
  "H1": {
-  "origem": "Choosing_first_course_and_training_20261009082720.mp4",
+  "origem": "regenerado/H1",
   "voz": "avatar-video-voz-texto-v3",
   "brolls_lms": true,
   "grafismo": false
@@ -24,7 +24,7 @@
   "grafismo": false
  },
  "H3": {
-  "origem": "Computer_parts_and_workstation_i…_20261009083324.mp4",
+  "origem": "regenerado/H3",
   "voz": "avatar-video-voz-texto-v3",
   "brolls_lms": false,
   "grafismo": false
@@ -36,7 +36,7 @@
   "grafismo": true
  },
  "H6": {
-  "origem": "Presenter_explaining_online_lear…_1080p_20261009082534.mp4",
+  "origem": "regenerado/H6",
   "voz": "avatar-video-voz-texto-v3",
   "brolls_lms": true,
   "grafismo": false
@@ -48,7 +48,7 @@
   "grafismo": true
  },
  "H9": {
-  "origem": "Video_demonstration_instruction_…_1080p_20261009083134.mp4",
+  "origem": "regenerado/H9",
   "voz": "avatar-video-voz-texto-v2",
   "brolls_lms": true,
   "grafismo": false
@@ -60,19 +60,19 @@
   "grafismo": false
  },
  "M2": {
-  "origem": "Choosing_first_course_and_practice_20261009100840.mp4",
+  "origem": "regenerado/M2",
   "voz": "avatar-video-voz-texto-v3",
   "brolls_lms": true,
   "grafismo": false
  },
  "M3": {
-  "origem": "Computador_introdução_aula_abertura_1080p_20261009101250.mp4",
+  "origem": "regenerado/M3",
   "voz": "avatar-video-voz-texto-v2",
   "brolls_lms": false,
   "grafismo": false
  },
  "M4": {
-  "origem": "Course_contents_and_video_instru…_20261009101112.mp4",
+  "origem": "regenerado/M4",
   "voz": "avatar-video-voz-texto-v2",
   "brolls_lms": true,
   "grafismo": false
@@ -96,8 +96,14 @@
   "grafismo": false
  },
  "M8": {
-  "origem": "Video_demonstration_instruction_…_1080p_20261009101202.mp4",
+  "origem": "regenerado/M8",
   "voz": "avatar-video-voz-texto-v3",
+  "brolls_lms": true,
+  "grafismo": false
+ },
+ "M9": {
+  "origem": "regenerado/M9",
+  "voz": "regenerado",
   "brolls_lms": true,
   "grafismo": false
  }
