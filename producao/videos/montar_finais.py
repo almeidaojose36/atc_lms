@@ -39,6 +39,8 @@ CORTES = {
     "M8": [(4.5, 10.0, [("aula", .8, 5.3)], "fade", "corte")],
 }
 # gaguez a remover (clip -> frase repetida; remove a primeira ocorrência, no áudio e no vídeo)
+# apresentador em círculo (picture-in-picture) sobre os ecrãs do LMS: clip -> (início, fim)
+PIP = {"H1": (0.0, 10.0), "M2": (0.5, 10.0)}
 GAGUEZ = {"M3": ["seu", "funcionamento"]}
 # grafismo (nome/título): clip -> (palavra que dispara, título, subtítulo, duração)
 GRAFISMOS = {
@@ -127,6 +129,13 @@ def montar(cid):
             if sai == "fade": fades += f",fade=t=out:st={b-a-0.2:.2f}:d=0.2:alpha=1"
             filt.append(f"[{n}:v]format=yuva420p{fades},setpts=PTS+{a}/TB[b{n}]")
             filt.append(f"{ultimo}[b{n}]overlay=enable='between(t,{a},{b})':eof_action=pass[v{n}]")
+            ultimo = f"[v{n}]"; n += 1
+        if cid in PIP:
+            sys.path.insert(0, str(V)); import presenter_pip
+            a, b = PIP[cid]; pasta = t / "pip"; presenter_pip.gerar(base, pasta, 360)
+            entradas += ["-framerate", "24", "-i", pasta / "%04d.png"]
+            filt.append(f"[{n}:v]format=rgba[p{n}]")
+            filt.append(f"{ultimo}[p{n}]overlay=x=W-w-60:y=H-h-60:enable='between(t,{a},{b})':eof_action=pass[v{n}]")
             ultimo = f"[v{n}]"; n += 1
         if cid in GRAFISMOS:
             gatilho, titulo, sub, d = GRAFISMOS[cid]
