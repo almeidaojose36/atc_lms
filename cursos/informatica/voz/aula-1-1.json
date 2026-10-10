@@ -1,0 +1,101 @@
+{
+  "aula": "aula-1-1",
+  "nota": "Perguntas frequentes da aula 1.1, respondidas pelo guia em voz. As respostas são curtas, em PT-PT, e vêm da aula e do manual do módulo 1. As respostas em áudio são geradas uma vez e reutilizadas.",
+  "linhas": {
+    "saudacao": "Olá! Tem alguma dúvida sobre esta aula? Carregue no microfone e pergunte-me em voz alta.",
+    "nao_ouvi": "Desculpe, não consegui ouvir bem. Pode repetir a pergunta, um pouco mais perto do microfone?",
+    "nao_sei": "Essa pergunta não está nesta aula, por isso não lhe quero dar uma resposta errada. Escreva-a na secção Perguntas e dúvidas, mais abaixo, e o formador responde-lhe."
+  },
+  "perguntas": [
+    {
+      "id": "hardware-software",
+      "exemplos": ["Qual é a diferença entre hardware e software?", "O que é hardware e o que é software?", "Hardware e software são a mesma coisa?"],
+      "resposta": "O hardware é a parte física do computador, tudo o que pode tocar, como o monitor, o teclado e o rato. O software são os programas que dão instruções ao hardware, como o Windows ou o Word."
+    },
+    {
+      "id": "hardware",
+      "exemplos": ["O que é o hardware?", "Dê exemplos de hardware", "O teclado é hardware?", "O rato é hardware ou software?"],
+      "resposta": "O hardware é tudo o que pode tocar no computador: o monitor, o teclado, o rato, a unidade central e a impressora."
+    },
+    {
+      "id": "software",
+      "exemplos": ["O que é o software?", "Dê exemplos de software", "O Word é software?", "O que são programas?"],
+      "resposta": "O software são os programas que dão instruções ao hardware. Por exemplo, o Windows 11, o Word, o Excel e o navegador de Internet."
+    },
+    {
+      "id": "sistema-operativo",
+      "exemplos": ["O que é o sistema operativo?", "Para que serve o Windows?", "O que faz o Windows 11?", "O que é o Windows 11?"],
+      "resposta": "O sistema operativo é o software mais importante do computador. Gere o hardware, os ficheiros e os outros programas. Neste curso usamos o Windows 11."
+    },
+    {
+      "id": "telemovel",
+      "exemplos": ["O telemóvel também é um computador?", "O telemóvel tem sistema operativo?", "O Android é um sistema operativo?"],
+      "resposta": "Sim. Um telemóvel também é um computador: o ecrã tátil e a bateria são hardware, e o Android ou o iOS são o sistema operativo."
+    },
+    {
+      "id": "iniciar-sessao",
+      "exemplos": ["Como inicio sessão?", "Como entro no Windows?", "Como ligo o computador?", "O que faço depois de ligar o computador?"],
+      "resposta": "Prima o botão de ligar e aguarde pelo ecrã de bloqueio. Depois clique em qualquer ponto do ecrã ou prima uma tecla, escreva o seu PIN ou a sua palavra-passe e prima Enter."
+    },
+    {
+      "id": "pin-palavra-passe",
+      "exemplos": ["Posso partilhar o meu PIN?", "Como altero a palavra-passe?", "Alguém sabe a minha palavra-passe, o que faço?", "Como mudo o PIN?"],
+      "resposta": "Nunca partilhe o seu PIN nem a sua palavra-passe. Se alguém a souber, altere-a em Definições, Contas, Opções de início de sessão."
+    },
+    {
+      "id": "ambiente-trabalho",
+      "exemplos": ["O que é o ambiente de trabalho?", "Quais são as partes do ambiente de trabalho?", "O que vejo depois de iniciar sessão?"],
+      "resposta": "O ambiente de trabalho é o ecrã que vê depois de iniciar sessão. Tem os ícones, a barra de tarefas em baixo, o botão Iniciar e, à direita, a área de notificação."
+    },
+    {
+      "id": "icones",
+      "exemplos": ["Para que servem os ícones?", "Como abro um ícone?", "O que são os ícones?"],
+      "resposta": "Os ícones dão acesso rápido a programas, pastas e ficheiros. Para abrir um ícone, faça duplo clique sobre ele."
+    },
+    {
+      "id": "barra-tarefas",
+      "exemplos": ["O que é a barra de tarefas?", "Onde fica a barra de tarefas?", "Para que serve a barra de tarefas?"],
+      "resposta": "A barra de tarefas fica na parte de baixo do ecrã. Mostra os programas abertos e os programas afixados."
+    },
+    {
+      "id": "area-notificacao",
+      "exemplos": ["O que é a área de notificação?", "Onde vejo a hora?", "Onde vejo a rede e o som?"],
+      "resposta": "A área de notificação fica à direita da barra de tarefas. Mostra a hora, a data, o estado da rede e o volume do som."
+    },
+    {
+      "id": "menu-iniciar",
+      "exemplos": ["Como abro o menu Iniciar?", "O que tem o menu Iniciar?", "Para que serve o botão Iniciar?", "Onde está o botão Iniciar?"],
+      "resposta": "Clique no botão Iniciar, com o logótipo do Windows, ou prima a tecla Windows do teclado. No menu Iniciar encontra as aplicações afixadas, os ficheiros recomendados e o botão de energia."
+    },
+    {
+      "id": "procurar-programa",
+      "exemplos": ["Como procuro um programa?", "Como abro o Word?", "Como encontro uma aplicação?", "Como pesquiso um programa?"],
+      "resposta": "Abra o menu Iniciar e comece logo a escrever o nome do programa, por exemplo Word. Depois clique no resultado em Melhor correspondência para o abrir."
+    },
+    {
+      "id": "botoes-janela",
+      "exemplos": ["Para que servem os botões da janela?", "O que faz o botão minimizar?", "Qual é a diferença entre minimizar e fechar?", "O que faz maximizar?"],
+      "resposta": "No canto superior direito de cada janela há três botões. Minimizar esconde a janela na barra de tarefas, e o programa continua aberto. Maximizar ocupa o ecrã inteiro. Fechar termina o programa."
+    },
+    {
+      "id": "mudar-janela",
+      "exemplos": ["Como passo de uma janela para outra?", "Como mudo de janela?", "Como vejo o ambiente de trabalho com janelas abertas?"],
+      "resposta": "Para passar de uma janela para outra, use Alt mais Tab. Para ver o ambiente de trabalho, prima Windows mais D, e prima outra vez para voltar."
+    },
+    {
+      "id": "encerrar",
+      "exemplos": ["Como desligo o computador?", "Como encerro o computador?", "Posso desligar da tomada?", "Como se desliga o Windows?"],
+      "resposta": "Primeiro guarde e feche os seus ficheiros. Depois abra o menu Iniciar, clique no botão de energia e escolha Encerrar. Nunca desligue o computador diretamente da tomada, porque pode danificar ficheiros."
+    },
+    {
+      "id": "suspender-reiniciar",
+      "exemplos": ["Qual é a diferença entre suspender e reiniciar?", "O que faz suspender?", "Quando devo reiniciar?"],
+      "resposta": "Suspender poupa energia e permite retomar o trabalho rapidamente. Reiniciar desliga e volta a ligar o computador, por exemplo depois de uma atualização."
+    },
+    {
+      "id": "exercicio",
+      "exemplos": ["O que faço a seguir?", "Onde está o exercício?", "Como pratico esta aula?", "Qual é a próxima aula?"],
+      "resposta": "Agora pratique com o exercício 1.1 do manual do módulo. Na próxima aula vamos trabalhar com ficheiros e pastas."
+    }
+  ]
+}

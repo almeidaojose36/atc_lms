@@ -27,6 +27,7 @@ import struct
 import sys
 import threading
 import time
+import unicodedata
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -42,6 +43,10 @@ DATA_DIR = Path(os.environ.get("ATC_DADOS", BASE / "dados"))
 DB_PATH = DATA_DIR / "atc.db"
 OLLAMA_URL = os.environ.get("ATC_OLLAMA_URL", "http://localhost:11434").rstrip("/")
 OLLAMA_MODEL = os.environ.get("ATC_MODELO", "qwen2.5:7b")
+# Guia por voz (ElevenLabs). A chave vem do ambiente e nunca fica no código.
+ELEVEN_URL = os.environ.get("ATC_ELEVEN_URL", "https://api.elevenlabs.io/v1").rstrip("/")
+ELEVEN_KEY = os.environ.get("ATC_ELEVEN_KEY", "")
+VOZ_LIMITE_DIA = int(os.environ.get("ATC_VOZ_LIMITE", "40"))  # perguntas por formando e por dia
 COOKIE = "atc_sessao"
 SESSION_DAYS = 14
 COMPLETE_RATIO = 0.9  # fração do vídeo que conta como "aula vista"
@@ -79,6 +84,13 @@ CREATE TABLE IF NOT EXISTS learner_presenter (
 CREATE TABLE IF NOT EXISTS onboarding (
   user_id INTEGER NOT NULL REFERENCES users(id), step TEXT NOT NULL, done TEXT NOT NULL,
   PRIMARY KEY(user_id, step));
+CREATE TABLE IF NOT EXISTS voice_answers (
+  lesson_id INTEGER NOT NULL, qkey TEXT NOT NULL, answer TEXT NOT NULL, source TEXT NOT NULL,
+  hits INTEGER NOT NULL DEFAULT 0, created TEXT NOT NULL, PRIMARY KEY(lesson_id, qkey));
+CREATE TABLE IF NOT EXISTS voice_log (
+  id INTEGER PRIMARY KEY, user_id INTEGER NOT NULL, lesson_id INTEGER NOT NULL, presenter TEXT NOT NULL,
+  question TEXT NOT NULL, source TEXT NOT NULL, stt_bytes INTEGER NOT NULL DEFAULT 0, tts_chars INTEGER NOT NULL DEFAULT 0,
+  created TEXT NOT NULL);
 CREATE TABLE IF NOT EXISTS sessions (
   token TEXT PRIMARY KEY, user_id INTEGER NOT NULL, csrf TEXT NOT NULL, created REAL NOT NULL);
 CREATE TABLE IF NOT EXISTS settings (key TEXT PRIMARY KEY, value TEXT);
@@ -437,6 +449,138 @@ def ask_assistant(question, lesson, mod, course_slug):
 
 
 # ---------------------------------------------------------------------------
+# Guia por voz: o formando pergunta em voz alta e o guia escolhido responde.
+# Custo controlado: respostas guardadas por aula e pergunta, áudio gerado uma vez e reutilizado.
+# Ordem: cache → perguntas frequentes da aula → modelo local (se existir) → "pergunte ao formador".
+# ---------------------------------------------------------------------------
+
+VOZES = {"helena": "JGnWZj684pcXmK2SxYIv", "miguel": "FbFkkfp4Iv6U5Q1WC4C2"}
+VOZ_ISOLAR = {"helena"}  # a voz da Helena tem eco: passa uma vez pelo isolador de voz
+VOZ_AJUSTES = {"stability": 0.5, "similarity_boost": 0.8, "style": 0.15, "speed": 1.0}
+VOZ_PARAGEM = set("""a o as os um uma uns umas de do da dos das no na nos nas ao aos em por para com sem que se e é
+eu me mim meu minha tu te você voce ele ela isto isso este esta esse essa como qual quais quando onde porque
+porquê pode posso podes faz fazer faço fica ficam é são ser está estão tem têm há mais ou também já
+the""".split())
+_VOZ_SINONIMOS = {"desli": "encer", "entro": "inici", "entra": "inici", "aplic": "progr", "pesqu": "procu",
+                  "encon": "procu", "mudo": "alter", "mudar": "alter"}
+
+
+def voz_tokens(texto):
+    t = unicodedata.normalize("NFD", texto.lower())
+    t = "".join(ch for ch in t if unicodedata.category(ch) != "Mn")
+    out = set()
+    for w in re.findall(r"[a-z0-9]+", t):
+        if w in VOZ_PARAGEM or len(w) < 2:
+            continue
+        w = w[:5]
+        out.add(_VOZ_SINONIMOS.get(w, w))
+    return out
+
+
+def voz_dados(slug, lslug):
+    path = COURSES_DIR / slug / "voz" / f"{lslug}.json"
+    return read_json(path) if path.is_file() else None
+
+
+def voz_procurar(pergunta, dados, minimo=0.5):
+    """Pergunta frequente mais parecida (coeficiente de Dice sobre radicais), ou None."""
+    q = voz_tokens(pergunta)
+    melhor, pontos = None, 0.0
+    if not q:
+        return None
+    for entrada in dados.get("perguntas", []):
+        for ex in entrada["exemplos"]:
+            e = voz_tokens(ex)
+            if e:
+                d = 2 * len(q & e) / (len(q) + len(e))
+                if d > pontos:
+                    melhor, pontos = entrada, d
+    return melhor if pontos >= minimo else None
+
+
+def voz_responder(con, lesson, mod, slug, dados, pergunta):
+    """Devolve (resposta, fonte). Guarda as respostas novas para não voltar a pagar por elas."""
+    toks = voz_tokens(pergunta)
+    if not toks:
+        return dados["linhas"]["nao_ouvi"], "linha"
+    chave = " ".join(sorted(toks))
+    row = con.execute("SELECT answer FROM voice_answers WHERE lesson_id=? AND qkey=?", (lesson["id"], chave)).fetchone()
+    if row:
+        con.execute("UPDATE voice_answers SET hits=hits+1 WHERE lesson_id=? AND qkey=?", (lesson["id"], chave))
+        return row["answer"], "cache"
+    faq = voz_procurar(pergunta, dados)
+    if faq:
+        resposta, fonte = faq["resposta"], "faq"
+    elif ollama_available():
+        try:
+            resposta, fonte = ask_assistant(pergunta, lesson, mod, slug), "modelo"
+        except (OSError, ValueError, KeyError):
+            return dados["linhas"]["nao_sei"], "sem_resposta"
+    else:
+        return dados["linhas"]["nao_sei"], "sem_resposta"
+    con.execute("INSERT OR IGNORE INTO voice_answers VALUES(?,?,?,?,0,?)", (lesson["id"], chave, resposta, fonte, now()))
+    return resposta, fonte
+
+
+def _eleven(caminho, corpo, tipo, timeout=60):
+    headers = {"Content-Type": tipo}
+    if ELEVEN_KEY:
+        headers["xi-api-key"] = ELEVEN_KEY
+    req = urllib.request.Request(ELEVEN_URL + caminho, data=corpo, headers=headers)
+    with urllib.request.urlopen(req, timeout=timeout) as r:
+        return r.read()
+
+
+def _multipart(campos, ficheiro):
+    fronteira = "atc" + secrets.token_hex(12)
+    partes = [f'--{fronteira}\r\nContent-Disposition: form-data; name="{k}"\r\n\r\n{v}\r\n'.encode() for k, v in campos.items()]
+    nome, dados, tipo = ficheiro
+    partes.append(f'--{fronteira}\r\nContent-Disposition: form-data; name="{nome}"; filename="{nome}"\r\n'
+                  f'Content-Type: {tipo}\r\n\r\n'.encode() + dados + b"\r\n")
+    partes.append(f"--{fronteira}--\r\n".encode())
+    return b"".join(partes), f"multipart/form-data; boundary={fronteira}"
+
+
+def voz_transcrever(audio, tipo):
+    """Fala → texto (ElevenLabs Scribe, português)."""
+    corpo, ct = _multipart({"model_id": "scribe_v1", "language_code": "por", "tag_audio_events": "false"},
+                           ("file", audio, tipo.split(";")[0]))
+    return json.loads(_eleven("/speech-to-text", corpo, ct, timeout=60)).get("text", "").strip()
+
+
+def voz_chave_audio(presenter, texto):
+    return hashlib.sha1(f"{VOZES[presenter]}|{texto}".encode()).hexdigest()[:20]
+
+
+def voz_ficheiro(slug, presenter, chave):
+    """Áudio já gerado: primeiro o que vem com o curso, depois a cache local."""
+    for base in (COURSES_DIR / slug / "voz" / "audio", DATA_DIR / "voz" / slug):
+        f = base / presenter / f"{chave}.mp3"
+        if f.is_file():
+            return f
+    return None
+
+
+def voz_falar(slug, presenter, texto, destino=None):
+    """Texto → fala na voz do guia. Devolve (chave, caracteres pagos). Só gera o que ainda não existe."""
+    chave = voz_chave_audio(presenter, texto)
+    if voz_ficheiro(slug, presenter, chave):
+        return chave, 0
+    pedido = json.dumps({"text": texto, "model_id": "eleven_multilingual_v2", "language_code": "pt",
+                         "voice_settings": VOZ_AJUSTES}).encode()
+    audio = _eleven(f"/text-to-speech/{VOZES[presenter]}?output_format=mp3_44100_128", pedido, "application/json", timeout=90)
+    if presenter in VOZ_ISOLAR:
+        corpo, ct = _multipart({}, ("audio", audio, "audio/mpeg"))
+        audio = _eleven("/audio-isolation", corpo, ct, timeout=120)
+    pasta = (destino or DATA_DIR / "voz" / slug) / presenter
+    pasta.mkdir(parents=True, exist_ok=True)
+    tmp = pasta / f"{chave}.tmp"
+    tmp.write_bytes(audio)
+    tmp.replace(pasta / f"{chave}.mp3")
+    return chave, len(texto)
+
+
+# ---------------------------------------------------------------------------
 # HTML
 # ---------------------------------------------------------------------------
 
@@ -497,7 +641,7 @@ def page(title, body, user=None, csrf="", wide=False, flash="", profile=None, pr
     return f"""<!doctype html><html lang="pt-PT"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{h(title)} · ATC Formação</title><link rel="icon" href="/static/logo-200.png">
-<link rel="stylesheet" href="/static/atc.css?v=5"><meta name="csrf" content="{h(csrf)}"><script src="/static/ui.js?v=3" defer></script></head>
+<link rel="stylesheet" href="/static/atc.css?v=6"><meta name="csrf" content="{h(csrf)}"><script src="/static/ui.js?v=3" defer></script></head>
 <body class="{'app' if user else 'public'}"><a class="skip-link" href="#conteudo">Saltar para o conteúdo</a>{sidebar}<div class="workspace"><header class="top"><div class="wrap">{header}</div></header>
 <main id="conteudo" class="wrap{' wide' if wide else ''}">{flash_html}{body}</main>
 <footer><div class="wrap"><span>ATC · Angbu Training Centre</span><span>Luanda, Angola · Aprendizagem com propósito</span></div></footer></div></body></html>"""
@@ -565,6 +709,8 @@ class Handler(BaseHTTPRequestHandler):
         if n > 5_000_000:
             raise HttpError(413, "Pedido demasiado grande.")
         raw = self.rfile.read(n) if n else b""
+        if (self.headers.get("Content-Type") or "").startswith("audio/"):
+            return {"_audio": raw, "_audio_type": self.headers.get("Content-Type")}
         if (self.headers.get("Content-Type") or "").startswith("application/json"):
             return json.loads(raw or b"{}")
         return {k: v[0] for k, v in urllib.parse.parse_qs(raw.decode(), keep_blank_values=True).items()}
@@ -1315,7 +1461,17 @@ def lesson_page(r, slug, lslug):
         return "".join(items)
 
     assistant = ""
-    if ollama_available():
+    voz = voz_dados(slug, lslug)
+    guia = selected_presenter(r, c["id"]) or "helena"
+    if voz:
+        nome = PRESENTERS[guia]["name"]
+        assistant = f"""<section class="card voz" id="voz" data-lesson="{l['id']}"><div class="voz-topo">
+<img src="/static/presenters/{guia}.png" alt=""><div><span class="eyebrow">GUIA POR VOZ</span><h2>Pergunte {"à" if guia == "helena" else "ao"} {nome}</h2>
+<p class="muted">Carregue no microfone, faça a pergunta em voz alta e carregue outra vez para enviar.</p></div></div>
+<button type="button" class="voz-mic" aria-pressed="false"><span class="voz-icone" aria-hidden="true">🎙</span><span class="voz-rotulo">Falar</span></button>
+<p class="voz-estado muted" aria-live="polite"></p><ol class="voz-conversa"><li class="voz-resposta voz-saudacao">{h(voz["linhas"]["saudacao"])} <button type="button" class="linkbtn">▶ Ouvir</button></li></ol>
+<form class="voz-escrever"><input name="q" maxlength="300" placeholder="Ou escreva a pergunta…" aria-label="Escrever a pergunta"><button class="btn small ghost">Perguntar</button></form></section>"""
+    elif ollama_available():
         assistant = f"""<section class="card"><h2>Assistente de estudo</h2>
 <p class="muted">Faça uma pergunta sobre esta aula. O assistente responde com base no vídeo e no manual.</p>
 <form id="ask"><textarea name="q" rows="2" required placeholder="Ex.: Qual é a diferença entre hardware e software?"></textarea>
@@ -1334,7 +1490,7 @@ def lesson_page(r, slug, lslug):
 <ul class="comments">{thread(None) or '<li class="muted">Ainda não há perguntas sobre esta aula.</li>'}</ul>
 <form method="post" action="/cursos/{slug}/aula/{lslug}/comentar">{csrf_field(r.csrf)}
 <textarea name="body" rows="3" required placeholder="Escreva a sua pergunta…"></textarea><button class="btn small">Publicar pergunta</button></form></section>
-<script src="/static/player.js?v=3"></script>""")
+<script src="/static/player.js?v=3"></script>{'<script src="/static/voz.js?v=1"></script>' if voz else ''}""")
 
 
 @route("POST", "/cursos/([a-z0-9-]+)/aula/([a-z0-9-]+)/comentar", "user")
@@ -1424,6 +1580,60 @@ def assistant_api(r):
         _ollama["checked"] = 0
         raise HttpError(503, "O assistente não está disponível neste momento. Coloque a dúvida ao formador.")
     r.send(200, json.dumps({"resposta": ans}, ensure_ascii=False), "application/json; charset=utf-8")
+
+
+@route("POST", r"/api/voz/(\d+)", "user")
+def voice_api(r, lid):
+    """Pergunta por voz (áudio) ou escrita (JSON); o guia escolhido responde com texto e áudio."""
+    l = r.con.execute("SELECT l.*, c.slug cslug FROM lessons l JOIN courses c ON c.id=l.course_id WHERE l.id=?", (int(lid),)).fetchone()
+    if not l:
+        raise HttpError(404)
+    c = r.course_for(l["cslug"])
+    dados = voz_dados(l["cslug"], l["slug"])
+    if not dados:
+        raise HttpError(404, "Esta aula ainda não tem guia por voz.")
+    presenter = selected_presenter(r, c["id"]) or "helena"
+    linha = str(r.data.get("linha", ""))
+    hoje = datetime.now().strftime("%Y-%m-%d")
+    if linha:   # frases fixas (saudação): geradas uma vez, não contam para o limite
+        if linha not in dados["linhas"]:
+            raise HttpError(400)
+        texto, pergunta, fonte, stt = dados["linhas"][linha], "", "linha", 0
+    else:
+        usadas = r.con.execute("SELECT COUNT(*) FROM voice_log WHERE user_id=? AND created LIKE ? AND source<>'linha'",
+                               (r.user["id"], hoje + "%")).fetchone()[0]
+        if usadas >= VOZ_LIMITE_DIA:
+            raise HttpError(429, "Atingiu o limite de perguntas por voz de hoje. Escreva a dúvida na secção Perguntas e dúvidas.")
+        audio, stt = r.data.get("_audio"), 0
+        if audio is not None:
+            if len(audio) > 2_000_000:
+                raise HttpError(413, "Gravação demasiado longa. Faça uma pergunta mais curta.")
+            stt = len(audio)
+            try:
+                pergunta = voz_transcrever(audio, r.data.get("_audio_type") or "audio/webm")
+            except (OSError, ValueError):
+                raise HttpError(503, "Não foi possível ouvir a pergunta agora. Tente de novo ou escreva-a.")
+        else:
+            pergunta = str(r.data.get("q", "")).strip()[:300]
+        m = r.con.execute("SELECT * FROM modules WHERE id=?", (l["module_id"],)).fetchone()
+        texto, fonte = voz_responder(r.con, l, m, l["cslug"], dados, pergunta)
+    try:
+        chave, pagos = voz_falar(l["cslug"], presenter, texto)
+        audio_url = f"/api/voz/audio/{l['cslug']}/{presenter}/{chave}.mp3"
+    except (OSError, ValueError):
+        audio_url, pagos = None, 0   # sem rede: a resposta escrita continua a aparecer
+    r.con.execute("INSERT INTO voice_log(user_id,lesson_id,presenter,question,source,stt_bytes,tts_chars,created) VALUES(?,?,?,?,?,?,?,?)",
+                  (r.user["id"], l["id"], presenter, pergunta[:300], fonte, stt, pagos, now()))
+    r.send(200, json.dumps({"pergunta": pergunta, "resposta": texto, "audio": audio_url, "fonte": fonte},
+                           ensure_ascii=False), "application/json; charset=utf-8")
+
+
+@route("GET", r"/api/voz/audio/([a-z0-9-]+)/(helena|miguel)/([0-9a-f]{20})\.mp3", "user")
+def voice_audio(r, slug, presenter, chave):
+    f = voz_ficheiro(slug, presenter, chave)
+    if not f:
+        raise HttpError(404)
+    r.serve_file(f, ctype="audio/mpeg")
 
 
 # -- manual online ----------------------------------------------------------
@@ -1617,7 +1827,7 @@ def cert_page(r, code):
     hours = row["hours_class"] or row["hours_video"]
     verify = f"http://{r.headers.get('Host', 'localhost')}/verificar?codigo={code}"
     return f"""<!doctype html><html lang="pt-PT"><head><meta charset="utf-8"><title>Certificado {h(code)}</title>
-<meta name="viewport" content="width=device-width, initial-scale=1"><link rel="stylesheet" href="/static/atc.css?v=5"></head>
+<meta name="viewport" content="width=device-width, initial-scale=1"><link rel="stylesheet" href="/static/atc.css?v=6"></head>
 <body class="certbody"><div class="noprint certbar"><a href="/">← Voltar</a> <button onclick="print()" class="btn small">Imprimir / guardar PDF</button></div>
 <div class="cert"><div class="certin"><img src="/static/logo-600.png" alt="ATC"><p class="k">Certificado de conclusão</p>
 <p>Certifica-se que</p><h1>{h(row['name'])}</h1><p>concluiu com aproveitamento o curso</p><h2>{h(row['title'])}</h2>
