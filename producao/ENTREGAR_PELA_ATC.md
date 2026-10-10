@@ -4,6 +4,12 @@ Lista exacta do material que não pode ser produzido neste ambiente (sem Windows
 
 Entrega: anexar os ficheiros na conversa ou guardá-los em `producao/entrega/` com **exactamente** os nomes abaixo.
 
+## Estado após a integração de 10 de outubro
+
+Já entregue e integrado (ramo `main`): seis capturas reais de Word, Excel e PowerPoint para a Web em PT-PT com páginas «Ver exemplos» no LMS, capas e ícones das aplicações no catálogo, e quatro clips reais de Office (`producao/capturas-office-pt-pt/`).
+
+**Ainda não é real:** as imagens de Windows em `producao/ecras-atc-personalizados/` e `cursos/informatica/manual/figures/fig-1-*-atc.png` são **simulações editadas por IA** (o próprio README o diz), tal como `fig_login`, `fig_desktop`, `fig_start`, `fig_window` e `fig_shutdown`. Por isso as secções A e B abaixo continuam necessárias. Os ícones `office-replica-*.png` são réplicas, não os logótipos oficiais (secção C).
+
 ## A. Capturas reais do Windows 11 (prioridade 1)
 
 Substituem as 5 ilustrações do manual do Módulo 1 (as ilustrações dizem "não é uma captura real").
