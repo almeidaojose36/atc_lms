@@ -314,13 +314,17 @@ def main():
         z = TMP / f"{s['id']}-zoom.mp4"; renderizar_zoom(webm, focos, z, t_fundo=k * 17.0, cortes=cortes)
         fs = [dict(f, t=f["t"] - sum(min(b, f["t"]) - a for a, b in cortes if a < f["t"])) for f in fs]
         dr = dur(z)
-        if fs:   # o guia fala: velocidade real, para manter a sincronização labial
-            fator = 1.0; alvo = min(dr, max(f["t"] + f["dur"] for f in fs) + 0.5)
+        if fs:   # o guia fala: acelera só o que vem antes; a fala fica em velocidade real (sincronização labial)
+            pre = min(f["t"] for f in fs) - 0.4; antes = min(max(dv + 0.8, pre / 1.8), pre); fator = pre / antes
+            alvo = min(antes + dr - pre, antes + max(f["t"] + f["dur"] for f in fs) - pre + 0.5)
+            falas += [dict(f, k=k, t=antes + f["t"] - pre) for f in fs]
+            fc = (f"[0:v]split[a][b];[a]trim=0:{pre:.3f},setpts=(PTS-STARTPTS)/{fator:.4f}[a1];"
+                  f"[b]trim=start={pre:.3f},setpts=PTS-STARTPTS[b1];[a1][b1]concat=n=2:v=1,"
+                  f"tpad=stop_mode=clone:stop_duration=6,trim=duration={alvo:.3f},setpts=PTS-STARTPTS[v0]")
         else:
             alvo = min(max(dr, dv + 1.6), dv + 4.5); fator = min(dr / alvo, 1.7)
-        falas += [dict(f, k=k, t=f["t"] / fator) for f in fs]
-        peca = TMP / f"{s['id']}-final.mp4"
-        fc = f"[0:v]setpts=PTS/{fator:.4f},tpad=stop_mode=clone:stop_duration=6,trim=duration={alvo:.3f},setpts=PTS-STARTPTS[v0]"; ultimo = "[v0]"
+            fc = f"[0:v]setpts=PTS/{fator:.4f},tpad=stop_mode=clone:stop_duration=6,trim=duration={alvo:.3f},setpts=PTS-STARTPTS[v0]"
+        peca = TMP / f"{s['id']}-final.mp4"; ultimo = "[v0]"
         entradas = ["-i", z]
         if s["capitulo"]:
             png = TMP / f"{s['id']}-cap.png"; capitulo_png(s["capitulo"], png)
