@@ -10,6 +10,7 @@ para a sincronização labial ficar o mais próxima possível.
 Resultados: producao/videos/avatar-video-voz-texto/<Apresentador>/
 """
 import json, pathlib, re, subprocess, sys, tempfile
+import numpy as np
 
 RAIZ = pathlib.Path(__file__).resolve().parents[1]
 ORIGEM = RAIZ / "videos" / "avatar-video"
@@ -40,6 +41,20 @@ def oracoes(texto):
     partes = [p for p in re.split(r"(?<=[.?!,;:])\s+", texto.strip()) if p.strip()]
     return [len(p.split()) for p in partes], re.sub(r"\s+", " ", texto).strip()
 
+
+def amostras(audio, sr=16000):
+    p = subprocess.run(["ffmpeg", "-loglevel", "error", "-i", str(audio), "-ac", "1", "-ar", str(sr), "-f", "s16le", "-"],
+                       capture_output=True, check=True)
+    return np.frombuffer(p.stdout, np.int16).astype(float), sr
+
+def corte_silencioso(x, sr, fim_anterior, inicio_seguinte):
+    """Instante de menor energia entre duas palavras, para não cortar sons a meio."""
+    lo, hi = int(fim_anterior * sr), int(inicio_seguinte * sr)
+    if hi - lo < int(0.02 * sr): return (fim_anterior + inicio_seguinte) / 2
+    j = int(0.005 * sr)
+    energia = [(np.sqrt(np.mean(x[k:k + j] ** 2)), k) for k in range(lo, hi - j, j)]
+    return (min(energia)[1] + j / 2) / sr
+
 def montar(orig_w, tts_w, contagens, tts_audio, orig_dur, dst_wav):
     # segmentos: (primeira palavra, última palavra+1); com GRUPO, cada oração parte-se em grupos curtos
     segs, i = [], 0
@@ -50,15 +65,18 @@ def montar(orig_w, tts_w, contagens, tts_audio, orig_dur, dst_wav):
             if GRUPO and i + c - k == 1: k = i + c      # evita grupos de uma só palavra no fim
             segs.append((j, k)); j = k
         i += c
+    x, sr = amostras(tts_audio)
     filtros, rotulos = [], []
     for n, (p, q) in enumerate(segs):
         o0, o1, t0, t1 = orig_w[p]["start"], orig_w[q-1]["end"], tts_w[p]["start"], tts_w[q-1]["end"]
         r = max(TEMPO_MIN, min(TEMPO_MAX, (t1 - t0) / max(o1 - o0, 0.05)))
-        # cortes a meio do intervalo entre palavras, para não partir sons
-        a = (tts_w[p-1]["end"] + t0) / 2 if p > 0 else max(t0 - 0.04, 0)
-        b = (t1 + tts_w[q]["start"]) / 2 if q < len(tts_w) else t1 + 0.06
+        a = corte_silencioso(x, sr, tts_w[p-1]["end"], t0) if p > 0 else max(t0 - 0.04, 0)
+        b = corte_silencioso(x, sr, t1, tts_w[q]["start"]) if q < len(tts_w) else t1 + 0.06
         atraso = max(o0 - (t0 - a) / r, 0)
+        d = (b - a) / r
+        fade = min(0.012, d / 4)
         filtros.append(f"[0:a]atrim={a:.3f}:{b:.3f},asetpts=PTS-STARTPTS,atempo={r:.4f},"
+                       f"afade=t=in:d={fade:.3f},afade=t=out:st={max(d - fade, 0):.3f}:d={fade:.3f},"
                        f"adelay={int(atraso*1000)}|{int(atraso*1000)}[s{n}]")
         rotulos.append(f"[s{n}]")
     filtros.append("".join(rotulos) + f"amix=inputs={len(rotulos)}:normalize=0,apad=whole_dur={orig_dur:.3f}[out]")

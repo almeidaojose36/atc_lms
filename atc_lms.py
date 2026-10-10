@@ -50,7 +50,7 @@ ROLES = {"admin": "Administrador", "formador": "Formador", "formando": "Formando
 PRESENTERS = {"helena": {"name": "Helena", "label": "Avatar feminino"}, "miguel": {"name": "Miguel", "label": "Avatar masculino"}}
 PROFILE_COLORS = {"sand": "Areia", "navy": "Azul", "green": "Verde", "rose": "Rosa"}
 
-STATUS = {"publicado": "Disponível", "em_breve": "Em breve"}
+STATUS = {"publicado": "Disponível", "amostra": "Amostra", "em_breve": "Em breve"}
 
 mimetypes.add_type("text/vtt", ".vtt")
 mimetypes.add_type("font/woff2", ".woff2")
@@ -708,6 +708,8 @@ class Handler(BaseHTTPRequestHandler):
     def can_access(self, c):
         if self.is_staff():
             return True
+        if c["status"] == "amostra":
+            return True  # cursos de amostra: módulo de demonstração aberto a qualquer conta
         return c["status"] == "publicado" and self.con.execute(
             "SELECT 1 FROM enrolments WHERE user_id=? AND course_id=?", (self.user["id"], c["id"])).fetchone() is not None
 
@@ -825,6 +827,13 @@ def course_card(r, c, enrolled):
     cover = (f'<img src="/media/{h(c["slug"])}/{h(c["cover"])}" alt="" loading="lazy">' if c["cover"]
              else f'<div class="ph ph-{h(c["slug"])}"><span class="course-monogram">{h({"word": "W", "excel": "X", "powerpoint": "P", "outlook": "O", "comptia-a-plus": "A+", "comptia-network-plus": "N+"}.get(c["slug"], "ATC"))}</span><span class="cover-caption">ATC · FORMAÇÃO PROFISSIONAL</span></div>')
     hours = f'{fmt_h(c["hours_video"])} h de vídeo' if c["hours_video"] else ""
+    if c["status"] == "amostra":
+        links = f'<a class="btn small" href="/cursos/{h(c["slug"])}">Abrir amostra →</a>'
+        if (COURSES_DIR / c["slug"] / "manual/exemplos-atc.json").is_file():
+            links += f' <a class="btn small ghost" href="/cursos/{h(c["slug"])}/exemplos">Ver exemplos →</a>'
+        return (f'<article class="course">{cover}<div><h3>{h(c["title"])}</h3><p>{h(c["subtitle"])}</p>'
+                f'<span class="tag">Amostra · Módulo 1</span> <span class="muted">Manual, exemplos e questionário</span>'
+                f'<p>{links}</p></div></article>')
     if c["status"] != "publicado":
         foot = f'<span class="tag soon">Em breve</span> <span class="muted">{hours}</span>'
         if (COURSES_DIR / c["slug"] / "manual/exemplos-atc.json").is_file():
@@ -967,7 +976,9 @@ def course_page(r, slug):
         out.append(f'<section class="card module"><h2><span class="num">Módulo {m["num"]}</span>{h(m["title"])}</h2>'
                    f'<p>{h(m["intro"])}</p><ul class="items">{"".join(items)}</ul><div class="actions">{"".join(res)}</div></section>')
     cert = r.con.execute("SELECT code FROM certificates WHERE user_id=? AND course_id=?", (r.user["id"], c["id"])).fetchone()
-    if cert:
+    if c["status"] == "amostra":
+        cert_html = '<p class="muted">Curso de amostra: inclui o Módulo 1 e não emite certificado.</p>'
+    elif cert:
         cert_html = f'<a class="btn" href="/certificado/{h(cert["code"])}">Ver certificado</a>'
     elif p["complete"]:
         cert_html = (f'<form method="post" action="/cursos/{slug}/certificado">{csrf_field(r.csrf)}'
@@ -976,6 +987,8 @@ def course_page(r, slug):
         cert_html = '<p class="muted">O certificado fica disponível quando concluir todas as aulas e questionários.</p>'
     cont = (f'<a class="btn" href="/cursos/{slug}/aula/{h(next_lesson["slug"])}">'
             f'{"Continuar" if p["pct"] else "Começar"}: {h(next_lesson["title"])}</a>' if next_lesson else "")
+    if not next_lesson and c["status"] == "amostra" and mods and mods[0]["manual_json"]:
+        cont = f'<a class="btn" href="/cursos/{slug}/modulo/{mods[0]["num"]}/manual">Começar: ler o manual</a>'
     hours = " · ".join(x for x in [f'{fmt_h(c["hours_video"])} h de vídeo' if c["hours_video"] else "",
                                    f'{fmt_h(c["hours_class"])} h presenciais' if c["hours_class"] else ""] if x)
     staff = (f' <a class="btn ghost" href="/admin/relatorio/{slug}">Relatório de turma</a>' if r.is_staff() else "")
@@ -1348,6 +1361,8 @@ def cert_issue(r, slug):
     row = r.con.execute("SELECT code FROM certificates WHERE user_id=? AND course_id=?", (r.user["id"], c["id"])).fetchone()
     if row:
         raise Redirect(f"/certificado/{row['code']}")
+    if c["status"] == "amostra":
+        raise HttpError(403, "Este é um curso de amostra e não emite certificado.")
     if not course_progress(r.con, r.user["id"], c["id"])["complete"]:
         raise HttpError(403, "Ainda não concluiu todas as aulas e questionários deste curso.")
     code = "ATC-" + secrets.token_hex(4).upper()

@@ -22,24 +22,26 @@ VOZ_BASE = {c: "avatar-video-novas-vozes" for c in "H1 H2 H3 H4 H5 H6 H7 H8 M1 M
 VOZ_BASE.update({c: "avatar-video-voz-texto-v2" for c in "H9 M3 M4 M8".split()})
 
 # (início, fim, [(gravação, de, até), ...]) substitui esse intervalo por ecrãs reais do LMS
+# (início, fim, [(gravação, de, até), ...], entrada, saída): substitui esse intervalo por ecrãs reais do LMS.
+# "corte" = mudança seca (quando o plano original também muda de forma seca); "fade" = dissolução de 0,2 s.
 CORTES = {
-    "H1": [(1.0, 7.5, [("catalogo", .8, 3.3), ("catalogo", 4.0, 5.5), ("catalogo", 10.0, 12.5)])],
-    "M2": [(0.5, 10.0, [("catalogo", .8, 3.8), ("catalogo", 4.0, 6.0), ("catalogo", 8.0, 9.0), ("catalogo", 10.0, 13.5)])],
-    "H5": [(2.0, 7.0, [("perfil", .6, 3.1), ("perfil", 8.2, 10.7)])],
-    "M7": [(2.15, 7.15, [("perfil", .6, 3.1), ("perfil", 8.2, 10.7)])],
-    "H6": [(3.0, 6.0, [("visao", .8, 2.3), ("visao", 2.9, 4.4)])],
-    "M1": [(3.0, 7.4, [("visao", .8, 3.0), ("visao", 3.0, 5.2)])],
-    "H8": [(1.0, 6.0, [("manual", 1.2, 3.7), ("manual", 4.5, 7.0)])],
-    "M4": [(2.4, 8.0, [("curso", .8, 3.4), ("curso", 3.4, 6.0)])],
-    "H9": [(6.0, 10.0, [("aula", .8, 3.2)])],
-    "M8": [(6.0, 10.0, [("aula", .8, 3.2)])],
+    "H1": [(1.0, 7.5, [("catalogo", .8, 3.3), ("catalogo", 4.0, 5.5), ("catalogo", 10.0, 12.5)], "fade", "fade")],
+    "M2": [(0.5, 10.0, [("catalogo", .8, 3.8), ("catalogo", 4.0, 6.0), ("catalogo", 8.0, 9.0), ("catalogo", 10.0, 12.5)], "fade", "fade")],
+    "H5": [(1.2, 9.0, [("perfil", .6, 5.6), ("perfil", 8.2, 11.0)], "fade", "fade")],
+    "M7": [(1.2, 9.0, [("perfil", .6, 5.6), ("perfil", 8.2, 11.0)], "fade", "fade")],
+    "H6": [(2.85, 6.05, [("visao", .8, 2.3), ("visao", 2.9, 4.4)], "corte", "corte")],
+    "M1": [(3.1, 7.4, [("visao", .8, 3.0), ("visao", 3.0, 5.2)], "corte", "fade")],
+    "H8": [(0.75, 5.95, [("manual", 1.0, 3.7), ("manual", 4.2, 7.0)], "corte", "corte")],
+    "M4": [(2.0, 8.0, [("curso", .8, 3.4), ("curso", 3.4, 6.0)], "fade", "corte")],
+    "H9": [(4.5, 10.0, [("aula", .8, 5.3)], "fade", "corte")],
+    "M8": [(4.5, 10.0, [("aula", .8, 5.3)], "fade", "corte")],
 }
 # grafismo (nome/título): clip -> (palavra que dispara, título, subtítulo, duração)
 GRAFISMOS = {
-    "H4": ("Helena", "Helena", "Guia virtual · ATC Angbu Training Centre", 4.0),
-    "M5": ("Miguel", "Miguel", "Guia virtual · ATC Angbu Training Centre", 4.0),
-    "H7": ("Informática", "Informática na Ótica do Utilizador", "Curso prático · ATC Angbu Training Centre", 4.0),
-    "M6": ("informática", "Informática na Ótica do Utilizador", "Curso prático · ATC Angbu Training Centre", 4.0),
+    "H4": ("Helena", "Helena", "Guia virtual · ATC Angbu Training Centre", 7.0),
+    "M5": ("Miguel", "Miguel", "Guia virtual · ATC Angbu Training Centre", 7.0),
+    "H7": ("Informática", "Informática na Ótica do Utilizador", "Curso prático · ATC Angbu Training Centre", 7.0),
+    "M6": ("informática", "Informática na Ótica do Utilizador", "Curso prático · ATC Angbu Training Centre", 7.0),
 }
 
 def run(*a, **k): return subprocess.run([str(x) for x in a], check=True, **k)
@@ -92,14 +94,17 @@ def montar(cid):
         idx = [i for i, t in enumerate(txt) if t == "todas"]
         if len(idx) >= 2:
             fim = next(i for i in range(idx[0], idx[1]) if txt[i].startswith("realizad"))
-            corte_fim = w[fim]["end"] + 0.35
+            corte_fim = w[fim]["end"] + 0.02
             print("H8: corta em", corte_fim, flush=True)
     with tempfile.TemporaryDirectory() as t:
         t = pathlib.Path(t)
-        for (a, b, segs) in CORTES.get(cid, []):
+        for (a, b, segs, entra, sai) in CORTES.get(cid, []):
             frag = t / f"f{n}.mp4"; fragmento(segs, b - a, frag)
             entradas += ["-i", frag]
-            filt.append(f"[{n}:v]format=yuva420p,fade=t=in:st=0:d=0.2:alpha=1,fade=t=out:st={b-a-0.2:.2f}:d=0.2:alpha=1,setpts=PTS+{a}/TB[b{n}]")
+            fades = ""
+            if entra == "fade": fades += ",fade=t=in:st=0:d=0.2:alpha=1"
+            if sai == "fade": fades += f",fade=t=out:st={b-a-0.2:.2f}:d=0.2:alpha=1"
+            filt.append(f"[{n}:v]format=yuva420p{fades},setpts=PTS+{a}/TB[b{n}]")
             filt.append(f"{ultimo}[b{n}]overlay=enable='between(t,{a},{b})':eof_action=pass[v{n}]")
             ultimo = f"[v{n}]"; n += 1
         if cid in GRAFISMOS:
@@ -114,8 +119,12 @@ def montar(cid):
         cmd = ["ffmpeg", "-y", "-loglevel", "error", *entradas]
         if filt: cmd += ["-filter_complex", ";".join(filt), "-map", ultimo]
         else: cmd += ["-map", "0:v"]
-        cmd += ["-map", "0:a", "-c:v", "libx264", "-crf", "18", "-pix_fmt", "yuv420p", "-c:a", "copy"]
-        if corte_fim: cmd += ["-t", f"{corte_fim:.3f}"]
+        if corte_fim:
+            cmd += ["-map", "0:a", "-c:v", "libx264", "-crf", "18", "-pix_fmt", "yuv420p",
+                    "-af", f"afade=t=out:st={corte_fim-0.15:.3f}:d=0.15", "-c:a", "aac", "-b:a", "192k", "-t", f"{corte_fim:.3f}"]
+        else:
+            cmd += ["-map", "0:a", "-c:v", "libx264", "-crf", "18", "-pix_fmt", "yuv420p", "-c:a", "copy"]
+        if corte_fim: pass
         else: cmd += ["-shortest"]
         run(*cmd, destino)
     return origem

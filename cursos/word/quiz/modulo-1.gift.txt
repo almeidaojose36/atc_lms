@@ -1,0 +1,17 @@
+$CATEGORY: $course$/Microsoft Word/Módulo 1
+
+::WD1-Q1:: Para que serve principalmente o Microsoft Word? { ~Gerir correio eletrónico =Criar e editar documentos de texto ~Calcular fórmulas numa folha ~Editar vídeo }
+
+::WD1-Q2:: Como se chama a faixa de comandos organizada em separadores? { ~Barra de tarefas =Friso ~Ambiente de trabalho ~Rodapé }
+
+::WD1-Q3:: Que separador reúne o tipo de letra, as listas e o alinhamento? { ~Inserir =Base ~Ajuda ~Ver }
+
+::WD1-Q4:: Qual destes comandos pertence ao separador Inserir? { ~Negrito =Tabela ~Itálico ~Cor da letra }
+
+::WD1-Q5:: Para que serve uma lista com marcas? { =Apresentar itens curtos sem ordem obrigatória ~Alterar o idioma ~Fechar o documento ~Mudar a cor da página }
+
+::WD1-Q6:: Porque é melhor usar estilos em vez de aumentar a letra à mão? { =Porque os títulos ficam todos iguais e organizados ~Porque o ficheiro fica mais pequeno ~Porque o texto fica sublinhado ~Porque não é preciso guardar }
+
+::WD1-Q7:: Verdadeiro ou falso: antes de fechar o documento, deve rever o texto e confirmar que ficou guardado. {T}
+
+::WD1-Q8:: Nos exercícios do curso, deve escrever: { ~Dados pessoais verdadeiros =Dados fictícios ~Palavras-passe ~Informação confidencial }

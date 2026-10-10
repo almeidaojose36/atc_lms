@@ -77,7 +77,7 @@ class PersonalisationTests(unittest.TestCase):
         self.r.data={'presenter':'../../bad'}
         with self.assertRaises(app.HttpError): app.presenter_save(self.r,'informatica')
         self.r.data={'presenter':'helena'}
-        with self.assertRaises(app.HttpError) as e: app.presenter_save(self.r,'excel')
+        with self.assertRaises(app.HttpError) as e: app.presenter_save(self.r,'comptia-a-plus')
         self.assertEqual(e.exception.code,403)
 
     def test_fallback_and_optional_media(self):

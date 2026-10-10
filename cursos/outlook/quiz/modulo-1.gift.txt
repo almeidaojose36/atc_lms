@@ -1,0 +1,17 @@
+$CATEGORY: $course$/Microsoft Outlook/Módulo 1
+
+::OL1-Q1:: Para que serve principalmente o Microsoft Outlook? { =Gerir correio eletrónico, contactos e calendário ~Editar fotografias ~Criar folhas de cálculo ~Gravar o ecrã }
+
+::OL1-Q2:: Que campo recebe a lista de destinatários principais? { ~Cc =Para ~Assunto ~Rascunho }
+
+::OL1-Q3:: O que faz o campo Bcc? { =Envia a mensagem sem que os outros destinatários vejam este endereço ~Apaga a mensagem ~Muda o idioma ~Anexa um ficheiro }
+
+::OL1-Q4:: Qual é a melhor característica de um assunto? { ~Ser vazio =Resumir de forma curta o conteúdo ~Ser muito longo ~Estar em letras maiúsculas }
+
+::OL1-Q5:: Que separador reúne negrito, itálico e listas? { ~Opções =Formatar texto ~Desenhar ~Ficheiro }
+
+::OL1-Q6:: Porque está o botão Enviar inativo no exercício? { =Porque ainda não há destinatário ~Porque o Outlook está avariado ~Porque falta um anexo ~Porque o texto é curto }
+
+::OL1-Q7:: Verdadeiro ou falso: depois de enviada, uma mensagem já não se pode corrigir, por isso deve rever tudo antes. {T}
+
+::OL1-Q8:: O que deve fazer com o campo Para no exercício deste curso? { ~Escrever um endereço verdadeiro =Deixá-lo vazio e guardar como rascunho ~Escrever o seu cartão bancário ~Enviar a toda a gente }

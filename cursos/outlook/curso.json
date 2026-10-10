@@ -2,9 +2,24 @@
   "slug": "outlook",
   "title": "Microsoft Outlook",
   "subtitle": "Correio eletrónico, calendário e contactos",
-  "status": "em_breve",
+  "status": "amostra",
   "order": 5,
   "hours_video": 1,
   "cover": "capa-icono.svg",
-  "modules": []
+  "modules": [
+    {
+      "num": 1,
+      "title": "Primeiros passos no Outlook",
+      "intro": "Correio eletrónico, calendário e contactos",
+      "manual_json": "manual/modulo-1.json",
+      "manual_figures": "manual/figures",
+      "lessons": [],
+      "quiz": {
+        "title": "Questionário do Módulo 1 · Primeiros passos no Outlook",
+        "gift": "quiz/modulo-1.gift.txt",
+        "pass_mark": 70
+      }
+    }
+  ],
+  "description": "Aprenda a escrever mensagens de correio eletrónico claras e profissionais. Este módulo de amostra combina manual online, exemplos e um questionário."
 }

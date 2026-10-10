@@ -1,0 +1,233 @@
+{
+  "course": "Microsoft Word",
+  "subtitle": "Documentos de texto claros e bem organizados",
+  "version": "1.0 — módulo introdutório ATC",
+  "date": "outubro de 2026",
+  "hours_class": 2,
+  "hours_video": 0.5,
+  "producer": "Almeida José",
+  "reviewer": "Formador ATC",
+  "intro": "Este módulo apresenta o Microsoft Word através de uma tarefa simples: escrever um relatório de formação com títulos, parágrafos e uma lista. Inclui capturas próprias de exemplos fictícios ATC.",
+  "modules": [
+    {
+      "num": 1,
+      "title": "Primeiros passos no Word",
+      "intro": "O Microsoft Word é uma aplicação para criar e editar documentos de texto. Neste módulo vai conhecer o friso, escrever um pequeno relatório de formação e aplicar títulos, parágrafos e listas.",
+      "objectives": [
+        "Reconhecer o Microsoft Word e a sua janela.",
+        "Identificar os separadores Base e Inserir do friso.",
+        "Escrever um documento com título, parágrafos e uma lista.",
+        "Distinguir um título de um parágrafo normal.",
+        "Rever o texto em português de Portugal antes de guardar."
+      ],
+      "sections": [
+        {
+          "title": "1.1 O que é o Word?",
+          "blocks": [
+            {
+              "figure": "office-replica-word.png",
+              "caption": "Ícone de identificação do Microsoft Word, réplica visual fornecida para este curso."
+            },
+            {
+              "p": "O **Microsoft Word** é uma aplicação para escrever, formatar e imprimir documentos: cartas, relatórios, currículos e manuais. O ficheiro que cria chama-se **documento**."
+            },
+            {
+              "table": [
+                [
+                  "Termo",
+                  "Significado",
+                  "Exemplo"
+                ],
+                [
+                  "Documento",
+                  "Ficheiro de texto criado no Word.",
+                  "Relatório de Formação"
+                ],
+                [
+                  "Friso",
+                  "Faixa de comandos organizada em separadores.",
+                  "Base, Inserir, Rever"
+                ],
+                [
+                  "Separador",
+                  "Grupo de comandos relacionados no friso.",
+                  "Base"
+                ],
+                [
+                  "Estilo",
+                  "Conjunto de formatação aplicado a um título ou parágrafo.",
+                  "Normal"
+                ]
+              ]
+            },
+            {
+              "tip": "Os nomes dos separadores e dos botões podem variar ligeiramente conforme a versão do programa e o idioma instalado. Neste manual usamos os termos da interface em português europeu, na versão para a Web."
+            }
+          ]
+        },
+        {
+          "title": "1.2 Conhecer o friso: o separador Base",
+          "blocks": [
+            {
+              "p": "Na parte superior da janela encontra o friso. O separador **Base** reúne os comandos mais usados enquanto escreve."
+            },
+            {
+              "figure": "amostra-word-base.jpg",
+              "caption": "Captura própria de um exemplo fictício ATC no Word para a Web: separador Base, com tipo de letra, tamanho, listas, alinhamento e estilos."
+            },
+            {
+              "table": [
+                [
+                  "Comando",
+                  "Para que serve"
+                ],
+                [
+                  "Tipo de letra e tamanho",
+                  "Escolher a letra e o seu tamanho (por exemplo, Aptos e 12)."
+                ],
+                [
+                  "N e I",
+                  "Aplicar negrito ou itálico ao texto selecionado."
+                ],
+                [
+                  "Listas",
+                  "Criar listas com marcas ou numeradas."
+                ],
+                [
+                  "Alinhamento",
+                  "Alinhar o parágrafo à esquerda, ao centro ou à direita."
+                ],
+                [
+                  "Estilos",
+                  "Aplicar um estilo, como Normal, ao parágrafo."
+                ]
+              ]
+            }
+          ]
+        },
+        {
+          "title": "1.3 O separador Inserir",
+          "blocks": [
+            {
+              "p": "Use **Inserir** para acrescentar elementos ao documento, como uma tabela, uma imagem ou um número de página."
+            },
+            {
+              "figure": "amostra-word-inserir.jpg",
+              "caption": "Captura própria de um exemplo fictício ATC no Word para a Web: separador Inserir, com Quebra de Página, Tabela, Imagem, Índice, Cabeçalho e Rodapé e Números de Página."
+            },
+            {
+              "steps": [
+                "Clique no separador **Inserir**.",
+                "Observe os grupos de comandos: **Quebra de Página**, **Tabela**, **Imagem**, **Índice**, **Cabeçalho e Rodapé** e **Números de Página**.",
+                "Volte ao separador **Base** para continuar a escrever."
+              ]
+            }
+          ]
+        },
+        {
+          "title": "1.4 Escrever um relatório simples",
+          "blocks": [
+            {
+              "p": "O exemplo do manual é um relatório de formação com um título, quatro linhas de identificação e duas secções."
+            },
+            {
+              "steps": [
+                "Escreva o título **Relatório de Formação** e carregue em **Enter**.",
+                "Escreva as linhas de identificação: **ATC — Angbu Training Centre**, **Curso: Microsoft Word**, **Local: Luanda** e **Formadora: Helena**.",
+                "Escreva o título da secção **Objetivo da sessão** e, por baixo, uma frase: **Criar um documento claro e organizar informação profissional.**",
+                "Escreva o título da secção **Atividades realizadas** e continue na linha seguinte."
+              ]
+            },
+            {
+              "note": "Use apenas dados fictícios nos exercícios. Não escreva dados pessoais verdadeiros nem informação confidencial."
+            }
+          ]
+        },
+        {
+          "title": "1.5 Títulos, parágrafos e listas",
+          "blocks": [
+            {
+              "p": "Um **título** organiza o documento e ajuda o leitor a encontrar a informação. Um **parágrafo** contém o texto corrente. Uma **lista com marcas** apresenta itens curtos, sem uma ordem obrigatória."
+            },
+            {
+              "steps": [
+                "Selecione a linha **Objetivo da sessão**.",
+                "No separador **Base**, escolha um estilo de título no grupo **Estilos**.",
+                "Repita para **Atividades realizadas**.",
+                "Escreva três itens numa lista com marcas: **Criar e guardar um ficheiro.**, **Formatar títulos e parágrafos.** e **Rever o texto em português de Portugal.**"
+              ]
+            },
+            {
+              "tip": "Use os estilos em vez de aumentar a letra à mão. Assim, todos os títulos ficam iguais e o documento fica mais fácil de organizar."
+            }
+          ]
+        },
+        {
+          "title": "1.6 Rever e guardar",
+          "blocks": [
+            {
+              "p": "Antes de terminar, leia o documento do princípio ao fim. A barra de estado, em baixo, indica a página, o número de palavras e o idioma de revisão. Para este curso, o idioma é **Português (Portugal)**."
+            },
+            {
+              "steps": [
+                "Corrija o texto sublinhado a vermelho, se for um erro de escrita. Nomes próprios, como **Angbu**, podem aparecer sublinhados e estar corretos.",
+                "Verifique se o título e as secções estão iguais entre si.",
+                "Confirme que o documento tem um nome claro, por exemplo **ATC — Exercício Word**.",
+                "Confirme que o documento ficou guardado antes de fechar."
+              ]
+            },
+            {
+              "warn": "Na versão para a Web, o ficheiro é guardado na conta Microsoft. Confirme sempre o estado do guardado antes de fechar o separador do navegador."
+            }
+          ]
+        }
+      ],
+      "exercise": {
+        "title": "Exercício prático · Relatório de formação",
+        "minutes": 15,
+        "file": "Crie um documento novo no Microsoft Word",
+        "tasks": [
+          "Crie um documento em branco e dê-lhe o nome **Relatorio_ATC**.",
+          "Escreva o título **Relatório de Formação** e as quatro linhas de identificação, com dados fictícios.",
+          "Acrescente as secções **Objetivo da sessão** e **Atividades realizadas**.",
+          "Aplique um estilo de título a cada secção.",
+          "Crie uma lista com três atividades realizadas.",
+          "Reveja o texto em português de Portugal e confirme que o documento ficou guardado."
+        ]
+      },
+      "summary": [
+        "O Word serve para criar e editar documentos de texto.",
+        "O friso organiza os comandos em separadores, como Base e Inserir.",
+        "Os estilos mantêm os títulos e os parágrafos consistentes.",
+        "Uma lista com marcas apresenta itens curtos.",
+        "Reveja sempre o documento antes de o fechar ou partilhar."
+      ]
+    }
+  ],
+  "glossary": [
+    [
+      "Documento",
+      "Ficheiro de texto criado no Word."
+    ],
+    [
+      "Estilo",
+      "Conjunto de formatação aplicado a um título ou parágrafo."
+    ],
+    [
+      "Friso",
+      "Faixa de comandos organizada em separadores."
+    ],
+    [
+      "Lista com marcas",
+      "Lista de itens curtos precedidos de um símbolo."
+    ],
+    [
+      "Parágrafo",
+      "Bloco de texto terminado com Enter."
+    ],
+    [
+      "Separador",
+      "Grupo de comandos do friso, como Base ou Inserir."
+    ]
+  ]
+}

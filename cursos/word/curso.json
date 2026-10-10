@@ -2,9 +2,24 @@
   "slug": "word",
   "title": "Microsoft Word",
   "subtitle": "Criar, formatar e imprimir documentos",
-  "status": "em_breve",
+  "status": "amostra",
   "order": 2,
   "hours_video": 2,
   "cover": "capa-icono.svg",
-  "modules": []
+  "modules": [
+    {
+      "num": 1,
+      "title": "Primeiros passos no Word",
+      "intro": "Criar, formatar e imprimir documentos",
+      "manual_json": "manual/modulo-1.json",
+      "manual_figures": "manual/figures",
+      "lessons": [],
+      "quiz": {
+        "title": "Questionário do Módulo 1 · Primeiros passos no Word",
+        "gift": "quiz/modulo-1.gift.txt",
+        "pass_mark": 70
+      }
+    }
+  ],
+  "description": "Aprenda a criar documentos de texto claros e bem organizados. Este módulo de amostra combina manual online, exemplos e um questionário."
 }

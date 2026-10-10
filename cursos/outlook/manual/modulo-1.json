@@ -1,0 +1,233 @@
+{
+  "course": "Microsoft Outlook",
+  "subtitle": "Mensagens de correio eletrónico claras e profissionais",
+  "version": "1.0 — módulo introdutório ATC",
+  "date": "outubro de 2026",
+  "hours_class": 1,
+  "hours_video": 0.25,
+  "producer": "Almeida José",
+  "reviewer": "Formador ATC",
+  "intro": "Este módulo apresenta o Microsoft Outlook através de uma tarefa simples: escrever uma mensagem de convite com assunto, lista e assinatura. Inclui capturas próprias de exemplos fictícios ATC.",
+  "modules": [
+    {
+      "num": 1,
+      "title": "Primeiros passos no Outlook",
+      "intro": "O Microsoft Outlook serve para gerir o correio eletrónico, os contactos e o calendário. Neste módulo vai escrever uma mensagem profissional, com assunto claro, parágrafos, uma lista e uma assinatura.",
+      "objectives": [
+        "Reconhecer o Microsoft Outlook e a janela de nova mensagem.",
+        "Distinguir os campos Para, Cc, Bcc e Assunto.",
+        "Escrever um assunto claro e uma mensagem organizada.",
+        "Usar o separador Formatar texto para negrito, listas e itálico.",
+        "Rever a mensagem antes de a enviar."
+      ],
+      "sections": [
+        {
+          "title": "1.1 O que é o Outlook?",
+          "blocks": [
+            {
+              "figure": "office-replica-outlook.png",
+              "caption": "Ícone de identificação do Microsoft Outlook, réplica visual fornecida para este curso."
+            },
+            {
+              "p": "O **Microsoft Outlook** é uma aplicação de correio eletrónico. Permite enviar e receber mensagens, guardar contactos e organizar compromissos num calendário."
+            },
+            {
+              "table": [
+                [
+                  "Termo",
+                  "Significado",
+                  "Exemplo"
+                ],
+                [
+                  "Mensagem",
+                  "Texto enviado a uma ou mais pessoas.",
+                  "Convite para uma formação"
+                ],
+                [
+                  "Assunto",
+                  "Resumo curto do conteúdo da mensagem.",
+                  "ATC — Formação Outlook"
+                ],
+                [
+                  "Destinatário",
+                  "Pessoa que recebe a mensagem.",
+                  "Campo Para"
+                ],
+                [
+                  "Rascunho",
+                  "Mensagem escrita que ainda não foi enviada.",
+                  "Mensagem de exemplo"
+                ]
+              ]
+            },
+            {
+              "tip": "Os nomes dos separadores e dos botões podem variar ligeiramente conforme a versão do programa e o idioma instalado. Neste manual usamos os termos da interface em português europeu, na versão para a Web."
+            }
+          ]
+        },
+        {
+          "title": "1.2 A janela de nova mensagem",
+          "blocks": [
+            {
+              "p": "Quando escreve uma mensagem nova, o Outlook mostra os campos de endereço, o assunto e a área de texto."
+            },
+            {
+              "figure": "amostra-outlook-rascunho.jpg",
+              "caption": "Captura própria de um exemplo fictício ATC no Outlook para a Web: nova mensagem com os campos Para e Cc, o aviso «Adicione um assunto» e o botão Enviar."
+            },
+            {
+              "table": [
+                [
+                  "Campo",
+                  "Para que serve"
+                ],
+                [
+                  "Para",
+                  "Endereços das pessoas a quem a mensagem é dirigida."
+                ],
+                [
+                  "Cc",
+                  "Pessoas que recebem uma cópia da mensagem."
+                ],
+                [
+                  "Bcc",
+                  "Pessoas que recebem a mensagem sem que os outros destinatários vejam o seu endereço."
+                ],
+                [
+                  "Assunto",
+                  "Resumo curto que o destinatário vê antes de abrir a mensagem."
+                ],
+                [
+                  "Enviar",
+                  "Envia a mensagem. Fica inativo enquanto não houver um destinatário."
+                ]
+              ]
+            }
+          ]
+        },
+        {
+          "title": "1.3 Escrever um assunto claro",
+          "blocks": [
+            {
+              "p": "Um bom assunto diz de que trata a mensagem. Evite assuntos vazios, demasiado longos ou com muitas letras maiúsculas."
+            },
+            {
+              "steps": [
+                "Clique no campo **Adicione um assunto**.",
+                "Escreva um assunto curto e específico, por exemplo **ATC — Formação Outlook**.",
+                "Confirme que o assunto continua visível por cima do texto da mensagem."
+              ]
+            }
+          ]
+        },
+        {
+          "title": "1.4 Organizar a mensagem",
+          "blocks": [
+            {
+              "p": "Uma mensagem fácil de ler tem uma saudação, um parágrafo curto, uma lista de pontos e uma despedida com a assinatura."
+            },
+            {
+              "steps": [
+                "Escreva a saudação: **Olá,**.",
+                "Escreva uma frase de contexto: **A sessão de formação em Microsoft Outlook terá lugar em Luanda.**",
+                "Escreva **Objetivos da sessão:** e crie uma lista com três pontos.",
+                "Termine com **Com os melhores cumprimentos,**, o seu nome e a ATC."
+              ]
+            },
+            {
+              "note": "Use dados fictícios nos exercícios. Não escreva endereços de correio verdadeiros nem informação confidencial."
+            }
+          ]
+        },
+        {
+          "title": "1.5 Formatar o texto",
+          "blocks": [
+            {
+              "p": "O separador **Formatar texto** reúne os comandos para negrito, itálico, listas, cores e alinhamento."
+            },
+            {
+              "figure": "amostra-outlook-formatar.jpg",
+              "caption": "Captura própria de um exemplo fictício ATC no Outlook para a Web: separador Formatar texto, com o assunto «ATC — Formação Outlook» e a mensagem formatada."
+            },
+            {
+              "steps": [
+                "Selecione **Objetivos da sessão:** e aplique negrito.",
+                "Selecione os três pontos e escolha uma lista com marcas.",
+                "Selecione a última frase e aplique itálico.",
+                "Volte ao separador **Mensagem** para rever o resultado."
+              ]
+            },
+            {
+              "tip": "Use a formatação com moderação. Uma mensagem com poucas mudanças de estilo é mais fácil de ler."
+            }
+          ]
+        },
+        {
+          "title": "1.6 Rever antes de enviar",
+          "blocks": [
+            {
+              "p": "Depois de enviada, uma mensagem já não se pode corrigir. Reveja sempre os campos antes de carregar em **Enviar**."
+            },
+            {
+              "steps": [
+                "Confirme os destinatários nos campos **Para**, **Cc** e **Bcc**.",
+                "Confirme o assunto.",
+                "Leia o texto do princípio ao fim e corrija erros.",
+                "Só então carregue em **Enviar**."
+              ]
+            },
+            {
+              "warn": "No exercício deste curso, deixe o campo Para vazio. A mensagem fica como rascunho e não é enviada a ninguém."
+            }
+          ]
+        }
+      ],
+      "exercise": {
+        "title": "Exercício prático · Mensagem de convite",
+        "minutes": 15,
+        "file": "Crie uma nova mensagem no Microsoft Outlook",
+        "tasks": [
+          "Abra uma mensagem nova e deixe o campo **Para** vazio.",
+          "Escreva o assunto **ATC — Formação Outlook**.",
+          "Escreva a saudação, uma frase de contexto e a despedida com o seu nome.",
+          "Crie uma lista com três objetivos.",
+          "Aplique negrito ao título da lista e itálico à última frase.",
+          "Reveja a mensagem e guarde-a como rascunho, sem a enviar."
+        ]
+      },
+      "summary": [
+        "O Outlook serve para gerir correio, contactos e calendário.",
+        "Os campos Para, Cc e Bcc definem quem recebe a mensagem.",
+        "Um assunto claro resume o conteúdo da mensagem.",
+        "Parágrafos curtos e listas tornam a mensagem fácil de ler.",
+        "Reveja sempre os destinatários e o texto antes de enviar."
+      ]
+    }
+  ],
+  "glossary": [
+    [
+      "Assunto",
+      "Resumo curto do conteúdo da mensagem."
+    ],
+    [
+      "Bcc",
+      "Cópia oculta: os outros destinatários não veem este endereço."
+    ],
+    [
+      "Cc",
+      "Cópia: pessoas que recebem a mensagem a título informativo."
+    ],
+    [
+      "Destinatário",
+      "Pessoa que recebe a mensagem."
+    ],
+    [
+      "Rascunho",
+      "Mensagem guardada que ainda não foi enviada."
+    ],
+    [
+      "Separador",
+      "Grupo de comandos da janela de mensagem, como Mensagem ou Formatar texto."
+    ]
+  ]
+}
