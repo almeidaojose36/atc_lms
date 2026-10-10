@@ -17,7 +17,7 @@ RAIZ = AQUI.parents[2]
 sys.path.insert(0, str(AQUI.parent))
 from gravar_ecras_lms import CURSOR_JS, CHROME
 BASE = "http://localhost:8080"
-VW, VH, DSF = 1440, 810, 2            # viewport CSS e densidade (gravação a 2880x1620)
+VW, VH, DSF = 1600, 900, 1            # viewport = tamanho da janela no vídeo (o Playwright não escala a gravação)
 OW, OH, FPS = 1920, 1080, 25           # saída
 WEBM = pathlib.Path(sys.argv[1]); SAIDA = pathlib.Path(sys.argv[2])
 TMP = pathlib.Path(tempfile.mkdtemp(prefix="walk-"))
@@ -72,27 +72,27 @@ class Gravador:
     def tocar(self, i=0):
         self.pg.evaluate("(i)=>{const v=document.querySelectorAll('video')[i]; if(v){v.muted=true; v.play()}}", i)
     def esperar(self, ms): self.pg.wait_for_timeout(ms)
-    def ir(self, url): self.pg.goto(BASE + url); self.pg.wait_for_load_state("networkidle"); self.esperar(400)
+    def ir(self, url): self.pg.goto(BASE + url, wait_until="domcontentloaded"); self.esperar(700)
 
 def s1(g):   # entrada: começa com zoom no logótipo e afasta
     g.ir("/entrar"); g.foco(".login.card img", zoom=2.2, segura=1.6, antes=-1.0); g.esperar(2200)
     g.escrever("input[name=email]", "formando@atc.ao"); g.escrever("input[name=pw]", "formando123")
-    g.clicar("form .btn", zoom=1.6); g.pg.wait_for_load_state("networkidle"); g.esperar(1500)
+    g.clicar("form .btn", zoom=1.6); g.pg.wait_for_load_state("domcontentloaded"); g.esperar(1500)
 
 def s2(g):   # guia e perfil
     g.ir("/comecar/guia"); g.esperar(600)
     g.mover(*g.centro(".presenter-option >> nth=0")); g.esperar(500)
     g.clicar(".presenter-option >> nth=1", zoom=1.5, segura=1.3); g.esperar(500)
-    g.clicar("form .btn", zoom=1.6); g.pg.wait_for_load_state("networkidle"); g.esperar(500)
-    g.tocar(0); g.esperar(1600); g.clicar(".onboard-copy form .btn"); g.pg.wait_for_load_state("networkidle"); g.esperar(400)
+    g.clicar("form .btn", zoom=1.6); g.pg.wait_for_load_state("domcontentloaded"); g.esperar(500)
+    g.tocar(0); g.esperar(1600); g.clicar(".onboard-copy form .btn"); g.pg.wait_for_load_state("domcontentloaded"); g.esperar(400)
     g.tocar(0); g.escrever("textarea[name=goal]", "Usar o computador com confiança no trabalho.")
-    g.escrever("input[name=occupation]", "Secretariado"); g.clicar(".profile-editor .btn"); g.pg.wait_for_load_state("networkidle"); g.esperar(900)
+    g.escrever("input[name=occupation]", "Secretariado"); g.clicar(".profile-editor .btn"); g.pg.wait_for_load_state("domcontentloaded"); g.esperar(900)
 
 def s3(g):   # catálogo e escolha do curso
-    g.ir("/comecar/passeio"); g.clicar(".onboard-copy form .btn", zoom=1.4); g.pg.wait_for_load_state("networkidle"); g.esperar(500)
+    g.ir("/comecar/passeio"); g.clicar(".onboard-copy form .btn", zoom=1.4); g.pg.wait_for_load_state("domcontentloaded"); g.esperar(500)
     g.foco(".course-picks", zoom=1.35, segura=4.5); g.mover(*g.centro(".course-pick >> nth=1")); g.esperar(700)
     g.mover(*g.centro(".course-pick >> nth=2")); g.esperar(700); g.rolar(260); g.esperar(800); g.rolar(-260); g.esperar(400)
-    g.clicar(".course-pick >> nth=0 >> .btn", zoom=1.6); g.pg.wait_for_load_state("networkidle"); g.esperar(400)
+    g.clicar(".course-pick >> nth=0 >> .btn", zoom=1.6); g.pg.wait_for_load_state("domcontentloaded"); g.esperar(400)
     g.tocar(0); g.foco(".guide-clips", zoom=1.25, segura=2.5); g.esperar(2800)
 
 def s4(g):   # aula e manual
