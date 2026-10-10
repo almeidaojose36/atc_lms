@@ -40,8 +40,18 @@ class VoiceGuideTests(unittest.TestCase):
     def test_silence_asks_to_repeat(self):
         self.assertEqual(self.responder(''), (self.dados['linhas']['nao_ouvi'], 'linha'))
 
+    def test_lesson_1_2_answers_and_redirects_what_it_does_not_cover(self):
+        dados = app.voz_dados('informatica', 'aula-1-2')
+        self.assertEqual(app.voz_procurar('como é que eu crio uma pasta nova', dados)['id'], 'criar-pasta')
+        self.assertEqual(app.voz_procurar('como abro o explorador', dados)['id'], 'explorador')
+        for q in ('como copio um ficheiro', 'como mudo o nome de um ficheiro', 'como apago uma pasta'):
+            self.assertIsNone(app.voz_procurar(q, dados), q)
+
     def test_every_answer_ships_with_audio_for_both_guides(self):
-        textos = list(self.dados['linhas'].values()) + [p['resposta'] for p in self.dados['perguntas']]
+        textos = []
+        for aula in ('aula-1-1', 'aula-1-2'):
+            d = app.voz_dados('informatica', aula)
+            textos += list(d['linhas'].values()) + [p['resposta'] for p in d['perguntas']]
         for guia in app.PRESENTERS:
             for t in textos:
                 chave = app.voz_chave_audio(guia, t)

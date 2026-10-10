@@ -1,4 +1,4 @@
-# Guia por voz (protótipo: Informática, aula 1.1)
+# Guia por voz (Informática: aulas 1.1 e 1.2)
 
 O formando carrega no microfone na página da aula, faz a pergunta em voz alta e o guia que escolheu (Helena ou Miguel) responde por escrito e em voz. Também pode escrever a pergunta.
 
@@ -22,3 +22,7 @@ O formando carrega no microfone na página da aula, faz a pergunta em voz alta e
 1. Criar `cursos/<curso>/voz/<aula>.json` (ver `aula-1-1.json`: frases fixas e perguntas com vários exemplos).
 2. Gerar o áudio: `python3 producao/vozes/gerar_voz_aula.py <curso> <aula>`.
 3. O painel aparece sozinho na página dessa aula.
+
+## Notas
+- O isolador de voz (eco da Helena) só aceita frases com 4,6 s ou mais. As frases mais curtas ficam com a voz original.
+- O vídeo da aula 1.2 manda fazer o «exercício 1.2 do manual», mas o manual do módulo 1 só tem o exercício 1.1. O guia por voz não refere o exercício 1.2: sugere praticar a criação de uma pasta. Acrescentar o exercício ao manual ou corrigir o vídeo.

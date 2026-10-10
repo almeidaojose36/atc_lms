@@ -1,0 +1,56 @@
+{
+  "aula": "aula-1-2",
+  "nota": "Perguntas frequentes da aula 1.2 (ficheiros e pastas), respondidas pelo guia em voz. As respostas vêm só da aula e do manual do módulo 1; o resto vai para o formador.",
+  "linhas": {
+    "saudacao": "Olá! Tem alguma dúvida sobre ficheiros e pastas? Carregue no microfone e pergunte-me em voz alta.",
+    "nao_ouvi": "Desculpe, não consegui ouvir bem. Pode repetir a pergunta, um pouco mais perto do microfone?",
+    "nao_sei": "Essa pergunta não está nesta aula, por isso não lhe quero dar uma resposta errada. Escreva-a na secção Perguntas e dúvidas, mais abaixo, e o formador responde-lhe."
+  },
+  "perguntas": [
+    {
+      "id": "ficheiro",
+      "exemplos": ["O que é um ficheiro?", "Para que serve um ficheiro?", "Dê exemplos de ficheiros", "Uma fotografia é um ficheiro?"],
+      "resposta": "Um ficheiro guarda um trabalho, como um documento, uma folha de cálculo ou uma fotografia."
+    },
+    {
+      "id": "pasta",
+      "exemplos": ["O que é uma pasta?", "Para que servem as pastas?", "Porque devo usar pastas?"],
+      "resposta": "As pastas servem para organizar os ficheiros, tal como as pastas de um arquivo de papel."
+    },
+    {
+      "id": "ficheiro-pasta",
+      "exemplos": ["Qual é a diferença entre ficheiro e pasta?", "Ficheiro e pasta são a mesma coisa?", "O que é um ficheiro e o que é uma pasta?"],
+      "resposta": "Um ficheiro guarda um trabalho, como um documento ou uma fotografia. Uma pasta não é um trabalho: serve para arrumar os ficheiros, tal como as pastas de um arquivo."
+    },
+    {
+      "id": "explorador",
+      "exemplos": ["O que é o Explorador de Ficheiros?", "Como abro o Explorador de Ficheiros?", "Onde vejo os meus ficheiros?", "Qual é o atalho do Explorador?"],
+      "resposta": "O Explorador de Ficheiros é onde vê e organiza os seus ficheiros e pastas. Para o abrir, prima a tecla Windows mais E, ou clique no ícone da pasta amarela na barra de tarefas."
+    },
+    {
+      "id": "criar-pasta",
+      "exemplos": ["Como crio uma pasta?", "Como faço uma pasta nova?", "Como se cria uma nova pasta?", "Como crio uma pasta no Explorador?"],
+      "resposta": "Abra o Explorador de Ficheiros, clique em Novo e escolha Pasta. Depois escreva o nome da pasta e prima Enter."
+    },
+    {
+      "id": "atalho-pasta",
+      "exemplos": ["Qual é o atalho para criar uma pasta?", "Há um atalho para uma pasta nova?", "Como crio uma pasta com o teclado?"],
+      "resposta": "Sim. No Explorador de Ficheiros, prima Control, Shift e N ao mesmo tempo para criar uma pasta nova. Depois escreva o nome e prima Enter."
+    },
+    {
+      "id": "nome-pasta",
+      "exemplos": ["Como dou o nome à pasta?", "Onde escrevo o nome da pasta?", "Como ponho o nome numa pasta nova?"],
+      "resposta": "Logo depois de criar a pasta, o nome fica pronto a escrever. Escreva o nome que quiser e prima Enter para confirmar."
+    },
+    {
+      "id": "pastas-principais",
+      "exemplos": ["Quais são as pastas principais?", "Onde ficam os meus documentos?", "Onde ficam as transferências?", "Que pastas tem o Explorador?"],
+      "resposta": "No painel da esquerda do Explorador encontra as pastas principais: Ambiente de Trabalho, Transferências, Documentos, Imagens, Música e Vídeos. Experimente encontrá-las no seu computador."
+    },
+    {
+      "id": "exercicio",
+      "exemplos": ["O que faço a seguir?", "Onde está o exercício?", "Como pratico esta aula?"],
+      "resposta": "Pratique o que aprendeu: abra o Explorador de Ficheiros e crie uma pasta nova, com o botão Novo ou com Control, Shift e N. Depois escreva o nome e prima Enter."
+    }
+  ]
+}

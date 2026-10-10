@@ -459,10 +459,10 @@ VOZ_ISOLAR = {"helena"}  # a voz da Helena tem eco: passa uma vez pelo isolador 
 VOZ_AJUSTES = {"stability": 0.5, "similarity_boost": 0.8, "style": 0.15, "speed": 1.0}
 VOZ_PARAGEM = set("""a o as os um uma uns umas de do da dos das no na nos nas ao aos em por para com sem que se e é
 eu me mim meu minha tu te você voce ele ela isto isso este esta esse essa como qual quais quando onde porque
-porquê pode posso podes faz fazer faço fica ficam é são ser está estão tem têm há mais ou também já
+porquê pode posso podes faz fazer faço fica ficam é são ser está estão tem têm há mais ou também já algum alguma
 the""".split())
 _VOZ_SINONIMOS = {"desli": "encer", "entro": "inici", "entra": "inici", "aplic": "progr", "pesqu": "procu",
-                  "encon": "procu", "mudo": "alter", "mudar": "alter"}
+                  "encon": "procu", "mudo": "alter", "mudar": "alter", "agora": "segui"}
 
 
 def voz_tokens(texto):
@@ -491,8 +491,9 @@ def voz_procurar(pergunta, dados, minimo=0.5):
     for entrada in dados.get("perguntas", []):
         for ex in entrada["exemplos"]:
             e = voz_tokens(ex)
-            if e:
-                d = 2 * len(q & e) / (len(q) + len(e))
+            comum = len(q & e)
+            if e and comum / len(q) >= 0.6:   # a maior parte da pergunta tem de estar coberta ("copiar ficheiro" ≠ "o que é um ficheiro")
+                d = 2 * comum / (len(q) + len(e))
                 if d > pontos:
                     melhor, pontos = entrada, d
     return melhor if pontos >= minimo else None
@@ -571,7 +572,11 @@ def voz_falar(slug, presenter, texto, destino=None):
     audio = _eleven(f"/text-to-speech/{VOZES[presenter]}?output_format=mp3_44100_128", pedido, "application/json", timeout=90)
     if presenter in VOZ_ISOLAR:
         corpo, ct = _multipart({}, ("audio", audio, "audio/mpeg"))
-        audio = _eleven("/audio-isolation", corpo, ct, timeout=120)
+        try:
+            audio = _eleven("/audio-isolation", corpo, ct, timeout=120)
+        except urllib.error.HTTPError as e:
+            if e.code != 400:   # 400: frase demasiado curta para o isolador (mínimo 4,6 s); fica a voz original
+                raise
     pasta = (destino or DATA_DIR / "voz" / slug) / presenter
     pasta.mkdir(parents=True, exist_ok=True)
     tmp = pasta / f"{chave}.tmp"
