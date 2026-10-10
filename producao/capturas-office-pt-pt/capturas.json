@@ -1,0 +1,72 @@
+{
+  "captured_on": "2026-10-10",
+  "locale": "pt-PT",
+  "source": "Microsoft 365 web apps in the signed-in user session",
+  "content": "Original fictional ATC demonstration content",
+  "capture_method": "Live browser screenshot frames assembled using original capture timestamps; genuine app UI interactions; no synthetic interface frames",
+  "audio": "Silent source clips; Portuguese caption sidecars",
+  "assets": [
+    {
+      "app": "word",
+      "title": "Explorar o friso do Word",
+      "video": "word/01-explorar-friso-8s.mp4",
+      "subtitles": "word/01-explorar-friso-8s.vtt",
+      "duration_seconds": 8.0,
+      "width": 1290,
+      "height": 984,
+      "codec": "h264",
+      "sha256": "38a4bda6ae2be81a4c921e28e875c9ffed0f2c757975b9660ee8a0bc9a9de71e",
+      "screenshots": [
+        "word/01-relatorio-base.jpg",
+        "word/02-relatorio-inserir.jpg"
+      ]
+    },
+    {
+      "app": "excel",
+      "title": "Calcular um total no Excel",
+      "video": "excel/01-calcular-soma-8s.mp4",
+      "subtitles": "excel/01-calcular-soma-8s.vtt",
+      "duration_seconds": 8.0,
+      "width": 1290,
+      "height": 984,
+      "codec": "h264",
+      "sha256": "a4b33b9927c24f0bcfebe3f8d8bc506c04d1fd494cde53dcb5960304196e5834",
+      "screenshots": [
+        "excel/01-tabela-antes-soma.jpg",
+        "excel/02-soma-resultado.jpg",
+        "excel/03-formula-em-edicao.jpg"
+      ]
+    },
+    {
+      "app": "powerpoint",
+      "title": "Diapositivos e transições no PowerPoint",
+      "video": "powerpoint/01-diapositivos-transicoes-8s.mp4",
+      "subtitles": "powerpoint/01-diapositivos-transicoes-8s.vtt",
+      "duration_seconds": 8.0,
+      "width": 1290,
+      "height": 984,
+      "codec": "h264",
+      "sha256": "d7cd585cd0c49b9ed4132a1de5d8624ef3ee0a74f3809cf70aed2dbd00cadb5e",
+      "screenshots": [
+        "powerpoint/01-titulo.jpg",
+        "powerpoint/02-objetivos.jpg",
+        "powerpoint/03-transicoes.jpg"
+      ]
+    },
+    {
+      "app": "outlook",
+      "title": "Escrever um assunto no Outlook",
+      "video": "outlook/01-escrever-assunto-8s.mp4",
+      "subtitles": "outlook/01-escrever-assunto-8s.vtt",
+      "duration_seconds": 8.0,
+      "width": 1280,
+      "height": 720,
+      "codec": "h264",
+      "sha256": "4b8ccfb605d481ce814b6926ebb366ce612cd3e296965580895af9b0754f2a88",
+      "screenshots": [
+        "outlook/01-rascunho-sem-assunto.jpg",
+        "outlook/02-mensagem-formatada.jpg"
+      ]
+    }
+  ]
+}
