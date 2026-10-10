@@ -1,1 +1,24 @@
-{ "slug": "powerpoint", "title": "Microsoft PowerPoint", "subtitle": "Apresentações claras e eficazes", "status": "em_breve", "order": 4, "hours_video": 1.5, "modules": [] }
+{
+  "slug": "powerpoint",
+  "title": "Microsoft PowerPoint",
+  "subtitle": "Apresentações claras e eficazes",
+  "description": "Prepare apresentações profissionais com uma mensagem clara, diapositivos bem organizados e recursos visuais que apoiam a comunicação. Este módulo de amostra apresenta a estrutura de uma apresentação eficaz.",
+  "status": "em_breve",
+  "order": 4,
+  "hours_video": 1.5,
+  "cover": "capa.svg",
+  "modules": [
+    {
+      "num": 1,
+      "title": "Primeiros passos no PowerPoint",
+      "intro": "Planeie uma apresentação curta, organize as ideias por diapositivo e escolha elementos visuais que ajudem o público a acompanhar a mensagem.",
+      "manual_json": "manual/modulo-1.json",
+      "manual_figures": "manual/figures",
+      "quiz": {
+        "title": "Questionário do Módulo 1 · Primeiros passos no PowerPoint",
+        "gift": "quiz/modulo-1.gift.txt",
+        "pass_mark": 70
+      }
+    }
+  ]
+}

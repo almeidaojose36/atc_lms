@@ -1,0 +1,13 @@
+$CATEGORY: $course$/Microsoft PowerPoint/Módulo 1
+
+::PPT1-Q1:: O que deve orientar a criação de uma apresentação? { ~A quantidade de animações =A mensagem que o público deve compreender ou a ação que deve tomar ~O número de cores disponíveis ~O tamanho do ficheiro }
+
+::PPT1-Q2:: Qual é uma sequência simples para organizar uma apresentação? { ~Índice, anexos e bibliografia =Abertura, desenvolvimento e conclusão ~Problema, índice e pausa ~Conclusão, abertura e desenvolvimento }
+
+::PPT1-Q3:: O que deve comunicar o título de um diapositivo? { ~Apenas o número do diapositivo =A ideia ou conclusão principal desse diapositivo ~O nome do ficheiro ~A lista completa do discurso }
+
+::PPT1-Q4:: Como devem ser usados os elementos visuais? { ~Para preencher espaço vazio =Quando ajudam a explicar a mensagem ou os dados ~Em todos os diapositivos, mesmo sem relação ~Como substitutos de qualquer explicação }
+
+::PPT1-Q5:: Antes de apresentar, é importante: { ~Ignorar a sequência dos diapositivos =Ensaiar, rever a informação e testar os elementos multimédia ~Aumentar todo o texto para ocupar o ecrã ~Adicionar mais texto para não esquecer o discurso }
+
+::PPT1-Q6:: Verdadeiro ou falso: cada diapositivo deve ter uma ideia principal clara. {T}

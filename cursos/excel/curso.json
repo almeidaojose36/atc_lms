@@ -6,6 +6,7 @@
   "status": "em_breve",
   "order": 3,
   "hours_video": 3,
+  "cover": "capa.svg",
   "modules": [
     {
       "num": 1,

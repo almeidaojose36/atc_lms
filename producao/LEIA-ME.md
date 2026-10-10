@@ -15,6 +15,8 @@
 - `visuais/manual-avatares/`: 69 imagens de referência dos apresentadores para composição dos manuais, preservadas por sessão de exportação.
 - `cursos/informatica/manual/figures/fig-1-2-sign-in-options-atc.png` e `fig-1-4-start-menu-atc.png`: variantes localizadas para o exemplo do formando, com Helena Manuel e ficheiros de treino ATC.
 - `cursos/excel/manual/`: módulo online «Primeiros passos no Excel», questionário e quatro esquemas animados ATC. Duas capturas completas da página oficial de suporte da Microsoft ilustram introdução de dados e preenchimento automático; origem, data e orientação de reutilização estão registadas em `cursos/excel/manual/figures/fontes.json`. O ecrã de abertura não foi incluído. O curso mantém o estado «Em breve» até as vídeo-aulas estarem prontas.
+- `cursos/powerpoint/`: amostra de curso com o módulo online «Primeiros passos no PowerPoint», questionário e dois esquemas animados ATC. O curso mantém o estado «Em breve» até as vídeo-aulas estarem prontas.
+- Capas SVG originais para Word, Excel, PowerPoint, Outlook, CompTIA A+ e CompTIA Network+; a capa de Informática mantém a imagem atual. As capas ilustram temas de aprendizagem e não reutilizam logótipos Microsoft ou CompTIA.
 - `visuais/fontes.json`: origem, autor, termos e limites de uso de cada imagem.
 
 Os retratos são ficheiros de imagem, não vídeos. Os textos foram preparados para narração, mas ainda não foram sintetizados nem cronometrados com uma voz final.
