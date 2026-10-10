@@ -1,0 +1,23 @@
+{
+ "ronda": 1,
+ "data": "2026-10-10",
+ "marcas": {
+  "H1": "fix: The lms was updated with better course icon, please use new screens",
+  "H2": "ok",
+  "H3": "ok",
+  "H4": "fix: Name and title graphic should stay on the screen longer",
+  "H5": "fix: the b-roll should stay longer",
+  "H6": "fix: the accent is not Angolan",
+  "H7": "fix: the Course title graphic should stay longer on the screen",
+  "H8": "fix: the manual opening still appears a bit and the words at the end were not removed completely",
+  "H9": "fix: Screen replaced by the real lesson player should stay longer",
+  "M1": "ok",
+  "M2": "fix: new LMS screens; the accent needs to be changed as well",
+  "M3": "fix: looks like the voice is breaking at times",
+  "M4": "ok",
+  "M5": "fix: Name and title graphic should stay on the screen longer",
+  "M6": "fix: Course title graphic should stay on the screen longer",
+  "M7": "fix: the presenter picker screen should stay longer",
+  "M8": "fix: the voice is breaking and screen replacement was not done properly"
+ }
+}
