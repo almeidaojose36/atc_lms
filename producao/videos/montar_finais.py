@@ -102,7 +102,10 @@ def montar(cid):
         w = palavras(base); fr = GAGUEZ[cid]; txt = [re.sub(r"\W+", "", x["text"]).lower() for x in w]
         pos = [i for i in range(len(txt) - len(fr) + 1) if txt[i:i + len(fr)] == fr]
         if len(pos) >= 2:
-            ta, tb = w[pos[0]]["start"] - 0.03, w[pos[1]]["start"] - 0.03
+            # remove a SEGUNDA ocorrência, cortando em silêncios (nunca a meio de uma palavra)
+            fim1 = w[pos[0] + len(fr) - 1]["end"]; fim2 = w[pos[1] + len(fr) - 1]["end"]
+            seg = w[pos[1] + len(fr)]["start"] if pos[1] + len(fr) < len(w) else fim2 + 0.5
+            ta = fim1 + 0.12; tb = max(fim2 + 0.1, seg - 0.26)
             limpo = FINAL / f"_{cid}_sem_gaguez.mp4"
             run("ffmpeg", "-y", "-loglevel", "error", "-i", base, "-filter_complex",
                 f"[0:v]trim=0:{ta:.3f},setpts=PTS-STARTPTS[v0];[0:v]trim={tb:.3f},setpts=PTS-STARTPTS[v1];"
