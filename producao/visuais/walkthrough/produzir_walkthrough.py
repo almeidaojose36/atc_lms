@@ -49,7 +49,7 @@ INIT_VIDEO = """document.addEventListener('DOMContentLoaded',()=>{
 class Gravador:
     """Movimentos suaves do rato, pontos a destacar (zoom) e momentos em que o guia fala (áudio do clip)."""
     def __init__(self, pg, t0):
-        self.pg, self.t0, self.x, self.y, self.focos, self.falas = pg, t0, VW / 2, VH / 2, [], []
+        self.pg, self.t0, self.x, self.y, self.focos, self.falas, self.cortes = pg, t0, VW / 2, VH / 2, [], [], []
     def t(self): return time.time() - self.t0
     def mover(self, x, y, ms=750):
         n = max(int(ms / 16), 8); x0, y0 = self.x, self.y
@@ -65,9 +65,16 @@ class Gravador:
     def clicar(self, sel, zoom=1.25, segura=0.9, espera=300):
         x, y = self.centro(sel); self.foco(xy=(x, y), zoom=zoom, segura=segura, antes=0.75)
         self.mover(x, y); self.pg.wait_for_timeout(espera); self.pg.mouse.down(); self.pg.wait_for_timeout(80); self.pg.mouse.up()
+    def pronto(self, t_ini):
+        """Espera que os vídeos da página carreguem e corta essa espera do vídeo final (sem ecrãs pretos nem esperas)."""
+        try:
+            self.pg.wait_for_function("Array.from(document.querySelectorAll('video')).every(v=>v.readyState>=2)", timeout=20000)
+        except Exception:
+            pass
+        self.esperar(250); self.cortes.append((t_ini, self.t()))
     def submeter(self, sel, zoom=1.2):
         with self.pg.expect_navigation(wait_until="domcontentloaded"): self.clicar(sel, zoom=zoom)
-        self.esperar(450)
+        self.pronto(self.t() - 0.05)
     def escrever(self, sel, texto, zoom=1.3):
         self.clicar(sel, zoom=zoom, segura=1.0); self.pg.keyboard.press("Control+A"); self.pg.keyboard.type(texto, delay=14)
     def rolar(self, dy, ms=900):
@@ -83,7 +90,8 @@ class Gravador:
                                    v.muted=true; v.play(); return v.currentSrc}""", i)
         self.falas.append({"t": self.t(), "src": src, "dur": segundos})
     def esperar(self, ms): self.pg.wait_for_timeout(ms)
-    def ir(self, url): self.pg.goto(BASE + url, wait_until="domcontentloaded"); self.esperar(600)
+    def ir(self, url):
+        t = self.t(); self.pg.goto(BASE + url, wait_until="domcontentloaded"); self.pronto(t)
 
 FIG_GUIA = 'figure:has(img[src*="/{}/"])'
 
@@ -159,7 +167,7 @@ def gravar():
             pg.mouse.move(VW / 2, VH / 2)
             ROTEIRO[s["id"]](g)
             estado = ctx.storage_state(); video = pg.video; ctx.close()
-            resultado[s["id"]] = (pathlib.Path(video.path()), g.focos, g.falas)
+            resultado[s["id"]] = (pathlib.Path(video.path()), g.focos, g.falas, g.cortes)
             print("gravado", s["id"], len(g.focos), "focos", flush=True)
         b.close()
     return resultado
@@ -209,7 +217,7 @@ def compor(conteudo, t):
     bg[CY0:CY0 + CH + BARRA, CX0:CX0 + CW] = zona * (1 - MASCARA) + cartao * MASCARA
     return np.clip(bg, 0, 255).astype(np.uint8)
 
-def renderizar_zoom(entrada, focos, saida, t_fundo=0.0):
+def renderizar_zoom(entrada, focos, saida, t_fundo=0.0, cortes=()):
     cfr = TMP / (saida.stem + "-cfr.mp4")
     run("ffmpeg", "-y", "-loglevel", "error", "-i", entrada, "-r", str(FPS), "-c:v", "libx264", "-crf", "12", "-preset", "veryfast", cfr)
     cap = cv2.VideoCapture(str(cfr)); W = int(cap.get(3)); H = int(cap.get(4)); escala = W / VW
@@ -220,6 +228,7 @@ def renderizar_zoom(entrada, focos, saida, t_fundo=0.0):
         ok, fr = cap.read()
         if not ok: break
         t = i / FPS; i += 1
+        if any(a <= t < b for a, b in cortes): continue
         ws = [(peso(f, t), f) for f in focos]; wmax = max([w for w, _ in ws] + [0])
         if wmax > 1e-3:
             soma = sum(w for w, _ in ws)
@@ -301,8 +310,9 @@ def main():
             fim = TMP / "fim.mp4"
             gravar_cartao("Aprender hoje.", "Ir mais longe amanhã.", "Comece hoje o seu percurso com a ATC Formação", fim, dv + 2.2)
             pecas.append(fim); continue
-        webm, focos, fs = gravacoes[s["id"]]
-        z = TMP / f"{s['id']}-zoom.mp4"; renderizar_zoom(webm, focos, z, t_fundo=k * 17.0)
+        webm, focos, fs, cortes = gravacoes[s["id"]]
+        z = TMP / f"{s['id']}-zoom.mp4"; renderizar_zoom(webm, focos, z, t_fundo=k * 17.0, cortes=cortes)
+        fs = [dict(f, t=f["t"] - sum(min(b, f["t"]) - a for a, b in cortes if a < f["t"])) for f in fs]
         dr = dur(z)
         if fs:   # o guia fala: velocidade real, para manter a sincronização labial
             fator = 1.0; alvo = min(dr, max(f["t"] + f["dur"] for f in fs) + 0.5)
