@@ -1,0 +1,50 @@
+{
+  "title": "Aprender com exemplos · Microsoft Excel",
+  "intro": "Duas tarefas guiadas com capturas reais das aplicações para a Web. Os comandos podem variar na aplicação instalada.",
+  "sections": [
+    {
+      "title": "Ler uma tabela de materiais",
+      "blocks": [
+        {
+          "p": "A folha ATC regista quantidades, preços e totais em kwanzas."
+        },
+        {
+          "figure": "amostra-excel-base.jpg",
+          "caption": "Captura própria ATC · Microsoft Excel para a Web · Português (Portugal)."
+        },
+        {
+          "steps": [
+            "Identifique os cabeçalhos Material, Quantidade, Preço (Kz) e Total (Kz).",
+            "Selecione D5, a célula do total.",
+            "Compare o valor 41 000 com a fórmula apresentada na barra de fórmulas."
+          ]
+        },
+        {
+          "tip": "A célula D5 contém =SOMA(D2:D4) e apresenta 41 000."
+        }
+      ]
+    },
+    {
+      "title": "Localizar a Soma Automática",
+      "blocks": [
+        {
+          "p": "O separador Fórmulas reúne funções para calcular resultados."
+        },
+        {
+          "figure": "amostra-excel-formulas.jpg",
+          "caption": "Captura própria ATC · Microsoft Excel para a Web · Português (Portugal)."
+        },
+        {
+          "steps": [
+            "Abra o separador Fórmulas.",
+            "Localize Soma Automática, identificada pelo símbolo Σ.",
+            "Ao praticar numa célula vazia, confirme sempre o intervalo proposto antes de premir Enter."
+          ]
+        },
+        {
+          "tip": "Nesta captura, o cálculo já está concluído; o separador mostra onde encontrar a função."
+        }
+      ]
+    }
+  ]
+}

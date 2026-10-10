@@ -827,6 +827,8 @@ def course_card(r, c, enrolled):
     hours = f'{fmt_h(c["hours_video"])} h de vídeo' if c["hours_video"] else ""
     if c["status"] != "publicado":
         foot = f'<span class="tag soon">Em breve</span> <span class="muted">{hours}</span>'
+        if (COURSES_DIR / c["slug"] / "manual/exemplos-atc.json").is_file():
+            foot += f'<p><a class="btn small ghost" href="/cursos/{h(c["slug"])}/exemplos">Ver exemplos →</a></p>'
         return f'<article class="course soon">{cover}<div><h3>{h(c["title"])}</h3><p>{h(c["subtitle"])}</p>{foot}</div></article>'
     if enrolled or r.is_staff():
         p = course_progress(r.con, r.user["id"], c["id"])
@@ -977,11 +979,25 @@ def course_page(r, slug):
     hours = " · ".join(x for x in [f'{fmt_h(c["hours_video"])} h de vídeo' if c["hours_video"] else "",
                                    f'{fmt_h(c["hours_class"])} h presenciais' if c["hours_class"] else ""] if x)
     staff = (f' <a class="btn ghost" href="/admin/relatorio/{slug}">Relatório de turma</a>' if r.is_staff() else "")
+    if (COURSES_DIR / slug / "manual/exemplos-atc.json").is_file():
+        staff += f' <a class="btn ghost" href="/cursos/{slug}/exemplos">Ver exemplos →</a>'
+    sample = ""
+    if slug == "informatica" and (COURSES_DIR / slug / "video/amostra-windows-atc.mp4").is_file():
+        sample = '''<section class="card module" id="amostra-windows">
+<span class="eyebrow">AMOSTRA ATC · 32 SEGUNDOS</span><h2>Primeiros passos no Windows</h2>
+<p>Explore os ecrãs personalizados com Helena e Miguel. Quatro cenas de 8 segundos, com legendas em português europeu.</p>
+<video controls playsinline preload="none" style="width:100%;max-height:640px;border-radius:12px"
+poster="/media/informatica/video/amostra-windows-atc.png" aria-label="Amostra ATC: primeiros passos no Windows">
+<source src="/media/informatica/video/amostra-windows-atc.mp4" type="video/mp4">
+O seu navegador não suporta vídeo.</video>
+<p class="muted">Simulação pedagógica com imagens editadas. Amostra sem áudio, preparada para as vozes dos formadores.</p>
+<div class="actions"><a class="btn ghost" href="/media/informatica/video/amostra-windows-atc.mp4?descarregar=1">Descarregar amostra</a>
+<a class="btn ghost" href="/media/informatica/video/amostra-windows-atc.vtt?descarregar=1">Descarregar legendas</a></div></section>'''
     return r.render(c["title"], f"""<p class="crumbs"><a href="/">Os meus cursos</a></p>
 {presenter_banner(r, c)}<section class="hero"><div><h1>{h(c['title'])}</h1><p class="lead">{h(c['subtitle'])}</p><p>{h(c['description'])}</p>
 <p class="muted">{hours}</p><div class="actions">{cont}{staff}</div></div>
 <aside class="card"><h3>O seu progresso</h3>{bar(p['pct'])}<p><b>{p['pct']}%</b> · {p['lessons_done']}/{p['lessons']} aulas ·
-{p['quizzes_done']}/{p['quizzes']} questionários</p>{cert_html}</aside></section>{''.join(out)}""")
+{p['quizzes_done']}/{p['quizzes']} questionários</p>{cert_html}</aside></section>{sample}{''.join(out)}""")
 
 
 def lesson_media(slug, lesson, presenter):
@@ -1166,6 +1182,42 @@ def assistant_api(r):
 
 
 # -- manual online ----------------------------------------------------------
+
+def instruction_examples(slug):
+    path = COURSES_DIR / slug / "manual/exemplos-atc.json"
+    if not path.is_file():
+        raise HttpError(404)
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+@route("GET", r"/cursos/([a-z0-9-]+)/exemplos", "user")
+def examples_page(r, slug):
+    c = r.course_for(slug, need_access=False)
+    data = instruction_examples(slug)
+    # Captures can be replaced during review; avoid displaying cached earlier frames.
+    for section in data["sections"]:
+        for block in section["blocks"]:
+            if "figure" in block:
+                stamp = (COURSES_DIR / slug / "manual/figures" / block["figure"]).stat().st_mtime_ns
+                block["figure"] += f"?v={stamp}"
+    cards = "".join(f'<section class="card manual instruction-example"><span class="eyebrow">EXEMPLO ATC · {i:02d}</span>'
+                    f'<h2>{h(s["title"])}</h2>{render_blocks(s["blocks"], f"/amostras-office/{slug}")}</section>'
+                    for i, s in enumerate(data["sections"], 1))
+    return r.render(data["title"], f'''<style>.instruction-example{{margin:24px 0}}.instruction-example figure img{{width:100%;height:auto}}
+@media print{{.sidebar,.topbar,.crumbs,.actions{{display:none!important}}main{{margin:0!important;padding:0!important}}.instruction-example{{break-inside:avoid}}}}</style>
+<p class="crumbs"><a href="/#catalogo">Catálogo</a> › {h(c['title'])}</p><span class="eyebrow">MANUAL DE AMOSTRA · ATC</span>
+<h1>{h(data['title'])}</h1><p class="lead">{h(data['intro'])}</p>{cards}
+<p class="muted">Exemplos de formação. O curso completo mantém a disponibilidade indicada no catálogo.</p>''')
+
+
+@route("GET", r"/amostras-office/([a-z0-9-]+)/([a-z0-9.-]+)", "user")
+def example_image(r, slug, filename):
+    r.course_for(slug, need_access=False)
+    data = instruction_examples(slug)
+    allowed = {b["figure"] for s in data["sections"] for b in s["blocks"] if "figure" in b}
+    if filename not in allowed:
+        raise HttpError(404)
+    r.serve_file(COURSES_DIR / slug / "manual/figures" / filename)
 
 def render_blocks(blocks, figbase):
     out = []

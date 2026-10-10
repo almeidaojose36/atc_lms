@@ -1,0 +1,107 @@
+[
+  {
+    "output": "helena/01-opcoes-inicio-sessao.png",
+    "source": "fig-1-2-sign-in-options-pt-pt.png",
+    "prompt": "Replace Amanda Brady account with Helena · ATC, helena@atc.example, reference portrait; localize PT-PT and add external ATC footer."
+  },
+  {
+    "output": "miguel/01-opcoes-inicio-sessao.png",
+    "source": "fig-1-2-sign-in-options-pt-pt.png",
+    "prompt": "Surgical edit of image 1 only: replace Helena circular account photo top left with exact Miguel male face from image 2, replace Helena · ATC with Miguel · ATC and helena@atc.example with miguel@atc.example. Preserve absolutely everything else unchanged including all perfectly readable Portuguese text, layout, native icons, toggle labels Desativado, and ATC footer. No reconstruction of the menus or Settings content. Exact same image framing and dimensions."
+  },
+  {
+    "output": "helena/02-menu-iniciar.png",
+    "source": "fig-1-4-start-menu-focused.png",
+    "prompt": "Use case: compositing. Image 1 is the edit target, a Windows training screenshot. Image 2 is the exact Helena face reference; image 3 is the exact ATC brand logo. Customize image 1 for ATC. Replace every visible account name (Amanda Brady or Rui) with \"Helena · ATC\" and every account photo with a circular headshot matching image 2 identity. Keep the Start menu and taskbar. Change recommended example filenames to ATC course documents: Plano de formação, Apresentação do curso, Manual do formando, Orçamento da formação. Fix Mais >. Preserve screenshot layout, original Windows app icons, native controls, readable Portuguese text. Add a slim navy footer OUTSIDE screenshot, supplied ATC logo left and exact text \"ATC | Informática na Ótica do Utilizador\", small \"Simulação pedagógica • Português (Portugal)\" right, orange separator. Do not place logo inside Windows native controls. Flat sharp screenshot for manual, no device mockup, do not crop original content."
+  },
+  {
+    "output": "miguel/02-menu-iniciar.png",
+    "source": "fig-1-4-start-menu-focused.png",
+    "prompt": "Use case: compositing. Image 1 is the edit target, a Windows training screenshot. Image 2 is the exact Miguel face reference; image 3 is the exact ATC brand logo. Customize image 1 for ATC. Replace every visible account name (Amanda Brady or Rui) with \"Miguel · ATC\" and every account photo with a circular headshot matching image 2 identity. Keep the Start menu and taskbar. Change recommended example filenames to ATC course documents: Plano de formação, Apresentação do curso, Manual do formando, Orçamento da formação. Fix Mais >. Preserve screenshot layout, original Windows app icons, native controls, readable Portuguese text. Add a slim navy footer OUTSIDE screenshot, supplied ATC logo left and exact text \"ATC | Informática na Ótica do Utilizador\", small \"Simulação pedagógica • Português (Portugal)\" right, orange separator. Do not place logo inside Windows native controls. Flat sharp screenshot for manual, no device mockup, do not crop original content."
+  },
+  {
+    "output": "helena/03-encerrar.png",
+    "source": "fig-1-6-shutdown-pt.png",
+    "prompt": "Use case: compositing. Image 1 is the edit target, a Windows training screenshot. Image 2 is the exact Helena face reference; image 3 is the exact ATC brand logo. Customize image 1 for ATC. Replace every visible account name (Amanda Brady or Rui) with \"Helena · ATC\" and every account photo with a circular headshot matching image 2 identity. Preserve both numbered arrows and Windows icons including highlighted Start and power button exactly. Replace Rui account with Helena and reference face. Replace recommended filenames with ATC training filenames. Preserve screenshot layout, original Windows app icons, native controls, readable Portuguese text. Add a slim navy footer OUTSIDE screenshot, supplied ATC logo left and exact text \"ATC | Informática na Ótica do Utilizador\", small \"Simulação pedagógica • Português (Portugal)\" right, orange separator. Do not place logo inside Windows native controls. Flat sharp screenshot for manual, no device mockup, do not crop original content."
+  },
+  {
+    "output": "miguel/03-encerrar.png",
+    "source": "fig-1-6-shutdown-pt.png",
+    "prompt": "Use case: compositing and text-localization. Edit image 1, a Windows educational screenshot, using exact character face from image 2 and ATC logo from image 3. Replace account portrait and name with exact Miguel identity from reference and \"Miguel · ATC\". Preserve both numbered arrows and highlighted Start and power button. Replace Rui and face, change document examples to ATC training documents. Keep native Windows controls, icons, layout and clear text in European Portuguese. Add same slim navy ATC footer OUTSIDE screenshot, supplied logo left, \"ATC | Informática na Ótica do Utilizador\", small \"Simulação pedagógica • Português (Portugal)\" right, orange separator. No additional people or devices, no invented controls, do not crop."
+  },
+  {
+    "output": "helena/04-menu-iniciar-anotado.png",
+    "source": "8mRaa7Xns95q.png",
+    "prompt": "Use case: compositing and text-localization. Edit image 1, a Windows educational screenshot, using exact character face from image 2 and ATC logo from image 3. Replace account portrait and name with exact Helena identity from reference and \"Helena · ATC\". Preserve all five numbered blue callouts. Localize Pinned to Afixado, Configurações to Definições, Explorador de Arquivos to Explorador de Ficheiros, Fotos to Fotografias, Mais &gt; to Mais >. Change Intranet da Contoso to Portal ATC with ATC shortcut logo. Recommendations: Manual do formando, Plano de formação, Objetivos do curso, Orçamento da formação. Keep native Windows controls, icons, layout and clear text in European Portuguese. Add same slim navy ATC footer OUTSIDE screenshot, supplied logo left, \"ATC | Informática na Ótica do Utilizador\", small \"Simulação pedagógica • Português (Portugal)\" right, orange separator. No additional people or devices, no invented controls, do not crop."
+  },
+  {
+    "output": "miguel/04-menu-iniciar-anotado.png",
+    "source": "8mRaa7Xns95q.png",
+    "prompt": "Use case: compositing and text-localization. Edit image 1, a Windows educational screenshot, using exact character face from image 2 and ATC logo from image 3. Replace account portrait and name with exact Miguel identity from reference and \"Miguel · ATC\". Preserve all five numbered blue callouts. Localize Pinned to Afixado, Configurações to Definições, Explorador de Arquivos to Explorador de Ficheiros, Fotos to Fotografias, Mais &gt; to Mais >. Change Intranet da Contoso to Portal ATC with ATC shortcut logo. Recommendations: Manual do formando, Plano de formação, Objetivos do curso, Orçamento da formação. Keep native Windows controls, icons, layout and clear text in European Portuguese. Add same slim navy ATC footer OUTSIDE screenshot, supplied logo left, \"ATC | Informática na Ótica do Utilizador\", small \"Simulação pedagógica • Português (Portugal)\" right, orange separator. No additional people or devices, no invented controls, do not crop."
+  },
+  {
+    "output": "helena/05-recuperar-pin.png",
+    "source": "6ciS9Kqv2jsh.jpg",
+    "prompt": "Use case: compositing and text-localization. Edit image 1, a Windows educational screenshot, using exact character face from image 2 and ATC logo from image 3. Replace account portrait and name with exact Helena identity from reference and \"Helena · ATC\". Replace generic large circular account icon with exact reference face, account w becomes Helena · ATC. Translate English message verbatim to: Ocorreu um problema e o seu PIN não está disponível. Clique para configurar novamente o PIN. Buttons: Configurar o meu PIN; Opções de início de sessão. Preserve red arrow pointing to sign-in option icon. Keep native Windows controls, icons, layout and clear text in European Portuguese. Add same slim navy ATC footer OUTSIDE screenshot, supplied logo left, \"ATC | Informática na Ótica do Utilizador\", small \"Simulação pedagógica • Português (Portugal)\" right, orange separator. No additional people or devices, no invented controls, do not crop."
+  },
+  {
+    "output": "miguel/05-recuperar-pin.png",
+    "source": "6ciS9Kqv2jsh.jpg",
+    "prompt": "Use case: text-localization and compositing. Image 1 edit target screenshot, image 2 exact ATC logo, image 3 Miguel identity reference only if requested. Replace generic circular account icon with exact Miguel reference face, name w with Miguel · ATC. Translate all English to European Portuguese: Ocorreu um problema e o seu PIN não está disponível. Clique para configurar novamente o PIN. Configurar o meu PIN. Opções de início de sessão. Preserve red arrow. Preserve native Microsoft app controls and icons; sharp legible European Portuguese. Add slim navy footer OUTSIDE original screenshot with logo, \"ATC | Informática na Ótica do Utilizador\", \"Simulação pedagógica • Português (Portugal)\" and orange separator. Flat screenshot for manual, no device frame, do not crop."
+  },
+  {
+    "output": "comuns/01-encerrar-dialogo.png",
+    "source": "3okdW4Jg9jBU.png",
+    "prompt": "Use case: text-localization and compositing. Image 1 edit target screenshot, image 2 exact ATC logo, image 3 Miguel identity reference only if requested. Preserve the exact shutdown dialog, Windows 11 logo and all Portuguese text. No account face exists: do not add one. Preserve native Microsoft app controls and icons; sharp legible European Portuguese. Add slim navy footer OUTSIDE original screenshot with logo, \"ATC | Informática na Ótica do Utilizador\", \"Simulação pedagógica • Português (Portugal)\" and orange separator. Flat screenshot for manual, no device frame, do not crop."
+  },
+  {
+    "output": "comuns/02-bloco-notas.png",
+    "source": "V8oaui5hrRE4.jpg",
+    "prompt": "Use case: text-localization and compositing. Image 1 edit target screenshot, image 2 exact ATC logo, image 3 Miguel identity reference only if requested. Keep Notepad and native window controls, localize app title to Plano de formação ATC.txt — Bloco de notas; menus Ficheiro, Editar, Ver. Replace chemistry prose with clear readable relevant Portuguese text: ATC — Plano de formação; Informática na Ótica do Utilizador; 1. Iniciar sessão no Windows; 2. Abrir aplicações no menu Iniciar; 3. Organizar janelas; 4. Guardar o trabalho; 5. Encerrar o computador em segurança. Add Formadores: Helena e Miguel. Leave plenty of white document area. Preserve native Microsoft app controls and icons; sharp legible European Portuguese. Add slim navy footer OUTSIDE original screenshot with logo, \"ATC | Informática na Ótica do Utilizador\", \"Simulação pedagógica • Português (Portugal)\" and orange separator. Flat screenshot for manual, no device frame, do not crop."
+  },
+  {
+    "output": "comuns/03-controlos-janela.png",
+    "source": "fig-1-5-window-controls.png",
+    "prompt": "Use case: text-localization and compositing. Image 1 edit target screenshot, image 2 exact ATC logo, image 3 Miguel identity reference only if requested. Preserve native window min/max/close and exact Snap Layout panel red highlight. Replace only ASUS website content with clean ATC academy training page, exact ATC logo, title Aprender hoje. Ir mais longe amanhã., subtitle Informática na Ótica do Utilizador, button Explorar cursos; browser tab ATC Formação, example URL https://atc.example/formacao. Recycle Bin becomes Reciclagem, ENG becomes POR, date Portuguese format. No account face visible so no extra face. Preserve native Microsoft app controls and icons; sharp legible European Portuguese. Add slim navy footer OUTSIDE original screenshot with logo, \"ATC | Informática na Ótica do Utilizador\", \"Simulação pedagógica • Português (Portugal)\" and orange separator. Flat screenshot for manual, no device frame, do not crop."
+  },
+  {
+    "output": "comuns/04-barra-tarefas.png",
+    "source": "fig-1-3-taskbar-diagram-pt.png",
+    "prompt": "Use case: text-localization. Image 1 is the source Windows training screenshot, image 2 is the exact ATC logo. Preserve all six numbered blue taskbar callouts, their positions and icons. Replace 78°F with 26°C, weather label Ensolarado with Céu limpo, time 11:11, date 10/10/2026, search Pesquisar. Render this horizontal image clean and readable, retain its extremely wide diagram shape inside a wider white training plate, do not invent extra controls. Add slim navy footer OUTSIDE original screenshot with supplied logo, exact \"ATC | Informática na Ótica do Utilizador\", \"Simulação pedagógica • Português (Portugal)\", orange separator. Keep original app icons, screenshot content, native layout, readable fonts. Flat instructional screenshot, no device mockup, no crop."
+  },
+  {
+    "output": "comuns/05-controlos-janela-detalhe.png",
+    "source": "fig-1-5-window-controls-focused.png",
+    "prompt": "Use case: text-localization. Image 1 is the source Windows training screenshot, image 2 is the exact ATC logo. Preserve the window buttons and exact Snap Layout panel, red focus rectangle. No user is visible so do not add any face or profile. Add slim navy footer OUTSIDE original screenshot with supplied logo, exact \"ATC | Informática na Ótica do Utilizador\", \"Simulação pedagógica • Português (Portugal)\", orange separator. Keep original app icons, screenshot content, native layout, readable fonts. Flat instructional screenshot, no device mockup, no crop."
+  },
+  {
+    "output": "comuns/06-barra-tarefas-tamanhos.png",
+    "source": "bYeqFLkcXavn.jpg",
+    "prompt": "Use case: text-localization. Image 1 is the source Windows training screenshot, image 2 is the exact ATC logo. Preserve three horizontal taskbar examples and recognizable native Windows icons. Add concise European Portuguese labels: Pequena, Média, Grande. No profile exists, do not invent one. Add slim navy footer OUTSIDE original screenshot with supplied logo, exact \"ATC | Informática na Ótica do Utilizador\", \"Simulação pedagógica • Português (Portugal)\", orange separator. Keep original app icons, screenshot content, native layout, readable fonts. Flat instructional screenshot, no device mockup, no crop."
+  },
+  {
+    "output": "comuns/07-bloco-notas-vazio.png",
+    "source": "21NQ7qsZIPVr.jpg",
+    "prompt": "Use case: text-localization. Image 1 is the source Windows training screenshot, image 2 is the exact ATC logo. Preserve Windows desktop and blank Notepad window. Localize title Sem título — Bloco de notas, menus Ficheiro, Editar, Ver, desktop Reciclagem. Replace document content with just ATC — Informática na Ótica do Utilizador on first line and Formadores: Helena e Miguel on second. Preserve preview/evaluation source watermark as provenance if present, do not remove it. Add slim navy footer OUTSIDE original screenshot with supplied logo, exact \"ATC | Informática na Ótica do Utilizador\", \"Simulação pedagógica • Português (Portugal)\", orange separator. Keep original app icons, screenshot content, native layout, readable fonts. Flat instructional screenshot, no device mockup, no crop."
+  },
+  {
+    "output": "helena/06-pesquisa-bloco-notas.png",
+    "source": "lu5l541Kpl8E.png",
+    "prompt": "Use case: compositing and text-localization. Image 1 source screenshot, image 2 ATC logo, image 3 exact Helena face reference. Replace circular account initial A in upper bar with small circular exact reference headshot. European Portuguese: Tudo, Aplicações, Documentos, Web, Definições, Bloco de notas, Aplicação, Abrir. Preserve photographed screen perspective and lighting; add no extra app controls. Add slim navy footer outside screenshot with ATC logo and \"ATC | Informática na Ótica do Utilizador\" and \"Simulação pedagógica • Português (Portugal)\", orange separator. Keep Windows icons and layout, sharp clear text, flat instructional image. Do not remove other creator watermarks."
+  },
+  {
+    "output": "miguel/06-pesquisa-bloco-notas.png",
+    "source": "lu5l541Kpl8E.png",
+    "prompt": "Use case: compositing and text-localization. Image 1 source screenshot, image 2 ATC logo, image 3 exact Miguel face reference. Replace circular account initial A in upper bar with small circular exact reference headshot. European Portuguese: Tudo, Aplicações, Documentos, Web, Definições, Bloco de notas, Aplicação, Abrir. Preserve photographed screen perspective and lighting; add no extra app controls. Add slim navy footer outside screenshot with ATC logo and \"ATC | Informática na Ótica do Utilizador\" and \"Simulação pedagógica • Português (Portugal)\", orange separator. Keep Windows icons and layout, sharp clear text, flat instructional image. Do not remove other creator watermarks."
+  },
+  {
+    "output": "comuns/08-recuperar-pin-detalhe.png",
+    "source": "TW41YlAN8EHI.png",
+    "prompt": "Use case: compositing and text-localization. Image 1 source screenshot, image 2 ATC logo, image 3 exact Helena face reference. Preserve cropped PIN field and red arrow, no face exists here so no extra face. Localize exact labels to Esqueci-me do meu PIN and Opções de início de sessão. Keep native Windows sign-in appearance. Add slim navy footer outside screenshot with ATC logo and \"ATC | Informática na Ótica do Utilizador\" and \"Simulação pedagógica • Português (Portugal)\", orange separator. Keep Windows icons and layout, sharp clear text, flat instructional image. Do not remove other creator watermarks."
+  },
+  {
+    "output": "comuns/09-bloco-notas-aplicacao.png",
+    "source": "XgvT1EuwIhcD.jpeg",
+    "prompt": "Use case: compositing and text-localization. Image 1 source screenshot, image 2 ATC logo, image 3 exact Miguel face reference. Keep the large real Notepad icon and simple app-window background. Make menu readable European Portuguese: Ficheiro, Editar, Formatar, Ver, Ajuda. Add title Bloco de notas — ATC above icon. No account face is visible: add no face. Add slim navy footer outside screenshot with ATC logo and \"ATC | Informática na Ótica do Utilizador\" and \"Simulação pedagógica • Português (Portugal)\", orange separator. Keep Windows icons and layout, sharp clear text, flat instructional image. Do not remove other creator watermarks."
+  }
+]

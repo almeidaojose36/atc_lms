@@ -1,0 +1,526 @@
+{
+  "language": "pt-PT",
+  "date": "2026-10-10",
+  "method": "Built-in imagegen editing with canonical ATC portraits and logo",
+  "assets": [
+    {
+      "output": "helena/01-opcoes-inicio-sessao.png",
+      "source": "fig-1-2-sign-in-options-pt-pt.png",
+      "prompt": "Replace Amanda Brady account with Helena · ATC, helena@atc.example, reference portrait; localize PT-PT and add external ATC footer.",
+      "width": 1388,
+      "height": 1133,
+      "sha256": "6da1f0647cae57b334827543d4fa899dadd168363c9cdcc23991987b6ca2d970",
+      "type": "AI-edited training simulation"
+    },
+    {
+      "output": "miguel/01-opcoes-inicio-sessao.png",
+      "source": "fig-1-2-sign-in-options-pt-pt.png",
+      "prompt": "Surgical edit of image 1 only: replace Helena circular account photo top left with exact Miguel male face from image 2, replace Helena · ATC with Miguel · ATC and helena@atc.example with miguel@atc.example. Preserve absolutely everything else unchanged including all perfectly readable Portuguese text, layout, native icons, toggle labels Desativado, and ATC footer. No reconstruction of the menus or Settings content. Exact same image framing and dimensions.",
+      "width": 1388,
+      "height": 1133,
+      "sha256": "16faad576773eac766a68d723929d6c04dfac248355fa79afee25269e2438496",
+      "type": "AI-edited training simulation"
+    },
+    {
+      "output": "helena/02-menu-iniciar.png",
+      "source": "fig-1-4-start-menu-focused.png",
+      "prompt": "Use case: compositing. Image 1 is the edit target, a Windows training screenshot. Image 2 is the exact Helena face reference; image 3 is the exact ATC brand logo. Customize image 1 for ATC. Replace every visible account name (Amanda Brady or Rui) with \"Helena · ATC\" and every account photo with a circular headshot matching image 2 identity. Keep the Start menu and taskbar. Change recommended example filenames to ATC course documents: Plano de formação, Apresentação do curso, Manual do formando, Orçamento da formação. Fix Mais >. Preserve screenshot layout, original Windows app icons, native controls, readable Portuguese text. Add a slim navy footer OUTSIDE screenshot, supplied ATC logo left and exact text \"ATC | Informática na Ótica do Utilizador\", small \"Simulação pedagógica • Português (Portugal)\" right, orange separator. Do not place logo inside Windows native controls. Flat sharp screenshot for manual, no device mockup, do not crop original content.",
+      "width": 1561,
+      "height": 1007,
+      "sha256": "f4d6dc2aea1fe6c139923a6ecbd4f73a570f4db4002842c7bd96da3bc835e5aa",
+      "type": "AI-edited training simulation"
+    },
+    {
+      "output": "miguel/02-menu-iniciar.png",
+      "source": "fig-1-4-start-menu-focused.png",
+      "prompt": "Use case: compositing. Image 1 is the edit target, a Windows training screenshot. Image 2 is the exact Miguel face reference; image 3 is the exact ATC brand logo. Customize image 1 for ATC. Replace every visible account name (Amanda Brady or Rui) with \"Miguel · ATC\" and every account photo with a circular headshot matching image 2 identity. Keep the Start menu and taskbar. Change recommended example filenames to ATC course documents: Plano de formação, Apresentação do curso, Manual do formando, Orçamento da formação. Fix Mais >. Preserve screenshot layout, original Windows app icons, native controls, readable Portuguese text. Add a slim navy footer OUTSIDE screenshot, supplied ATC logo left and exact text \"ATC | Informática na Ótica do Utilizador\", small \"Simulação pedagógica • Português (Portugal)\" right, orange separator. Do not place logo inside Windows native controls. Flat sharp screenshot for manual, no device mockup, do not crop original content.",
+      "width": 1561,
+      "height": 1007,
+      "sha256": "f96d0222f399c206db5ce1bbda12936aa8c9c7d4c4b1b7d710de6c3b562176ea",
+      "type": "AI-edited training simulation"
+    },
+    {
+      "output": "helena/03-encerrar.png",
+      "source": "fig-1-6-shutdown-pt.png",
+      "prompt": "Use case: compositing. Image 1 is the edit target, a Windows training screenshot. Image 2 is the exact Helena face reference; image 3 is the exact ATC brand logo. Customize image 1 for ATC. Replace every visible account name (Amanda Brady or Rui) with \"Helena · ATC\" and every account photo with a circular headshot matching image 2 identity. Preserve both numbered arrows and Windows icons including highlighted Start and power button exactly. Replace Rui account with Helena and reference face. Replace recommended filenames with ATC training filenames. Preserve screenshot layout, original Windows app icons, native controls, readable Portuguese text. Add a slim navy footer OUTSIDE screenshot, supplied ATC logo left and exact text \"ATC | Informática na Ótica do Utilizador\", small \"Simulação pedagógica • Português (Portugal)\" right, orange separator. Do not place logo inside Windows native controls. Flat sharp screenshot for manual, no device mockup, do not crop original content.",
+      "width": 1674,
+      "height": 940,
+      "sha256": "164f7c0d18c0b3415dbc365f9b113821fe3abb2c90d433a0893dc64b00a8cbc2",
+      "type": "AI-edited training simulation"
+    },
+    {
+      "output": "miguel/03-encerrar.png",
+      "source": "fig-1-6-shutdown-pt.png",
+      "prompt": "Use case: compositing and text-localization. Edit image 1, a Windows educational screenshot, using exact character face from image 2 and ATC logo from image 3. Replace account portrait and name with exact Miguel identity from reference and \"Miguel · ATC\". Preserve both numbered arrows and highlighted Start and power button. Replace Rui and face, change document examples to ATC training documents. Keep native Windows controls, icons, layout and clear text in European Portuguese. Add same slim navy ATC footer OUTSIDE screenshot, supplied logo left, \"ATC | Informática na Ótica do Utilizador\", small \"Simulação pedagógica • Português (Portugal)\" right, orange separator. No additional people or devices, no invented controls, do not crop.",
+      "width": 1672,
+      "height": 941,
+      "sha256": "c6f936ffe5b513876d76ada449a1f437f241e0cd270007e5946304857a742d72",
+      "type": "AI-edited training simulation"
+    },
+    {
+      "output": "helena/04-menu-iniciar-anotado.png",
+      "source": "8mRaa7Xns95q.png",
+      "prompt": "Use case: compositing and text-localization. Edit image 1, a Windows educational screenshot, using exact character face from image 2 and ATC logo from image 3. Replace account portrait and name with exact Helena identity from reference and \"Helena · ATC\". Preserve all five numbered blue callouts. Localize Pinned to Afixado, Configurações to Definições, Explorador de Arquivos to Explorador de Ficheiros, Fotos to Fotografias, Mais &gt; to Mais >. Change Intranet da Contoso to Portal ATC with ATC shortcut logo. Recommendations: Manual do formando, Plano de formação, Objetivos do curso, Orçamento da formação. Keep native Windows controls, icons, layout and clear text in European Portuguese. Add same slim navy ATC footer OUTSIDE screenshot, supplied logo left, \"ATC | Informática na Ótica do Utilizador\", small \"Simulação pedagógica • Português (Portugal)\" right, orange separator. No additional people or devices, no invented controls, do not crop.",
+      "width": 1178,
+      "height": 1335,
+      "sha256": "944ff25f17e0c47fc0fe3e53e6c88fcaad2b41aec2a93d221a2550b8117f4c80",
+      "type": "AI-edited training simulation"
+    },
+    {
+      "output": "miguel/04-menu-iniciar-anotado.png",
+      "source": "8mRaa7Xns95q.png",
+      "prompt": "Use case: compositing and text-localization. Edit image 1, a Windows educational screenshot, using exact character face from image 2 and ATC logo from image 3. Replace account portrait and name with exact Miguel identity from reference and \"Miguel · ATC\". Preserve all five numbered blue callouts. Localize Pinned to Afixado, Configurações to Definições, Explorador de Arquivos to Explorador de Ficheiros, Fotos to Fotografias, Mais &gt; to Mais >. Change Intranet da Contoso to Portal ATC with ATC shortcut logo. Recommendations: Manual do formando, Plano de formação, Objetivos do curso, Orçamento da formação. Keep native Windows controls, icons, layout and clear text in European Portuguese. Add same slim navy ATC footer OUTSIDE screenshot, supplied logo left, \"ATC | Informática na Ótica do Utilizador\", small \"Simulação pedagógica • Português (Portugal)\" right, orange separator. No additional people or devices, no invented controls, do not crop.",
+      "width": 1178,
+      "height": 1335,
+      "sha256": "ceb91a2ab86dff6f027a4946d8e16c0e9f31e5701c103101fba15f6e314e7d68",
+      "type": "AI-edited training simulation"
+    },
+    {
+      "output": "helena/05-recuperar-pin.png",
+      "source": "6ciS9Kqv2jsh.jpg",
+      "prompt": "Use case: compositing and text-localization. Edit image 1, a Windows educational screenshot, using exact character face from image 2 and ATC logo from image 3. Replace account portrait and name with exact Helena identity from reference and \"Helena · ATC\". Replace generic large circular account icon with exact reference face, account w becomes Helena · ATC. Translate English message verbatim to: Ocorreu um problema e o seu PIN não está disponível. Clique para configurar novamente o PIN. Buttons: Configurar o meu PIN; Opções de início de sessão. Preserve red arrow pointing to sign-in option icon. Keep native Windows controls, icons, layout and clear text in European Portuguese. Add same slim navy ATC footer OUTSIDE screenshot, supplied logo left, \"ATC | Informática na Ótica do Utilizador\", small \"Simulação pedagógica • Português (Portugal)\" right, orange separator. No additional people or devices, no invented controls, do not crop.",
+      "width": 1498,
+      "height": 1050,
+      "sha256": "95171408d068f88931c1a2fd6b8b0534d6f0d649394e9a1339783a4922769ccc",
+      "type": "AI-edited training simulation"
+    },
+    {
+      "output": "miguel/05-recuperar-pin.png",
+      "source": "6ciS9Kqv2jsh.jpg",
+      "prompt": "Use case: text-localization and compositing. Image 1 edit target screenshot, image 2 exact ATC logo, image 3 Miguel identity reference only if requested. Replace generic circular account icon with exact Miguel reference face, name w with Miguel · ATC. Translate all English to European Portuguese: Ocorreu um problema e o seu PIN não está disponível. Clique para configurar novamente o PIN. Configurar o meu PIN. Opções de início de sessão. Preserve red arrow. Preserve native Microsoft app controls and icons; sharp legible European Portuguese. Add slim navy footer OUTSIDE original screenshot with logo, \"ATC | Informática na Ótica do Utilizador\", \"Simulação pedagógica • Português (Portugal)\" and orange separator. Flat screenshot for manual, no device frame, do not crop.",
+      "width": 1498,
+      "height": 1050,
+      "sha256": "a7080d8fa45a9886e24e0e92541149a32c593960a782238eea8ef2f39ccd11f5",
+      "type": "AI-edited training simulation"
+    },
+    {
+      "output": "comuns/01-encerrar-dialogo.png",
+      "source": "3okdW4Jg9jBU.png",
+      "prompt": "Use case: text-localization and compositing. Image 1 edit target screenshot, image 2 exact ATC logo, image 3 Miguel identity reference only if requested. Preserve the exact shutdown dialog, Windows 11 logo and all Portuguese text. No account face exists: do not add one. Preserve native Microsoft app controls and icons; sharp legible European Portuguese. Add slim navy footer OUTSIDE original screenshot with logo, \"ATC | Informática na Ótica do Utilizador\", \"Simulação pedagógica • Português (Portugal)\" and orange separator. Flat screenshot for manual, no device frame, do not crop.",
+      "width": 1740,
+      "height": 904,
+      "sha256": "1c3c86fb8ce66d506444465041e0dfc7864de55bd1afff8a79982d8b51f86eb7",
+      "type": "AI-edited training simulation"
+    },
+    {
+      "output": "comuns/02-bloco-notas.png",
+      "source": "V8oaui5hrRE4.jpg",
+      "prompt": "Use case: text-localization and compositing. Image 1 edit target screenshot, image 2 exact ATC logo, image 3 Miguel identity reference only if requested. Keep Notepad and native window controls, localize app title to Plano de formação ATC.txt — Bloco de notas; menus Ficheiro, Editar, Ver. Replace chemistry prose with clear readable relevant Portuguese text: ATC — Plano de formação; Informática na Ótica do Utilizador; 1. Iniciar sessão no Windows; 2. Abrir aplicações no menu Iniciar; 3. Organizar janelas; 4. Guardar o trabalho; 5. Encerrar o computador em segurança. Add Formadores: Helena e Miguel. Leave plenty of white document area. Preserve native Microsoft app controls and icons; sharp legible European Portuguese. Add slim navy footer OUTSIDE original screenshot with logo, \"ATC | Informática na Ótica do Utilizador\", \"Simulação pedagógica • Português (Portugal)\" and orange separator. Flat screenshot for manual, no device frame, do not crop.",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "514be3253919b7febf4ad8325f3c28e73db692deab395094fde9c1a41481f6e4",
+      "type": "AI-edited training simulation"
+    },
+    {
+      "output": "comuns/03-controlos-janela.png",
+      "source": "fig-1-5-window-controls.png",
+      "prompt": "Use case: text-localization and compositing. Image 1 edit target screenshot, image 2 exact ATC logo, image 3 Miguel identity reference only if requested. Preserve native window min/max/close and exact Snap Layout panel red highlight. Replace only ASUS website content with clean ATC academy training page, exact ATC logo, title Aprender hoje. Ir mais longe amanhã., subtitle Informática na Ótica do Utilizador, button Explorar cursos; browser tab ATC Formação, example URL https://atc.example/formacao. Recycle Bin becomes Reciclagem, ENG becomes POR, date Portuguese format. No account face visible so no extra face. Preserve native Microsoft app controls and icons; sharp legible European Portuguese. Add slim navy footer OUTSIDE original screenshot with logo, \"ATC | Informática na Ótica do Utilizador\", \"Simulação pedagógica • Português (Portugal)\" and orange separator. Flat screenshot for manual, no device frame, do not crop.",
+      "width": 1672,
+      "height": 941,
+      "sha256": "b04544e27011b1202a998d52b3589dde742dbce70e9aab31f6ae3e7911bc2b09",
+      "type": "AI-edited training simulation"
+    },
+    {
+      "output": "comuns/04-barra-tarefas.png",
+      "source": "fig-1-3-taskbar-diagram-pt.png",
+      "prompt": "Use case: text-localization. Image 1 is the source Windows training screenshot, image 2 is the exact ATC logo. Preserve all six numbered blue taskbar callouts, their positions and icons. Replace 78°F with 26°C, weather label Ensolarado with Céu limpo, time 11:11, date 10/10/2026, search Pesquisar. Render this horizontal image clean and readable, retain its extremely wide diagram shape inside a wider white training plate, do not invent extra controls. Add slim navy footer OUTSIDE original screenshot with supplied logo, exact \"ATC | Informática na Ótica do Utilizador\", \"Simulação pedagógica • Português (Portugal)\", orange separator. Keep original app icons, screenshot content, native layout, readable fonts. Flat instructional screenshot, no device mockup, no crop.",
+      "width": 2170,
+      "height": 725,
+      "sha256": "e5de78f54549a8865e07f7fb06ebafd54f68ee016bf931e9bd0792d7af85eab0",
+      "type": "AI-edited training simulation"
+    },
+    {
+      "output": "comuns/05-controlos-janela-detalhe.png",
+      "source": "fig-1-5-window-controls-focused.png",
+      "prompt": "Use case: text-localization. Image 1 is the source Windows training screenshot, image 2 is the exact ATC logo. Preserve the window buttons and exact Snap Layout panel, red focus rectangle. No user is visible so do not add any face or profile. Add slim navy footer OUTSIDE original screenshot with supplied logo, exact \"ATC | Informática na Ótica do Utilizador\", \"Simulação pedagógica • Português (Portugal)\", orange separator. Keep original app icons, screenshot content, native layout, readable fonts. Flat instructional screenshot, no device mockup, no crop.",
+      "width": 1484,
+      "height": 1060,
+      "sha256": "d8b71f7f23a2cb54b9951109ae38374225802085424e8858e10e6258317934a7",
+      "type": "AI-edited training simulation"
+    },
+    {
+      "output": "comuns/06-barra-tarefas-tamanhos.png",
+      "source": "bYeqFLkcXavn.jpg",
+      "prompt": "Use case: text-localization. Image 1 is the source Windows training screenshot, image 2 is the exact ATC logo. Preserve three horizontal taskbar examples and recognizable native Windows icons. Add concise European Portuguese labels: Pequena, Média, Grande. No profile exists, do not invent one. Add slim navy footer OUTSIDE original screenshot with supplied logo, exact \"ATC | Informática na Ótica do Utilizador\", \"Simulação pedagógica • Português (Portugal)\", orange separator. Keep original app icons, screenshot content, native layout, readable fonts. Flat instructional screenshot, no device mockup, no crop.",
+      "width": 1675,
+      "height": 939,
+      "sha256": "dc7544283733fc8f485f57140942912472b3ba27fef32997cb02f66e6277d4ba",
+      "type": "AI-edited training simulation"
+    },
+    {
+      "output": "comuns/07-bloco-notas-vazio.png",
+      "source": "21NQ7qsZIPVr.jpg",
+      "prompt": "Use case: text-localization. Image 1 is the source Windows training screenshot, image 2 is the exact ATC logo. Preserve Windows desktop and blank Notepad window. Localize title Sem título — Bloco de notas, menus Ficheiro, Editar, Ver, desktop Reciclagem. Replace document content with just ATC — Informática na Ótica do Utilizador on first line and Formadores: Helena e Miguel on second. Preserve preview/evaluation source watermark as provenance if present, do not remove it. Add slim navy footer OUTSIDE original screenshot with supplied logo, exact \"ATC | Informática na Ótica do Utilizador\", \"Simulação pedagógica • Português (Portugal)\", orange separator. Keep original app icons, screenshot content, native layout, readable fonts. Flat instructional screenshot, no device mockup, no crop.",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "40fbf9550d2e0555cbce120d5d61c6f05f38171cf3c4740950085ffff7cafa1e",
+      "type": "AI-edited training simulation"
+    },
+    {
+      "output": "helena/06-pesquisa-bloco-notas.png",
+      "source": "lu5l541Kpl8E.png",
+      "prompt": "Use case: compositing and text-localization. Image 1 source screenshot, image 2 ATC logo, image 3 exact Helena face reference. Replace circular account initial A in upper bar with small circular exact reference headshot. European Portuguese: Tudo, Aplicações, Documentos, Web, Definições, Bloco de notas, Aplicação, Abrir. Preserve photographed screen perspective and lighting; add no extra app controls. Add slim navy footer outside screenshot with ATC logo and \"ATC | Informática na Ótica do Utilizador\" and \"Simulação pedagógica • Português (Portugal)\", orange separator. Keep Windows icons and layout, sharp clear text, flat instructional image. Do not remove other creator watermarks.",
+      "width": 1672,
+      "height": 941,
+      "sha256": "d305896721d0d1b7b8e70abbfe80e7a39be87f6c9446b758ad422fe35a5d1277",
+      "type": "AI-edited training simulation"
+    },
+    {
+      "output": "miguel/06-pesquisa-bloco-notas.png",
+      "source": "lu5l541Kpl8E.png",
+      "prompt": "Use case: compositing and text-localization. Image 1 source screenshot, image 2 ATC logo, image 3 exact Miguel face reference. Replace circular account initial A in upper bar with small circular exact reference headshot. European Portuguese: Tudo, Aplicações, Documentos, Web, Definições, Bloco de notas, Aplicação, Abrir. Preserve photographed screen perspective and lighting; add no extra app controls. Add slim navy footer outside screenshot with ATC logo and \"ATC | Informática na Ótica do Utilizador\" and \"Simulação pedagógica • Português (Portugal)\", orange separator. Keep Windows icons and layout, sharp clear text, flat instructional image. Do not remove other creator watermarks.",
+      "width": 1672,
+      "height": 941,
+      "sha256": "98c32828ea62f20ba618e58959f2c9f060c576875a7ec2d5943ce751b6eb5763",
+      "type": "AI-edited training simulation"
+    },
+    {
+      "output": "comuns/08-recuperar-pin-detalhe.png",
+      "source": "TW41YlAN8EHI.png",
+      "prompt": "Use case: compositing and text-localization. Image 1 source screenshot, image 2 ATC logo, image 3 exact Helena face reference. Preserve cropped PIN field and red arrow, no face exists here so no extra face. Localize exact labels to Esqueci-me do meu PIN and Opções de início de sessão. Keep native Windows sign-in appearance. Add slim navy footer outside screenshot with ATC logo and \"ATC | Informática na Ótica do Utilizador\" and \"Simulação pedagógica • Português (Portugal)\", orange separator. Keep Windows icons and layout, sharp clear text, flat instructional image. Do not remove other creator watermarks.",
+      "width": 1886,
+      "height": 834,
+      "sha256": "83ff1030aa33bc8bbaf587a84394131f37b2c2a06bba343ee365b3599b3de1bf",
+      "type": "AI-edited training simulation"
+    },
+    {
+      "output": "comuns/09-bloco-notas-aplicacao.png",
+      "source": "XgvT1EuwIhcD.jpeg",
+      "prompt": "Use case: compositing and text-localization. Image 1 source screenshot, image 2 ATC logo, image 3 exact Miguel face reference. Keep the large real Notepad icon and simple app-window background. Make menu readable European Portuguese: Ficheiro, Editar, Formatar, Ver, Ajuda. Add title Bloco de notas — ATC above icon. No account face is visible: add no face. Add slim navy footer outside screenshot with ATC logo and \"ATC | Informática na Ótica do Utilizador\" and \"Simulação pedagógica • Português (Portugal)\", orange separator. Keep Windows icons and layout, sharp clear text, flat instructional image. Do not remove other creator watermarks.",
+      "width": 1672,
+      "height": 941,
+      "sha256": "ab6deb00c3075f7daa5c4fa5aae9e75e75a1f20aefc2cefec24360e3a43d48f0",
+      "type": "AI-edited training simulation"
+    }
+  ],
+  "source_inventory": [
+    {
+      "source": "21NQ7qsZIPVr.jpg",
+      "sha256": "ce8d494a03f773927279774397bb7f699ff43e2e643481906e68567fc2e3516b",
+      "status": "customized",
+      "outputs": [
+        "comuns/07-bloco-notas-vazio.png"
+      ],
+      "note": "ATC derivative; original retained."
+    },
+    {
+      "source": "3okdW4Jg9jBU.png",
+      "sha256": "5ec4bc6018f5dab8d7378b7a1e1f5fea421cc54c81f6d928d1b2f5c97f55ae56",
+      "status": "customized",
+      "outputs": [
+        "comuns/01-encerrar-dialogo.png"
+      ],
+      "note": "ATC derivative; original retained."
+    },
+    {
+      "source": "6ciS9Kqv2jsh.jpg",
+      "sha256": "17e6d99744d45e4685c1b9d514de4ed66a070f96d7cb030ee588798691b5dd8d",
+      "status": "customized",
+      "outputs": [
+        "helena/05-recuperar-pin.png",
+        "miguel/05-recuperar-pin.png"
+      ],
+      "note": "ATC derivative; original retained."
+    },
+    {
+      "source": "8Kain3Mm3Xux.png",
+      "sha256": "109b99f61c72a5151ba17856b0effa201475402db3b818f4207ec569121aed60",
+      "status": "mapped_to_clean_or_high_resolution_variant",
+      "outputs": [
+        "helena/02-menu-iniciar.png",
+        "miguel/02-menu-iniciar.png"
+      ],
+      "note": "ATC derivative; original retained."
+    },
+    {
+      "source": "8mRaa7Xns95q.png",
+      "sha256": "b2551840969286c48a9fa527778e8449530044c2a0faca6db1fddd03d54c9bf9",
+      "status": "customized",
+      "outputs": [
+        "helena/04-menu-iniciar-anotado.png",
+        "miguel/04-menu-iniciar-anotado.png"
+      ],
+      "note": "ATC derivative; original retained."
+    },
+    {
+      "source": "DXebctcie84d.jpeg",
+      "sha256": "aab10687a47b53a869d5c3504834e1f1961c679cf1abb23d7900b523066180ea",
+      "status": "mapped_to_clean_or_high_resolution_variant",
+      "outputs": [
+        "comuns/09-bloco-notas-aplicacao.png"
+      ],
+      "note": "ATC derivative; original retained."
+    },
+    {
+      "source": "E7hifvshfiQj.png",
+      "sha256": "5bc8863fae0b8fc856aa19456e9b99b53a865e4c6e3d26615ee9d34e1abffc79",
+      "status": "mapped_to_clean_or_high_resolution_variant",
+      "outputs": [
+        "comuns/05-controlos-janela-detalhe.png"
+      ],
+      "note": "ATC derivative; original retained."
+    },
+    {
+      "source": "TW41YlAN8EHI.png",
+      "sha256": "8525427e130abb51e75b8860ca40ee7f65688152abe0203c6c32ca3f29d28df3",
+      "status": "customized",
+      "outputs": [
+        "comuns/08-recuperar-pin-detalhe.png"
+      ],
+      "note": "ATC derivative; original retained."
+    },
+    {
+      "source": "V8oaui5hrRE4.jpg",
+      "sha256": "ae3aa52a60efb0e403a1404c65bec23d63be3c7225f20fac70211592b6c1f0e7",
+      "status": "customized",
+      "outputs": [
+        "comuns/02-bloco-notas.png"
+      ],
+      "note": "ATC derivative; original retained."
+    },
+    {
+      "source": "WzEO9IvmdvZo.png",
+      "sha256": "6922df3e04df31bbda78c8dd8d35793ab5921a4fb12e03f6f733c914946c04f2",
+      "status": "mapped_to_clean_or_high_resolution_variant",
+      "outputs": [
+        "helena/01-opcoes-inicio-sessao.png",
+        "miguel/01-opcoes-inicio-sessao.png"
+      ],
+      "note": "ATC derivative; original retained."
+    },
+    {
+      "source": "XgvT1EuwIhcD.jpeg",
+      "sha256": "21899835a9bf9af9089fa428e202518cc141740ccfa4d360742715db7841becb",
+      "status": "customized",
+      "outputs": [
+        "comuns/09-bloco-notas-aplicacao.png"
+      ],
+      "note": "ATC derivative; original retained."
+    },
+    {
+      "source": "bYeqFLkcXavn.jpg",
+      "sha256": "4f9f11eba68290a65f8bb089d3266642349fc4d2f5e37becdbe98b4fcbdd3b37",
+      "status": "customized",
+      "outputs": [
+        "comuns/06-barra-tarefas-tamanhos.png"
+      ],
+      "note": "ATC derivative; original retained."
+    },
+    {
+      "source": "fig-1-1-windows-software-pt.png",
+      "sha256": "ed7d9d3929f6008434b70d07d3b077f60e9ba486a69d8b885e71b3543ab9a515",
+      "status": "mapped_to_clean_or_high_resolution_variant",
+      "outputs": [
+        "comuns/01-encerrar-dialogo.png"
+      ],
+      "note": "ATC derivative; original retained."
+    },
+    {
+      "source": "fig-1-2-sign-in-options-pt-pt.jpg",
+      "sha256": "43a513831f9a0a68a23eb2b1284596d2a470030aa5541e4edafcc7aa62bc8a65",
+      "status": "mapped_to_clean_or_high_resolution_variant",
+      "outputs": [
+        "helena/01-opcoes-inicio-sessao.png",
+        "miguel/01-opcoes-inicio-sessao.png"
+      ],
+      "note": "ATC derivative; original retained."
+    },
+    {
+      "source": "fig-1-2-sign-in-options-pt-pt.png",
+      "sha256": "6922df3e04df31bbda78c8dd8d35793ab5921a4fb12e03f6f733c914946c04f2",
+      "status": "customized",
+      "outputs": [
+        "helena/01-opcoes-inicio-sessao.png",
+        "miguel/01-opcoes-inicio-sessao.png"
+      ],
+      "note": "ATC derivative; original retained."
+    },
+    {
+      "source": "fig-1-3-taskbar-diagram-pt.png",
+      "sha256": "07e61f34cbb54674f22f7b25773139ac175b80d82cc87f9278ca549cfa3ba0ce",
+      "status": "customized",
+      "outputs": [
+        "comuns/04-barra-tarefas.png"
+      ],
+      "note": "ATC derivative; original retained."
+    },
+    {
+      "source": "fig-1-4-start-menu-focused.jpg",
+      "sha256": "e62a09b22ad0abcb58e8f4a6ea28ac7d1e0f42183023dbf789a0b47c515f3c0b",
+      "status": "mapped_to_clean_or_high_resolution_variant",
+      "outputs": [
+        "helena/02-menu-iniciar.png",
+        "miguel/02-menu-iniciar.png"
+      ],
+      "note": "ATC derivative; original retained."
+    },
+    {
+      "source": "fig-1-4-start-menu-focused.png",
+      "sha256": "ff6a7edf021992a6502d0a6c0ef0718a014cbb5dfdd210edc2ca8f885ac1d08c",
+      "status": "customized",
+      "outputs": [
+        "helena/02-menu-iniciar.png",
+        "miguel/02-menu-iniciar.png"
+      ],
+      "note": "ATC derivative; original retained."
+    },
+    {
+      "source": "fig-1-4-start-menu-pt.png",
+      "sha256": "109b99f61c72a5151ba17856b0effa201475402db3b818f4207ec569121aed60",
+      "status": "mapped_to_clean_or_high_resolution_variant",
+      "outputs": [
+        "helena/02-menu-iniciar.png",
+        "miguel/02-menu-iniciar.png"
+      ],
+      "note": "ATC derivative; original retained."
+    },
+    {
+      "source": "fig-1-5-window-controls-focused.jpg",
+      "sha256": "78ab1899e0b46db554ede1542a9735d8a04dae58ceb11271f1ba06f5cb6c4da3",
+      "status": "mapped_to_clean_or_high_resolution_variant",
+      "outputs": [
+        "comuns/05-controlos-janela-detalhe.png"
+      ],
+      "note": "ATC derivative; original retained."
+    },
+    {
+      "source": "fig-1-5-window-controls-focused.png",
+      "sha256": "548096d588f397bbe8c7ea826b70a8e9874d44a7ead657b35615059c8c022b5d",
+      "status": "customized",
+      "outputs": [
+        "comuns/05-controlos-janela-detalhe.png"
+      ],
+      "note": "ATC derivative; original retained."
+    },
+    {
+      "source": "fig-1-5-window-controls.png",
+      "sha256": "a93e6e032aa47aebef9e3531ddf70686eb39fff4fefe9514eed86bf488a9747d",
+      "status": "customized",
+      "outputs": [
+        "comuns/03-controlos-janela.png"
+      ],
+      "note": "ATC derivative; original retained."
+    },
+    {
+      "source": "fig-1-6-shutdown-pt.jpg",
+      "sha256": "0be1a0203137e5676c79f689c32c05e65cef68731e5e6b4233f2eae5de147660",
+      "status": "mapped_to_clean_or_high_resolution_variant",
+      "outputs": [
+        "helena/03-encerrar.png",
+        "miguel/03-encerrar.png"
+      ],
+      "note": "ATC derivative; original retained."
+    },
+    {
+      "source": "fig-1-6-shutdown-pt.png",
+      "sha256": "cde992a83722e3fcca6ae59efec6009825817164960770591fd66ae1b373bf7e",
+      "status": "customized",
+      "outputs": [
+        "helena/03-encerrar.png",
+        "miguel/03-encerrar.png"
+      ],
+      "note": "ATC derivative; original retained."
+    },
+    {
+      "source": "lu5l541Kpl8E.png",
+      "sha256": "d70240c376c4dddd6fc596e814739e899d8bdd85efeb25e013d4d482a8178f23",
+      "status": "customized",
+      "outputs": [
+        "helena/06-pesquisa-bloco-notas.png",
+        "miguel/06-pesquisa-bloco-notas.png"
+      ],
+      "note": "ATC derivative; original retained."
+    },
+    {
+      "source": "manual-contact-sheet.png",
+      "sha256": "7bb3159ecb7b5b2010ab7e8f103e4734a973086b192a1c22d534892a9dfa111d",
+      "status": "manual_page_reference",
+      "outputs": [],
+      "note": "Rendered manual page or contact sheet; not a standalone screenshot. Use new frames when rebuilding the manual."
+    },
+    {
+      "source": "page-05.png",
+      "sha256": "205555ddaef0db2a5cc98af6ab33038e703962a9904adcd996c4587e327f9a31",
+      "status": "manual_page_reference",
+      "outputs": [],
+      "note": "Rendered manual page or contact sheet; not a standalone screenshot. Use new frames when rebuilding the manual."
+    },
+    {
+      "source": "page-06.png",
+      "sha256": "d4f1c5da30a35f035b51e2a1dc0b987590892ab3de7dbfec4d6edce98b6c10a8",
+      "status": "manual_page_reference",
+      "outputs": [],
+      "note": "Rendered manual page or contact sheet; not a standalone screenshot. Use new frames when rebuilding the manual."
+    },
+    {
+      "source": "page-07.png",
+      "sha256": "7b9e2f2d39e6c62f3dea04916e83aa6083619a11dadf0638519038dcb70203e4",
+      "status": "manual_page_reference",
+      "outputs": [],
+      "note": "Rendered manual page or contact sheet; not a standalone screenshot. Use new frames when rebuilding the manual."
+    },
+    {
+      "source": "page-08.png",
+      "sha256": "636dba97b8a9b8d70bcfad1047a88ecddb667bc17a39deb4efa3825d4f2a4a09",
+      "status": "manual_page_reference",
+      "outputs": [],
+      "note": "Rendered manual page or contact sheet; not a standalone screenshot. Use new frames when rebuilding the manual."
+    },
+    {
+      "source": "page-09.png",
+      "sha256": "79562e14de618358dc4280b091bbfb0bdd9706bb3b169cd72644b3acfaa13ba6",
+      "status": "manual_page_reference",
+      "outputs": [],
+      "note": "Rendered manual page or contact sheet; not a standalone screenshot. Use new frames when rebuilding the manual."
+    },
+    {
+      "source": "page-1.png",
+      "sha256": "7e1ac7d6c5d1c19a073cdf6541e975558f3b5b8a019581cec85637aabb5b3cf2",
+      "status": "manual_page_reference",
+      "outputs": [],
+      "note": "Rendered manual page or contact sheet; not a standalone screenshot. Use new frames when rebuilding the manual."
+    },
+    {
+      "source": "page-10.png",
+      "sha256": "f36eb49b2746230043729c2ceeba5409d12dd275e97a9b62f61b12f6757d4acc",
+      "status": "manual_page_reference",
+      "outputs": [],
+      "note": "Rendered manual page or contact sheet; not a standalone screenshot. Use new frames when rebuilding the manual."
+    },
+    {
+      "source": "page-11.png",
+      "sha256": "01ba542f471a650784f6e5a1de42daa2ca79921e6076aa60f9008e583c9800f7",
+      "status": "manual_page_reference",
+      "outputs": [],
+      "note": "Rendered manual page or contact sheet; not a standalone screenshot. Use new frames when rebuilding the manual."
+    },
+    {
+      "source": "page-12.png",
+      "sha256": "a1ff0ee765d0d8eb00a5ab9e016fa767438b579a4de81da4c5113851ae534041",
+      "status": "manual_page_reference",
+      "outputs": [],
+      "note": "Rendered manual page or contact sheet; not a standalone screenshot. Use new frames when rebuilding the manual."
+    },
+    {
+      "source": "page-13.png",
+      "sha256": "feec94ac75cc2a9170370bab6360c67e498bcecfbbe559c063b686c51bcd7151",
+      "status": "manual_page_reference",
+      "outputs": [],
+      "note": "Rendered manual page or contact sheet; not a standalone screenshot. Use new frames when rebuilding the manual."
+    },
+    {
+      "source": "page-14.png",
+      "sha256": "67fd23daa123759fbb61fb14aeaf3b5d98af1fe25e847e1a8078c28c5780bd9a",
+      "status": "manual_page_reference",
+      "outputs": [],
+      "note": "Rendered manual page or contact sheet; not a standalone screenshot. Use new frames when rebuilding the manual."
+    },
+    {
+      "source": "scOY6FWy0Ev0.jpg",
+      "sha256": "0046665371951ea1e85fba130d8e95be7baafc1d9f277a8dd2326169affacbfc",
+      "status": "third_party_video_thumbnail_reference",
+      "outputs": [],
+      "note": "Contains another creator’s branding; retained as reference, not reused in the sample. ATC Start-menu frames provide the replacement."
+    }
+  ]
+}

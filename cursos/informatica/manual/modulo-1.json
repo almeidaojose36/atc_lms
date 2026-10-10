@@ -238,9 +238,8 @@
               "source": "https://support.microsoft.com/en-us/windows/experience/fileexplorer/file-explorer-in-windows"
             },
             {
-              "figure": "icone-windows.png",
-              "caption": "Símbolo da tecla Windows, usada no atalho Windows + E. Used with permission from Microsoft.",
-              "source": "https://support.microsoft.com/en-us/windows/experience/fileexplorer/file-explorer-in-windows"
+              "figure": "windows-replica.png",
+              "caption": "Símbolo da tecla Windows, usada no atalho Windows + E."
             }
           ]
         },
@@ -248,27 +247,23 @@
           "title": "1.8 Reconhecer os programas",
           "blocks": [
             {
-              "p": "Estes são ícones originais da família Microsoft Office de 2018–2025. A versão instalada pode mostrar ícones mais recentes. Identifique o programa pelo nome completo, não apenas pela cor."
+              "p": "Os ícones seguintes são réplicas visuais fornecidas para este curso e ajudam a reconhecer os programas. A aparência pode variar conforme a versão instalada; confirme sempre o nome da aplicação."
             },
             {
-              "figure": "word-original.svg",
-              "caption": "Microsoft Word — Criar e editar documentos de texto. Ícone histórico original. Used with permission from Microsoft.",
-              "source": "https://commons.wikimedia.org/wiki/File:Microsoft_Office_Word_%282019%E2%80%932025%29.svg"
+              "figure": "office-replica-word.png",
+              "caption": "Microsoft Word — criar e editar documentos de texto."
             },
             {
-              "figure": "excel-original.svg",
-              "caption": "Microsoft Excel — Organizar dados, calcular e criar gráficos. Ícone histórico original. Used with permission from Microsoft.",
-              "source": "https://commons.wikimedia.org/wiki/File:Microsoft_Office_Excel_%282019%E2%80%932025%29.svg"
+              "figure": "office-replica-excel.png",
+              "caption": "Microsoft Excel — organizar dados, calcular e criar gráficos."
             },
             {
-              "figure": "powerpoint-original.svg",
-              "caption": "Microsoft PowerPoint — Preparar apresentações com diapositivos. Ícone histórico original. Used with permission from Microsoft.",
-              "source": "https://commons.wikimedia.org/wiki/File:Microsoft_Office_PowerPoint_%282019%E2%80%932025%29.svg"
+              "figure": "office-replica-powerpoint.png",
+              "caption": "Microsoft PowerPoint — preparar apresentações com diapositivos."
             },
             {
-              "figure": "outlook-original.svg",
-              "caption": "Microsoft Outlook — Gerir correio eletrónico, contactos e calendário. Ícone histórico original. Used with permission from Microsoft.",
-              "source": "https://commons.wikimedia.org/wiki/File:Microsoft_Office_Outlook_%282018%E2%80%932024%29.svg"
+              "figure": "office-replica-outlook.png",
+              "caption": "Microsoft Outlook — gerir correio eletrónico, contactos e calendário."
             }
           ]
         }

@@ -1,0 +1,34 @@
+[
+  {
+    "id": "scene-01-sessao",
+    "start": 0,
+    "duration": 8,
+    "frame": "helena/01-opcoes-inicio-sessao.png",
+    "presenter": "Helena",
+    "narration": "Nas Definições, abra Contas. Aqui encontra as opções de início de sessão, incluindo o PIN."
+  },
+  {
+    "id": "scene-02-documentos",
+    "start": 8,
+    "duration": 8,
+    "frame": "miguel/02-menu-iniciar.png",
+    "presenter": "Miguel",
+    "narration": "No menu Iniciar, encontre os documentos recentes. Abra o manual do formando para acompanhar a formação."
+  },
+  {
+    "id": "scene-03-plano",
+    "start": 16,
+    "duration": 8,
+    "frame": "comuns/02-bloco-notas.png",
+    "presenter": "Helena",
+    "narration": "No Bloco de notas, consulte o plano da formação. Organize os passos e guarde o seu trabalho."
+  },
+  {
+    "id": "scene-04-encerrar",
+    "start": 24,
+    "duration": 8,
+    "frame": "miguel/03-encerrar.png",
+    "presenter": "Miguel",
+    "narration": "Antes de encerrar, guarde os ficheiros. No menu Iniciar, use o botão de energia para terminar."
+  }
+]

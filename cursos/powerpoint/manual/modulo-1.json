@@ -1,0 +1,228 @@
+{
+  "course": "Microsoft PowerPoint",
+  "subtitle": "Estruturar ideias e comunicar com diapositivos",
+  "version": "1.0 — módulo de amostra ATC",
+  "date": "outubro de 2026",
+  "hours_class": 2,
+  "hours_video": 0.25,
+  "producer": "Almeida José",
+  "reviewer": "Formador ATC",
+  "intro": "Este módulo de amostra orienta o formando na criação de uma apresentação breve. Os diagramas animados foram criados pela ATC e representam princípios de organização visual; não são capturas nem reproduções da interface do Microsoft PowerPoint. Inclui também capturas próprias de exemplos ATC na aplicação para a Web.",
+  "modules": [
+    {
+      "num": 1,
+      "title": "Primeiros passos no PowerPoint",
+      "intro": "Uma apresentação eficaz ajuda o público a compreender uma ideia. Antes de escolher cores ou animações, defina a mensagem, conheça o público e organize o conteúdo numa sequência simples.",
+      "objectives": [
+        "Identificar a finalidade e o público de uma apresentação.",
+        "Organizar uma mensagem em abertura, desenvolvimento e conclusão.",
+        "Criar diapositivos com uma ideia principal por ecrã.",
+        "Escolher texto e elementos visuais legíveis e relevantes.",
+        "Ensaiar e rever uma apresentação antes de a apresentar."
+      ],
+      "sections": [
+        {
+          "title": "1.1 Começar pela mensagem",
+          "blocks": [
+            {
+              "figure": "office-replica-powerpoint.png",
+              "caption": "Ícone de identificação do Microsoft PowerPoint, réplica visual fornecida para este curso."
+            },
+            {
+              "p": "Uma apresentação começa com uma pergunta: **o que deve o público compreender ou fazer no final?** Escreva essa resposta numa frase curta. Use-a para decidir que informação incluir e que informação pode ficar de fora."
+            },
+            {
+              "table": [
+                [
+                  "Parte",
+                  "Objetivo",
+                  "Exemplo de conteúdo"
+                ],
+                [
+                  "Abertura",
+                  "Apresentar o tema e orientar o público.",
+                  "Título, contexto e objetivo"
+                ],
+                [
+                  "Desenvolvimento",
+                  "Explicar as ideias com uma ordem lógica.",
+                  "Três passos, dados ou exemplos"
+                ],
+                [
+                  "Conclusão",
+                  "Reforçar a mensagem e indicar o próximo passo.",
+                  "Resumo e ação recomendada"
+                ]
+              ]
+            },
+            {
+              "figure": "animar-estrutura.svg",
+              "caption": "Esquema animado ATC: três partes organizam a mensagem de uma apresentação."
+            },
+            {
+              "tip": "Se não conseguir resumir o objetivo numa frase, simplifique a apresentação antes de abrir o Microsoft PowerPoint."
+            }
+          ]
+        },
+        {
+          "title": "1.2 Um diapositivo, uma ideia principal",
+          "blocks": [
+            {
+              "p": "Cada diapositivo deve ter uma função clara. Um título informativo ajuda o público a perceber a conclusão, e não apenas o tema. Prefira frases curtas e use uma imagem, um gráfico ou um diagrama apenas quando acrescentar informação."
+            },
+            {
+              "figure": "animar-diapositivo.svg",
+              "caption": "Esquema animado ATC: título com mensagem, poucos pontos de apoio e um elemento visual útil."
+            },
+            {
+              "table": [
+                [
+                  "Reveja",
+                  "Pergunta"
+                ],
+                [
+                  "Título",
+                  "O título comunica a conclusão do diapositivo?"
+                ],
+                [
+                  "Texto",
+                  "É possível compreender a ideia sem ler um parágrafo longo?"
+                ],
+                [
+                  "Imagem ou gráfico",
+                  "Ajuda a explicar os dados ou é apenas decorativo?"
+                ],
+                [
+                  "Contraste",
+                  "O texto continua legível à distância?"
+                ]
+              ]
+            },
+            {
+              "warn": "Evite colocar todo o discurso no diapositivo. O público deve conseguir ouvir e acompanhar a mensagem sem ler blocos extensos de texto."
+            }
+          ]
+        },
+        {
+          "title": "1.3 Criar uma apresentação simples",
+          "blocks": [
+            {
+              "p": "No Microsoft PowerPoint, pode iniciar uma apresentação em branco ou escolher um modelo. Para praticar, crie uma apresentação com quatro diapositivos: título, problema, proposta e próximo passo. Use o mesmo tema visual ao longo da sequência."
+            },
+            {
+              "steps": [
+                "Abra o Microsoft PowerPoint e crie uma apresentação em branco.",
+                "Escolha um tema simples e confirme que o texto tem contraste suficiente.",
+                "Adicione um diapositivo de título com o tema e o objetivo.",
+                "Crie dois diapositivos de desenvolvimento, cada um com uma ideia principal.",
+                "Termine com a conclusão ou a ação que pretende do público.",
+                "Guarde o ficheiro com um nome claro e ensaie a apresentação no modo de apresentação de diapositivos."
+              ]
+            },
+            {
+              "note": "Os nomes de comandos e a disposição dos separadores podem variar consoante a versão e o idioma do Microsoft PowerPoint."
+            }
+          ]
+        },
+        {
+          "title": "1.4 Rever e apresentar",
+          "blocks": [
+            {
+              "p": "Antes de apresentar, reveja a sequência, confirme nomes e números e teste vídeos, ligações ou outros elementos inseridos. Ensaiar ajuda a ajustar o tempo e a explicar a mensagem sem ler os diapositivos."
+            },
+            {
+              "steps": [
+                "Apresente a sequência completa do início ao fim.",
+                "Confirme que cada diapositivo prepara o seguinte.",
+                "Verifique ortografia, números e fontes dos dados.",
+                "Confirme que os elementos multimédia funcionam no computador da apresentação.",
+                "Termine com uma conclusão e reserve tempo para perguntas."
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Exemplo ATC · Apresentar o tema no primeiro diapositivo",
+          "blocks": [
+            {
+              "p": "O título e uma frase de apoio orientam o público."
+            },
+            {
+              "figure": "amostra-powerpoint-titulo.jpg",
+              "caption": "Captura própria ATC · Microsoft PowerPoint para a Web · Português (Portugal)."
+            },
+            {
+              "steps": [
+                "Selecione a primeira miniatura à esquerda.",
+                "Escreva um título que identifique o tema.",
+                "Acrescente uma frase curta que explique o propósito."
+              ]
+            },
+            {
+              "tip": "O diapositivo apresenta Formação Digital ATC e uma mensagem de apoio."
+            }
+          ]
+        },
+        {
+          "title": "Exemplo ATC · Organizar os objetivos da apresentação",
+          "blocks": [
+            {
+              "p": "O segundo diapositivo comunica três objetivos em frases curtas."
+            },
+            {
+              "figure": "amostra-powerpoint-objetivos.jpg",
+              "caption": "Captura própria ATC · Microsoft PowerPoint para a Web · Português (Portugal)."
+            },
+            {
+              "steps": [
+                "Selecione a segunda miniatura.",
+                "Use um título informativo: Objetivos da formação.",
+                "Liste apenas os objetivos essenciais, com uma ideia por linha."
+              ]
+            },
+            {
+              "tip": "Confirme que o título e os três objetivos são legíveis e seguem uma ordem clara."
+            }
+          ]
+        }
+      ],
+      "exercise": {
+        "title": "Exercício prático · Apresentar uma melhoria simples",
+        "minutes": 20,
+        "file": "Crie uma apresentação de quatro diapositivos",
+        "tasks": [
+          "Escolha uma melhoria simples para um processo de formação ou de trabalho.",
+          "Escreva o objetivo da apresentação numa frase.",
+          "Crie quatro diapositivos: título, situação atual, proposta e próximo passo.",
+          "Use uma ideia principal por diapositivo e escolha um visual que apoie a mensagem.",
+          "Apresente em voz alta e reveja a clareza, o tempo e a legibilidade."
+        ]
+      },
+      "summary": [
+        "Defina a mensagem e o público antes de criar os diapositivos.",
+        "Organize a apresentação em abertura, desenvolvimento e conclusão.",
+        "Use uma ideia principal por diapositivo.",
+        "Escolha elementos visuais pela sua utilidade e mantenha o texto legível.",
+        "Ensaie, reveja e teste a apresentação antes de a apresentar."
+      ]
+    }
+  ],
+  "glossary": [
+    [
+      "Diapositivo",
+      "Cada ecrã individual de uma apresentação."
+    ],
+    [
+      "Modelo",
+      "Estrutura visual predefinida que pode ser aplicada a uma apresentação."
+    ],
+    [
+      "Tema",
+      "Conjunto coordenado de cores, tipos de letra e efeitos visuais."
+    ],
+    [
+      "Mensagem principal",
+      "Ideia que o público deve compreender e recordar."
+    ]
+  ]
+}

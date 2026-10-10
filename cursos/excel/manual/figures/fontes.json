@@ -1,0 +1,31 @@
+{
+  "source": "Capturas próprias ATC e esquemas pedagógicos ATC",
+  "captures": [
+    {
+      "course": "excel",
+      "file": "cursos/excel/manual/figures/amostra-excel-base.jpg",
+      "captured": "2026-10-10",
+      "sha256": "ea9504f0d896c5abc24ed7872858510fc2904602fc11ba7c713cee0ce444c9ff",
+      "method": "Screenshot through the existing signed-in in-app browser",
+      "changes": "None: full viewport preserved. Branding and instructional steps placed outside the image.",
+      "document": "ATC fictional training exercise; no private document URLs stored.",
+      "capture_view": "Workbook zoom 200% during capture; restored to 100% afterward."
+    },
+    {
+      "course": "excel",
+      "file": "cursos/excel/manual/figures/amostra-excel-formulas.jpg",
+      "captured": "2026-10-10",
+      "sha256": "1302b0ea0c6a9b6dcec059bcd8eaaabb5ac1d552b0e7f11e03b4066e45faa1be",
+      "method": "Screenshot through the existing signed-in in-app browser",
+      "changes": "None: full viewport preserved. Branding and instructional steps placed outside the image.",
+      "document": "ATC fictional training exercise; no private document URLs stored.",
+      "capture_view": "Workbook zoom 200% during capture; restored to 100% afterward."
+    }
+  ],
+  "diagrams": [
+    "animar-estrutura.svg",
+    "animar-criar-livro.svg",
+    "animar-introduzir-dados.svg",
+    "animar-preencher-serie.svg"
+  ]
+}

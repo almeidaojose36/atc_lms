@@ -1,0 +1,275 @@
+{
+  "course": "Microsoft Excel",
+  "subtitle": "Folhas de cálculo para organizar e compreender dados",
+  "version": "1.0 — módulo introdutório ATC",
+  "date": "outubro de 2026",
+  "hours_class": 2,
+  "hours_video": 0.5,
+  "producer": "Almeida José",
+  "reviewer": "Formador ATC",
+  "intro": "Este módulo apresenta o Microsoft Excel através de tarefas simples: criar um livro, preencher células e continuar uma série. Inclui capturas próprias de exemplos ATC e esquemas pedagógicos ATC.",
+  "modules": [
+    {
+      "num": 1,
+      "title": "Primeiros passos no Excel",
+      "intro": "O Microsoft Excel é uma aplicação de folhas de cálculo. Permite organizar informação em linhas e colunas, efetuar cálculos e apresentar dados em gráficos. Neste módulo, vai praticar com um pequeno registo de despesas de formação em kwanzas.",
+      "objectives": [
+        "Explicar para que serve uma folha de cálculo e distinguir livro, folha e célula.",
+        "Criar um livro em branco e identificar uma célula pelo endereço.",
+        "Introduzir texto e números e avançar entre células com Enter ou Tab.",
+        "Usar o preenchimento automático para prolongar uma série simples.",
+        "Reconhecer que gráficos e formatação condicional ajudam a interpretar dados."
+      ],
+      "sections": [
+        {
+          "title": "1.1 O que é o Excel?",
+          "blocks": [
+            {
+              "figure": "office-replica-excel.png",
+              "caption": "Ícone de identificação do Microsoft Excel, réplica visual fornecida para este curso."
+            },
+            {
+              "p": "O **Microsoft Excel** é uma aplicação de folhas de cálculo. Uma folha está organizada em **colunas** (identificadas por letras) e **linhas** (identificadas por números). O cruzamento de uma coluna com uma linha forma uma **célula**."
+            },
+            {
+              "table": [
+                [
+                  "Termo",
+                  "Significado",
+                  "Exemplo"
+                ],
+                [
+                  "Livro",
+                  "Ficheiro de trabalho do Excel; pode conter várias folhas.",
+                  "Registo de despesas.xlsx"
+                ],
+                [
+                  "Folha",
+                  "Uma página de células dentro do livro.",
+                  "Janeiro"
+                ],
+                [
+                  "Célula",
+                  "Espaço onde se introduz um valor ou uma fórmula.",
+                  "B4 é a coluna B, linha 4"
+                ],
+                [
+                  "Intervalo",
+                  "Conjunto de uma ou mais células.",
+                  "B2:B8"
+                ]
+              ]
+            },
+            {
+              "p": "O Excel ajuda a efetuar cálculos, pode sugerir gráficos adequados aos dados e permite realçar tendências com barras de dados, escalas de cores e conjuntos de ícones. Os resultados dependem dos dados e das fórmulas introduzidas; confirme sempre se fazem sentido."
+            },
+            {
+              "figure": "animar-estrutura.svg",
+              "caption": "Esquema animado ATC: um livro contém folhas; cada folha organiza células em linhas e colunas."
+            },
+            {
+              "tip": "Os nomes dos separadores, botões e funções podem variar ligeiramente conforme a versão do Microsoft Excel e o idioma instalado. Neste manual usamos os termos da interface em português europeu."
+            }
+          ]
+        },
+        {
+          "title": "1.2 Criar um livro e selecionar uma célula",
+          "blocks": [
+            {
+              "p": "Abra o **Microsoft Excel** e escolha **Livro em branco**. Também pode criar um livro com **Ctrl+N**. A grelha que aparece é uma folha de cálculo pronta a receber dados."
+            },
+            {
+              "steps": [
+                "Abra o Microsoft Excel.",
+                "Escolha **Livro em branco**.",
+                "Clique numa célula, por exemplo A1. A referência da célula combina a letra da coluna com o número da linha.",
+                "Introduza um título, como **Despesas de formação ATC**, e prima Enter.",
+                "Guarde o ficheiro com um nome claro, por exemplo **Registo de despesas.xlsx**."
+              ]
+            },
+            {
+              "figure": "animar-criar-livro.svg",
+              "caption": "Esquema animado ATC: criar um livro e começar na célula A1."
+            }
+          ]
+        },
+        {
+          "title": "1.3 Introduzir texto e números",
+          "blocks": [
+            {
+              "p": "Selecione uma célula vazia, escreva o conteúdo e prima **Enter** ou **Tab**. Enter confirma a entrada e normalmente avança para a célula seguinte na coluna; Tab confirma e avança para a célula à direita. Pode escrever palavras, datas ou números."
+            },
+            {
+              "figure": "animar-introduzir-dados.svg",
+              "caption": "Esquema animado ATC: preencher uma tabela simples de despesas em kwanzas."
+            },
+            {
+              "steps": [
+                "Na célula A1, escreva **Despesa**; na B1, escreva **Valor (Kz)**.",
+                "Na célula A2, escreva **Caderno**; em B2, escreva **2500**.",
+                "Na linha seguinte, registe **Transporte** e **6000**.",
+                "Na terceira linha, registe **Dados móveis** e **3500**.",
+                "Confirme os valores e guarde o livro."
+              ]
+            },
+            {
+              "warn": "Não introduza dados pessoais ou financeiros reais em ficheiros de demonstração. Use apenas valores de exemplo durante a prática."
+            }
+          ]
+        },
+        {
+          "title": "1.4 Preencher uma série automaticamente",
+          "blocks": [
+            {
+              "p": "Quando reconhece um padrão, o Excel pode continuar uma série. Para criar uma sequência mensal, escreva **Jan** e **Fev** em duas células adjacentes, selecione ambas e arraste a **alça de preenchimento** — o pequeno quadrado no canto inferior direito da seleção — na direção pretendida."
+            },
+            {
+              "figure": "animar-preencher-serie.svg",
+              "caption": "Esquema animado ATC: selecionar os dois primeiros meses e arrastar a alça para continuar a série."
+            },
+            {
+              "steps": [
+                "Escreva **Jan** numa célula e **Fev** na célula imediatamente à direita.",
+                "Selecione as duas células.",
+                "Aponte para a alça de preenchimento até o ponteiro mudar.",
+                "Arraste para a direita até ao mês pretendido.",
+                "Verifique se o padrão continuou corretamente."
+              ]
+            },
+            {
+              "tip": "Com apenas um valor selecionado, o Excel pode copiar esse valor em vez de continuar uma série. Para indicar o padrão, selecione os dois primeiros valores antes de arrastar."
+            }
+          ]
+        },
+        {
+          "title": "1.5 Transformar dados em informação",
+          "blocks": [
+            {
+              "p": "Depois de organizar os dados, pode aplicar fórmulas para calcular totais, criar um gráfico para comparar categorias ou usar formatação condicional para destacar valores. O Excel também pode apresentar recomendações de gráficos com base nos dados selecionados."
+            },
+            {
+              "table": [
+                [
+                  "Necessidade",
+                  "Recurso do Excel",
+                  "Exemplo de utilização"
+                ],
+                [
+                  "Calcular",
+                  "Fórmula ou função",
+                  "Somar as despesas registadas"
+                ],
+                [
+                  "Comparar categorias",
+                  "Gráfico",
+                  "Ver qual despesa tem o maior valor"
+                ],
+                [
+                  "Encontrar valores fora do padrão",
+                  "Formatação condicional",
+                  "Realçar despesas acima de um limite"
+                ]
+              ]
+            },
+            {
+              "p": "Este módulo limita-se à introdução de dados. Nos módulos seguintes, o curso irá desenvolver fórmulas, funções, gráficos e apresentação de resultados."
+            },
+            {
+              "figure": "atc-formula-soma.jpg",
+              "caption": "Captura própria ATC no Microsoft Excel para a Web, em português de Portugal: introduzir =SOMA(D2:D4) com materiais fictícios de formação."
+            },
+            {
+              "figure": "atc-soma-resultado.jpg",
+              "caption": "Captura própria ATC: resultado da soma, 41 000 Kz. Demonstração das próximas competências; exercício introdutório mantém-se sem fórmulas."
+            }
+          ]
+        },
+        {
+          "title": "Exemplo ATC · Ler uma tabela de materiais",
+          "blocks": [
+            {
+              "p": "A folha ATC regista quantidades, preços e totais em kwanzas."
+            },
+            {
+              "figure": "amostra-excel-base.jpg",
+              "caption": "Captura própria ATC · Microsoft Excel para a Web · Português (Portugal)."
+            },
+            {
+              "steps": [
+                "Identifique os cabeçalhos Material, Quantidade, Preço (Kz) e Total (Kz).",
+                "Selecione D5, a célula do total.",
+                "Compare o valor 41 000 com a fórmula apresentada na barra de fórmulas."
+              ]
+            },
+            {
+              "tip": "A célula D5 contém =SOMA(D2:D4) e apresenta 41 000."
+            }
+          ]
+        },
+        {
+          "title": "Exemplo ATC · Localizar a Soma Automática",
+          "blocks": [
+            {
+              "p": "O separador Fórmulas reúne funções para calcular resultados."
+            },
+            {
+              "figure": "amostra-excel-formulas.jpg",
+              "caption": "Captura própria ATC · Microsoft Excel para a Web · Português (Portugal)."
+            },
+            {
+              "steps": [
+                "Abra o separador Fórmulas.",
+                "Localize Soma Automática, identificada pelo símbolo Σ.",
+                "Ao praticar numa célula vazia, confirme sempre o intervalo proposto antes de premir Enter."
+              ]
+            },
+            {
+              "tip": "Nesta captura, o cálculo já está concluído; o separador mostra onde encontrar a função."
+            }
+          ]
+        }
+      ],
+      "exercise": {
+        "title": "Exercício prático · Registo de despesas de formação",
+        "minutes": 15,
+        "file": "Crie um livro novo no Microsoft Excel",
+        "tasks": [
+          "Crie um livro em branco e guarde-o como **Despesas_ATC.xlsx**.",
+          "Introduza os cabeçalhos **Despesa** e **Valor (Kz)**.",
+          "Registe três despesas fictícias: Caderno (2500), Transporte (6000) e Dados móveis (3500).",
+          "Crie uma segunda folha e preencha os meses de Jan a Jun usando o preenchimento automático.",
+          "Guarde o ficheiro e confirme que as duas folhas aparecem no livro."
+        ]
+      },
+      "summary": [
+        "Um livro do Excel pode conter várias folhas.",
+        "As células são identificadas pela coluna e pela linha, como A1 ou C5.",
+        "Enter ou Tab confirma uma entrada e move a seleção.",
+        "Selecionar dois valores permite ao preenchimento automático continuar uma série.",
+        "Fórmulas, gráficos e formatação condicional ajudam a analisar e comunicar dados."
+      ]
+    }
+  ],
+  "glossary": [
+    [
+      "Alça de preenchimento",
+      "Pequeno quadrado no canto inferior direito da seleção, usado para copiar valores ou continuar séries."
+    ],
+    [
+      "Célula",
+      "Unidade individual da grelha, identificada pela coluna e linha."
+    ],
+    [
+      "Livro",
+      "Ficheiro do Excel que pode conter uma ou mais folhas de cálculo."
+    ],
+    [
+      "Folha de cálculo",
+      "Grelha de linhas e colunas onde se organizam os dados."
+    ],
+    [
+      "Formatação condicional",
+      "Regras visuais que realçam células consoante os seus valores."
+    ]
+  ]
+}
