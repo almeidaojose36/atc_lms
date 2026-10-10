@@ -497,7 +497,7 @@ def page(title, body, user=None, csrf="", wide=False, flash="", profile=None, pr
     return f"""<!doctype html><html lang="pt-PT"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{h(title)} · ATC Formação</title><link rel="icon" href="/static/logo-200.png">
-<link rel="stylesheet" href="/static/atc.css?v=4"><meta name="csrf" content="{h(csrf)}"><script src="/static/ui.js?v=3" defer></script></head>
+<link rel="stylesheet" href="/static/atc.css?v=5"><meta name="csrf" content="{h(csrf)}"><script src="/static/ui.js?v=3" defer></script></head>
 <body class="{'app' if user else 'public'}"><a class="skip-link" href="#conteudo">Saltar para o conteúdo</a>{sidebar}<div class="workspace"><header class="top"><div class="wrap">{header}</div></header>
 <main id="conteudo" class="wrap{' wide' if wide else ''}">{flash_html}{body}</main>
 <footer><div class="wrap"><span>ATC · Angbu Training Centre</span><span>Luanda, Angola · Aprendizagem com propósito</span></div></footer></div></body></html>"""
@@ -1617,7 +1617,7 @@ def cert_page(r, code):
     hours = row["hours_class"] or row["hours_video"]
     verify = f"http://{r.headers.get('Host', 'localhost')}/verificar?codigo={code}"
     return f"""<!doctype html><html lang="pt-PT"><head><meta charset="utf-8"><title>Certificado {h(code)}</title>
-<meta name="viewport" content="width=device-width, initial-scale=1"><link rel="stylesheet" href="/static/atc.css?v=4"></head>
+<meta name="viewport" content="width=device-width, initial-scale=1"><link rel="stylesheet" href="/static/atc.css?v=5"></head>
 <body class="certbody"><div class="noprint certbar"><a href="/">← Voltar</a> <button onclick="print()" class="btn small">Imprimir / guardar PDF</button></div>
 <div class="cert"><div class="certin"><img src="/static/logo-600.png" alt="ATC"><p class="k">Certificado de conclusão</p>
 <p>Certifica-se que</p><h1>{h(row['name'])}</h1><p>concluiu com aproveitamento o curso</p><h2>{h(row['title'])}</h2>
