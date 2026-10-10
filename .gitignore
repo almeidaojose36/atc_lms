@@ -3,3 +3,4 @@ dados/*-wal
 __pycache__/
 *.pyc
 .DS_Store
+producao/apresentacoes/_build/
