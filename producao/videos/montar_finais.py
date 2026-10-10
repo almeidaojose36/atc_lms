@@ -40,7 +40,7 @@ CORTES = {
 }
 # gaguez a remover (clip -> frase repetida; remove a primeira ocorrência, no áudio e no vídeo)
 # apresentador em círculo (picture-in-picture) sobre os ecrãs do LMS: clip -> (início, fim)
-PIP = {"H1": (0.0, 10.0), "M2": (0.5, 10.0)}
+PIP = {}   # desligado: o círculo do apresentador não ficou bem (ver presenter_pip.py)
 GAGUEZ = {"M3": ["seu", "funcionamento"]}
 # grafismo (nome/título): clip -> (palavra que dispara, título, subtítulo, duração)
 GRAFISMOS = {
