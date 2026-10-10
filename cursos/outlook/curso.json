@@ -1,1 +1,10 @@
-{ "slug": "outlook", "title": "Microsoft Outlook", "subtitle": "Correio eletrónico, calendário e contactos", "status": "em_breve", "order": 5, "hours_video": 1, "cover": "capa.svg", "modules": [] }
+{
+  "slug": "outlook",
+  "title": "Microsoft Outlook",
+  "subtitle": "Correio eletrónico, calendário e contactos",
+  "status": "em_breve",
+  "order": 5,
+  "hours_video": 1,
+  "cover": "capa-icono.svg",
+  "modules": []
+}
