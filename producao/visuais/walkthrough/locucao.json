@@ -1,7 +1,9 @@
 [
-  {"id": "s1", "capitulo": "", "texto": "Bem-vindo à ATC Formação: um espaço de aprendizagem personalizado, para desenvolver as suas competências digitais ao seu ritmo."},
-  {"id": "s2", "capitulo": "01 / Onboarding Personalizado", "texto": "Para começar, escolha o seu guia virtual, a Helena ou o Miguel, e personalize o seu perfil e os seus objetivos de aprendizagem."},
-  {"id": "s3", "capitulo": "02 / Escolha de Curso", "texto": "Explore o catálogo. Da informática essencial às ferramentas de escritório, escolha o curso que corresponde aos seus objetivos profissionais."},
-  {"id": "s4", "capitulo": "03 / Aulas Práticas e Manuais", "texto": "Cada módulo combina vídeos com o seu guia, demonstrações passo a passo no ecrã e um manual que pode consultar e descarregar."},
-  {"id": "s5", "capitulo": "04 / Progresso e Certificação", "texto": "Acompanhe o seu progresso, obtenha o certificado e dê o próximo passo na sua carreira. Comece hoje a aprender na ATC Formação."}
+  {"id": "s1", "capitulo": "", "texto": "Bem-vindo à ATC Formação. Entrar no seu espaço de aprendizagem personalizado é simples e seguro."},
+  {"id": "s2", "capitulo": "Passo 1 / Escolha do Guia Virtual", "texto": "Desde o primeiro acesso, a experiência adapta-se a si. Escolha o seu guia virtual, a Helena ou o Miguel, para o acompanhar em todas as aulas."},
+  {"id": "s3", "capitulo": "Passo 2 / Perfil e Percurso", "texto": "Defina os seus objetivos, escolha a sua área e entre diretamente no seu percurso de aprendizagem."},
+  {"id": "s4", "capitulo": "Passo 3 / Aulas Práticas com Demonstração", "texto": "Cada curso divide competências exigentes em módulos curtos: explicações em vídeo com o seu guia e demonstrações práticas, lado a lado."},
+  {"id": "s5", "capitulo": "Passo 4 / Manuais Integrados e Adaptativos", "texto": "Precisa de rever? Consulte manuais completos, com guias visuais passo a passo, que pode descarregar sem sair do seu espaço."},
+  {"id": "s6", "capitulo": "Destaque / Um Guia, Toda a Plataforma", "texto": "Mude de guia a qualquer momento. Toda a plataforma, do vídeo da aula às imagens do manual, adapta-se de imediato."},
+  {"id": "s7", "capitulo": "", "texto": "Aprender hoje. Ir mais longe amanhã. Comece hoje o seu percurso com a ATC Formação."}
 ]

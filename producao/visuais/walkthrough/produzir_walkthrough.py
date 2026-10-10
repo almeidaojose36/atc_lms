@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Vídeo de apresentação do percurso do formando (60–90 s), com locução, zooms nos cliques e capítulos.
+"""Vídeo de apresentação da plataforma (~90 s): locução, zooms suaves, capítulos, o guia a falar e a troca de guia em destaque.
 
 1. Locução: locucao/<id>.mp3 (ElevenLabs, voz da Helena), texto em locucao.json.
-2. Gravação: uma gravação Playwright por secção (1440x810 com densidade 2, cursor visível, vídeos do LMS sem som).
+2. Gravação: uma gravação Playwright por secção (1600x900, cursor visível, vídeos do LMS sem som; o áudio do guia entra na montagem).
 3. Zoom: cada clique/foco registado gera um zoom suave sobre esse ponto (recorte e escala com OpenCV).
 4. Montagem: secções ajustadas à locução, títulos de capítulo, cartão final, áudio normalizado.
 Requer o LMS em http://localhost:8080 com o formando demo sem guia escolhido e a pasta WebM dos clips.
@@ -43,77 +43,112 @@ def interceptar(route):
 
 INIT_VIDEO = """document.addEventListener('DOMContentLoaded',()=>{
   document.querySelectorAll('source[type="video/mp4"]').forEach(s=>s.type='video/webm');
-  document.querySelectorAll('video').forEach(v=>{v.muted=true;v.load()});});"""
+  document.querySelectorAll('video').forEach(v=>{v.muted=true;v.preload='auto';
+    v.addEventListener('loadeddata',()=>{if(v.paused&&v.currentTime===0&&!v.dataset.falar)v.currentTime=0.8},{once:true});v.load()});});"""
 
 class Gravador:
-    """Movimentos suaves do rato e registo dos pontos a destacar (para o zoom)."""
+    """Movimentos suaves do rato, pontos a destacar (zoom) e momentos em que o guia fala (áudio do clip)."""
     def __init__(self, pg, t0):
-        self.pg, self.t0, self.x, self.y, self.focos = pg, t0, VW / 2, VH / 2, []
+        self.pg, self.t0, self.x, self.y, self.focos, self.falas = pg, t0, VW / 2, VH / 2, [], []
     def t(self): return time.time() - self.t0
-    def mover(self, x, y, ms=650):
+    def mover(self, x, y, ms=750):
         n = max(int(ms / 16), 8); x0, y0 = self.x, self.y
         for i in range(1, n + 1):
-            p = i / n; e = p * p * (3 - 2 * p)
+            p = i / n; e = p * p * p * (p * (6 * p - 15) + 10)          # smootherstep: arranque e paragem suaves
             self.pg.mouse.move(x0 + (x - x0) * e, y0 + (y - y0) * e); self.pg.wait_for_timeout(16)
         self.x, self.y = x, y
     def centro(self, sel):
         el = self.pg.locator(sel).first; el.scroll_into_view_if_needed(); b = el.bounding_box()
         return b["x"] + b["width"] / 2, b["y"] + b["height"] / 2
-    def foco(self, sel=None, xy=None, zoom=1.7, segura=1.2, antes=0.0):
+    def foco(self, sel=None, xy=None, zoom=1.25, segura=1.2, antes=0.0):
         x, y = xy or self.centro(sel); self.focos.append({"t": self.t() + antes, "x": x, "y": y, "z": zoom, "hold": segura})
-    def clicar(self, sel, zoom=1.7, segura=1.0, espera=350):
-        x, y = self.centro(sel); self.foco(xy=(x, y), zoom=zoom, segura=segura, antes=0.7)
+    def clicar(self, sel, zoom=1.25, segura=0.9, espera=300):
+        x, y = self.centro(sel); self.foco(xy=(x, y), zoom=zoom, segura=segura, antes=0.75)
         self.mover(x, y); self.pg.wait_for_timeout(espera); self.pg.mouse.down(); self.pg.wait_for_timeout(80); self.pg.mouse.up()
-    def escrever(self, sel, texto, zoom=1.8):
-        self.clicar(sel, zoom=zoom, segura=1.4); self.pg.keyboard.press("Control+A"); self.pg.keyboard.type(texto, delay=22)
+    def submeter(self, sel, zoom=1.2):
+        with self.pg.expect_navigation(wait_until="domcontentloaded"): self.clicar(sel, zoom=zoom)
+        self.esperar(450)
+    def escrever(self, sel, texto, zoom=1.3):
+        self.clicar(sel, zoom=zoom, segura=1.0); self.pg.keyboard.press("Control+A"); self.pg.keyboard.type(texto, delay=14)
     def rolar(self, dy, ms=900):
         n = max(int(ms / 30), 6)
         for i in range(n): self.pg.mouse.wheel(0, dy / n); self.pg.wait_for_timeout(30)
+    def rolar_ate(self, sel, y_alvo=380, ms=1000):
+        b = self.pg.locator(sel).first.bounding_box(); self.rolar(b["y"] + b["height"] / 2 - y_alvo, ms); self.esperar(150)
     def tocar(self, i=0):
         self.pg.evaluate("(i)=>{const v=document.querySelectorAll('video')[i]; if(v){v.muted=true; v.play()}}", i)
+    def falar(self, i, segundos):
+        """O guia fala: o clip toca desde o início e o áudio original entra na montagem neste instante."""
+        src = self.pg.evaluate("""(i)=>{const v=document.querySelectorAll('video')[i]; v.dataset.falar=1; v.pause(); v.currentTime=0;
+                                   v.muted=true; v.play(); return v.currentSrc}""", i)
+        self.falas.append({"t": self.t(), "src": src, "dur": segundos})
     def esperar(self, ms): self.pg.wait_for_timeout(ms)
-    def ir(self, url): self.pg.goto(BASE + url, wait_until="domcontentloaded"); self.esperar(700)
+    def ir(self, url): self.pg.goto(BASE + url, wait_until="domcontentloaded"); self.esperar(600)
 
-def s1(g):   # entrada: começa com zoom no logótipo e afasta
-    g.ir("/entrar"); g.foco(".login.card img", zoom=2.2, segura=1.6, antes=-1.0); g.esperar(2200)
-    g.escrever("input[name=email]", "formando@atc.ao"); g.escrever("input[name=pw]", "formando123")
-    g.clicar("form .btn", zoom=1.6); g.pg.wait_for_load_state("domcontentloaded"); g.esperar(1500)
+FIG_GUIA = 'figure:has(img[src*="/{}/"])'
 
-def s2(g):   # guia e perfil
-    g.ir("/comecar/guia"); g.esperar(600)
-    g.mover(*g.centro(".presenter-option >> nth=0")); g.esperar(500)
-    g.clicar(".presenter-option >> nth=1", zoom=1.5, segura=1.3); g.esperar(500)
-    g.clicar("form .btn", zoom=1.6); g.pg.wait_for_load_state("domcontentloaded"); g.esperar(500)
-    g.tocar(0); g.esperar(1600); g.clicar(".onboard-copy form .btn"); g.pg.wait_for_load_state("domcontentloaded"); g.esperar(400)
+def s1(g):   # entrada limpa: zoom ligeiro no cartão de entrada
+    g.ir("/entrar"); g.foco(".login.card", zoom=1.15, segura=6.5, antes=-0.6); g.esperar(900)
+    g.escrever("input[name=email]", "formando@atc.ao", zoom=1.15); g.escrever("input[name=pw]", "formando123", zoom=1.15)
+    g.submeter("form .btn", zoom=1.15); g.esperar(300)
+
+def s2(g):   # escolha do guia: passar pela Helena e pelo Miguel, escolher o Miguel
+    g.ir("/comecar/guia"); g.esperar(400)
+    g.foco(".presenter-options", zoom=1.2, segura=5.6, antes=0.2)
+    g.mover(*g.centro(".presenter-option >> nth=0"), ms=1000); g.esperar(1400)
+    g.mover(*g.centro(".presenter-option >> nth=1"), ms=1000); g.esperar(1200)
+    g.clicar(".presenter-option >> nth=1", zoom=1.3, segura=1.6); g.esperar(900)
+    g.submeter(".presenter-submit .btn"); g.tocar(0); g.foco(".guide-clips", zoom=1.25, segura=2.2, antes=0.2); g.esperar(2800)
+
+def s3(g):   # montagem rápida: boas-vindas, perfil, passeio, escolha do curso
+    g.ir("/comecar/boas-vindas"); g.tocar(0); g.esperar(500)
+    g.submeter(".onboard-copy form .btn")
     g.tocar(0); g.escrever("textarea[name=goal]", "Usar o computador com confiança no trabalho.")
-    g.escrever("input[name=occupation]", "Secretariado"); g.clicar(".profile-editor .btn"); g.pg.wait_for_load_state("domcontentloaded"); g.esperar(900)
+    g.escrever("input[name=occupation]", "Secretariado"); g.submeter(".profile-editor .btn")
+    g.tocar(0); g.esperar(900); g.submeter(".onboard-copy form .btn")
+    g.foco(".course-picks", zoom=1.2, segura=2.6); g.mover(*g.centro(".course-pick >> nth=1")); g.esperar(500)
+    g.mover(*g.centro(".course-pick >> nth=0")); g.esperar(500)
+    g.submeter(".course-pick >> nth=0 >> .btn", zoom=1.3); g.esperar(600)
 
-def s3(g):   # catálogo e escolha do curso
-    g.ir("/comecar/passeio"); g.clicar(".onboard-copy form .btn", zoom=1.4); g.pg.wait_for_load_state("domcontentloaded"); g.esperar(500)
-    g.foco(".course-picks", zoom=1.35, segura=4.5); g.mover(*g.centro(".course-pick >> nth=1")); g.esperar(700)
-    g.mover(*g.centro(".course-pick >> nth=2")); g.esperar(700); g.rolar(260); g.esperar(800); g.rolar(-260); g.esperar(400)
-    g.clicar(".course-pick >> nth=0 >> .btn", zoom=1.6); g.pg.wait_for_load_state("domcontentloaded"); g.esperar(400)
-    g.tocar(0); g.foco(".guide-clips", zoom=1.25, segura=2.5); g.esperar(2800)
+def s4(g):   # aula 1.1: clips do guia e demonstração lado a lado; o Miguel fala no fim da locução
+    g.ir("/cursos/informatica/aula/aula-1-1"); g.tocar(1)
+    g.foco(".guide-clips", zoom=1.2, segura=3.6, antes=0.1); g.mover(*g.centro(".guide-clip >> nth=1"), ms=900); g.esperar(3600)
+    g.rolar_ate("#v", 470); g.tocar(2); g.esperar(300)
+    b = g.pg.locator("#v").bounding_box(); cx, yc = b["x"] + b["width"] / 2, b["y"] + b["height"] - 30
+    g.foco(xy=(cx, yc - 120), zoom=1.3, segura=3.2); g.mover(b["x"] + 60, yc, ms=900); g.esperar(800)
+    g.mover(b["x"] + b["width"] * 0.45, yc, ms=900); g.esperar(1700)
+    g.rolar(-2000, 900); g.esperar(400)
+    g.pg.evaluate("document.querySelectorAll('video').forEach(v=>v.pause())")
+    g.mover(*g.centro(".guide-clip >> nth=0"), ms=700); g.esperar(200)
+    g.foco(".guide-clip >> nth=0", zoom=1.35, segura=6.2, antes=0.1); g.falar(0, 6.4); g.esperar(7000)
 
-def s4(g):   # aula e manual
-    g.ir("/cursos/informatica/aula/aula-1-1"); g.tocar(0); g.foco(".guide-clips", zoom=1.3, segura=2.4); g.esperar(2600)
-    g.rolar(560); g.tocar(2); g.esperar(400); g.foco("#v", zoom=1.3, segura=2.0); g.esperar(2400)
-    g.ir("/cursos/informatica/modulo/1/manual"); g.esperar(300)
-    g.mover(*g.centro("#s1")); g.rolar(380); g.esperar(300)
-    g.foco("figure >> nth=1", zoom=1.45, segura=2.2); g.esperar(2600)
+def s5(g):   # manual: deslizar pelas imagens do passo a passo (com o Miguel)
+    g.ir("/cursos/informatica/modulo/1/manual"); g.esperar(200)
+    g.mover(VW * 0.62, VH * 0.55, ms=600); g.rolar_ate(FIG_GUIA.format("miguel"), 420, ms=1800); g.esperar(300)
+    g.foco(FIG_GUIA.format("miguel"), zoom=1.3, segura=2.8); g.esperar(3300)
+    g.rolar(700, 1600); g.esperar(300); g.foco(xy=(VW * 0.5, VH * 0.5), zoom=1.2, segura=1.8); g.esperar(2200)
 
-def s5(g):   # progresso e certificado
-    g.ir("/"); g.foco(".featured", zoom=1.4, segura=2.6); g.mover(*g.centro(".feature-progress")); g.esperar(2800)
-    g.ir("/cursos/informatica"); g.foco("aside.card", zoom=1.7, segura=3.0); g.mover(*g.centro("aside.card")); g.esperar(3400)
+def s6(g):   # destaque: mudar de guia; manual e aula voltam a aparecer com a Helena
+    g.ir("/cursos/informatica/modulo/1/manual"); g.rolar_ate(FIG_GUIA.format("miguel"), 420, ms=500)
+    g.foco(FIG_GUIA.format("miguel"), zoom=1.25, segura=1.4, antes=0.1); g.esperar(1500)
+    g.submeter(".guide-chip", zoom=1.35)
+    g.foco(".presenter-options", zoom=1.2, segura=2.6, antes=0.2); g.esperar(300)
+    g.clicar(".presenter-option >> nth=0", zoom=1.3, segura=1.4); g.esperar(700)
+    g.submeter(".presenter-submit .btn"); g.esperar(200)
+    g.rolar_ate(FIG_GUIA.format("helena"), 420, ms=1000)
+    g.foco(FIG_GUIA.format("helena"), zoom=1.3, segura=2.4); g.esperar(2900)
+    g.ir("/cursos/informatica/aula/aula-1-1"); g.esperar(200)
+    g.mover(*g.centro(".guide-clip >> nth=0"), ms=700)
+    g.foco(".guide-clip >> nth=0", zoom=1.35, segura=6.2, antes=0.1); g.falar(0, 6.3); g.esperar(7000)
 
-ROTEIRO = {"s1": s1, "s2": s2, "s3": s3, "s4": s4, "s5": s5}
+ROTEIRO = {"s1": s1, "s2": s2, "s3": s3, "s4": s4, "s5": s5, "s6": s6}
 
 def gravar():
     resultado = {}
     with sync_playwright() as p:
         b = p.chromium.launch(executable_path=CHROME, args=["--no-sandbox", "--autoplay-policy=no-user-gesture-required"])
         estado = None
-        for s in SECOES:
+        for s in [x for x in SECOES if x["id"] in ROTEIRO]:
             pasta = TMP / s["id"]; pasta.mkdir()
             kw = dict(viewport={"width": VW, "height": VH}, device_scale_factor=DSF,
                       record_video_dir=str(pasta), record_video_size={"width": VW * DSF, "height": VH * DSF})
@@ -124,7 +159,7 @@ def gravar():
             pg.mouse.move(VW / 2, VH / 2)
             ROTEIRO[s["id"]](g)
             estado = ctx.storage_state(); video = pg.video; ctx.close()
-            resultado[s["id"]] = (pathlib.Path(video.path()), g.focos)
+            resultado[s["id"]] = (pathlib.Path(video.path()), g.focos, g.falas)
             print("gravado", s["id"], len(g.focos), "focos", flush=True)
         b.close()
     return resultado
@@ -252,36 +287,41 @@ def gravar_cartao(titulo, subtitulo, nota, destino, segundos):
 
 # ---------- montagem ----------
 TRANS = 0.7
-TIPOS = ["circleopen", "smoothleft", "smoothleft", "smoothup", "smoothleft", "fadeblack"]
+TIPOS = ["circleopen", "smoothleft", "smoothleft", "smoothup", "smoothleft", "zoomin", "fadeblack"]
 MUSICA = AQUI / "musica" / "fundo.mp3"
 
 def main():
     gravacoes = gravar()
     abertura = TMP / "abertura.mp4"
-    gravar_cartao("ATC Formação", "O seu percurso de aprendizagem, passo a passo", "Angbu Training Centre · Luanda", abertura, 3.6)
-    pecas, vozes = [abertura], []
+    gravar_cartao("ATC Formação", "O seu percurso de aprendizagem, passo a passo", "Angbu Training Centre · Luanda", abertura, 3.4)
+    pecas, vozes, falas = [abertura], [], []
     for k, s in enumerate(SECOES):
-        webm, focos = gravacoes[s["id"]]
+        vo = AQUI / "locucao" / f"{s['id']}.mp3"; dv = dur(vo); vozes.append(vo)
+        if s["id"] not in gravacoes:            # fecho: cartão com o lema e o logótipo
+            fim = TMP / "fim.mp4"
+            gravar_cartao("Aprender hoje.", "Ir mais longe amanhã.", "Comece hoje o seu percurso com a ATC Formação", fim, dv + 2.2)
+            pecas.append(fim); continue
+        webm, focos, fs = gravacoes[s["id"]]
         z = TMP / f"{s['id']}-zoom.mp4"; renderizar_zoom(webm, focos, z, t_fundo=k * 17.0)
-        vo = AQUI / "locucao" / f"{s['id']}.mp3"; dv = dur(vo); dr = dur(z)
-        alvo = min(max(dr, dv + 2.2), dv + 6.0)
-        fator = min(dr / alvo, 1.6)
+        dr = dur(z)
+        if fs:   # o guia fala: velocidade real, para manter a sincronização labial
+            fator = 1.0; alvo = min(dr, max(f["t"] + f["dur"] for f in fs) + 0.5)
+        else:
+            alvo = min(max(dr, dv + 1.6), dv + 4.5); fator = min(dr / alvo, 1.7)
+        falas += [dict(f, k=k, t=f["t"] / fator) for f in fs]
         peca = TMP / f"{s['id']}-final.mp4"
         fc = f"[0:v]setpts=PTS/{fator:.4f},tpad=stop_mode=clone:stop_duration=6,trim=duration={alvo:.3f},setpts=PTS-STARTPTS[v0]"; ultimo = "[v0]"
         entradas = ["-i", z]
         if s["capitulo"]:
             png = TMP / f"{s['id']}-cap.png"; capitulo_png(s["capitulo"], png)
             entradas += ["-loop", "1", "-i", png]
-            fc += (f";[1:v]format=rgba,fade=t=in:st=0.6:d=0.35:alpha=1,fade=t=out:st=3.8:d=0.4:alpha=1[c];"
-                   f"{ultimo}[c]overlay=x='if(lt(t,1.15),-w+(w+90)*(t-0.6)/0.55,90)':y=H-h-60:enable='between(t,0.6,4.2)':shortest=1[v1]")
+            fc += (f";[1:v]format=rgba,fade=t=in:st=0.6:d=0.35:alpha=1,fade=t=out:st=4.2:d=0.4:alpha=1[c];"
+                   f"{ultimo}[c]overlay=x='if(lt(t,1.15),-w+(w+90)*(t-0.6)/0.55,90)':y=H-h-60:enable='between(t,0.6,4.6)':shortest=1[v1]")
             ultimo = "[v1]"
         run("ffmpeg", "-y", "-loglevel", "error", *entradas, "-filter_complex", fc, "-map", ultimo, "-t", f"{alvo:.3f}",
             "-c:v", "libx264", "-crf", "17", "-pix_fmt", "yuv420p", "-r", str(FPS), peca)
-        pecas.append(peca); vozes.append(vo)
-        print(s["id"], f"gravação {dr:.1f}s -> {alvo:.1f}s (x{fator:.2f}), locução {dv:.1f}s", flush=True)
-    fim = TMP / "fim.mp4"
-    gravar_cartao("Comece hoje a aprender", "ATC Formação", "Aprender hoje. Ir mais longe amanhã.", fim, 4.2)
-    pecas.append(fim)
+        pecas.append(peca)
+        print(s["id"], f"gravação {dr:.1f}s -> {alvo:.1f}s (x{fator:.2f}), locução {dv:.1f}s, falas {len(fs)}", flush=True)
     # transições entre todas as peças
     duracoes = [dur(p) for p in pecas]; inicios = [0.0]
     for d in duracoes[:-1]: inicios.append(inicios[-1] + d - TRANS)
@@ -292,17 +332,25 @@ def main():
     video = TMP / "video.mp4"
     run("ffmpeg", "-y", "-loglevel", "error", *entradas, "-filter_complex", ";".join(fc), "-map", ultimo,
         "-c:v", "libx264", "-crf", "18", "-preset", "medium", "-pix_fmt", "yuv420p", video)
-    # locução (começa 0,6 s depois de cada secção) e música por baixo, a baixar quando há voz
-    entradas, fc = ["-i", video, "-i", MUSICA], []
+    # locução (0,6 s depois do início de cada secção), voz do guia nos momentos em que fala,
+    # e música por baixo, a baixar sempre que alguém fala
+    entradas, fc, n = ["-i", video, "-stream_loop", "1", "-i", MUSICA], [], 2
+    rotulos = []
     for k, vo in enumerate(vozes):
-        t = inicios[k + 1] + 0.6; ms = int(t * 1000); entradas += ["-i", vo]
-        fc.append(f"[{k + 2}:a]adelay={ms}|{ms},aformat=channel_layouts=stereo[v{k}]")
-    fc.append("".join(f"[v{k}]" for k in range(len(vozes))) + f"amix=inputs={len(vozes)}:normalize=0,apad=whole_dur={total:.2f},asplit=2[voz][chave]")
-    fc.append(f"[1:a]atrim=0:{total:.2f},afade=t=in:d=1.2,afade=t=out:st={total - 2.5:.2f}:d=2.5,volume=0.32,aformat=channel_layouts=stereo[mus]")
-    fc.append("[mus][chave]sidechaincompress=threshold=0.02:ratio=9:attack=30:release=500[musd]")
+        ms = int((inicios[k + 1] + 0.6) * 1000); entradas += ["-i", vo]
+        fc.append(f"[{n}:a]adelay={ms}|{ms},aformat=channel_layouts=stereo[v{k}]"); rotulos.append(f"[v{k}]"); n += 1
+    for j, f in enumerate(falas):
+        ms = int((inicios[f["k"] + 1] + f["t"]) * 1000); entradas += ["-i", webm_para(f["src"])]
+        fc.append(f"[{n}:a]atrim=0:{f['dur']:.2f},afade=t=out:st={f['dur'] - 0.25:.2f}:d=0.25,volume=1.1,"
+                  f"adelay={ms}|{ms},aformat=sample_rates=44100:channel_layouts=stereo[g{j}]"); rotulos.append(f"[g{j}]"); n += 1
+        print("guia fala", pathlib.Path(f["src"]).name, f"aos {ms / 1000:.1f}s", flush=True)
+    fc.append("".join(rotulos) + f"amix=inputs={len(rotulos)}:normalize=0,apad=whole_dur={total:.2f},asplit=2[voz][chave]")
+    fc.append(f"[1:a]atrim=0:{total:.2f},afade=t=in:d=1.0,afade=t=out:st={total - 2.5:.2f}:d=2.5,volume=0.36,aformat=sample_rates=44100:channel_layouts=stereo[mus]")
+    fc.append("[mus][chave]sidechaincompress=threshold=0.015:ratio=12:attack=25:release=450[musd]")
     fc.append("[voz][musd]amix=inputs=2:normalize=0,loudnorm=I=-16:TP=-1.5:LRA=11[a]")
     run("ffmpeg", "-y", "-loglevel", "error", *entradas, "-filter_complex", ";".join(fc), "-map", "0:v", "-map", "[a]",
         "-c:v", "copy", "-c:a", "aac", "-b:a", "192k", "-t", f"{total:.2f}", SAIDA)
+    json.dump({"inicios": inicios, "falas": falas}, open(SAIDA.with_suffix(".json"), "w"), indent=1)
     print("ok", SAIDA, f"{total:.1f}s")
     shutil.rmtree(TMP, ignore_errors=True)
 
