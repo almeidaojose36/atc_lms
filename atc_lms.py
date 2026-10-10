@@ -73,6 +73,12 @@ CREATE TABLE IF NOT EXISTS course_presenters (
   user_id INTEGER NOT NULL REFERENCES users(id), course_id INTEGER NOT NULL REFERENCES courses(id),
   presenter TEXT NOT NULL CHECK(presenter IN ('helena','miguel')), updated TEXT NOT NULL,
   PRIMARY KEY(user_id, course_id));
+CREATE TABLE IF NOT EXISTS learner_presenter (
+  user_id INTEGER PRIMARY KEY REFERENCES users(id),
+  presenter TEXT NOT NULL CHECK(presenter IN ('helena','miguel')), updated TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS onboarding (
+  user_id INTEGER NOT NULL REFERENCES users(id), step TEXT NOT NULL, done TEXT NOT NULL,
+  PRIMARY KEY(user_id, step));
 CREATE TABLE IF NOT EXISTS sessions (
   token TEXT PRIMARY KEY, user_id INTEGER NOT NULL, csrf TEXT NOT NULL, created REAL NOT NULL);
 CREATE TABLE IF NOT EXISTS settings (key TEXT PRIMARY KEY, value TEXT);
@@ -465,7 +471,7 @@ def bar(pct):
     return f'<div class="bar" role="progressbar" aria-valuenow="{pct}" aria-valuemin="0" aria-valuemax="100"><span style="width:{pct}%"></span></div>'
 
 
-def page(title, body, user=None, csrf="", wide=False, flash="", profile=None):
+def page(title, body, user=None, csrf="", wide=False, flash="", profile=None, presenter=None):
     if user:
         user = dict(user)
         user["name"] = (profile or {}).get("display_name") or user["name"]
@@ -482,12 +488,16 @@ def page(title, body, user=None, csrf="", wide=False, flash="", profile=None):
                    '</nav><div class="sidebar-note"><span class="eyebrow">O SEU PRÓXIMO PASSO</span><h3>Aprender hoje.<br>Ir mais longe amanhã.</h3><p>Competências que fazem a diferença.</p></div>' +
                    f'<div class="profile"><span class="avatar avatar-{h(profile_color)}">{h(user["name"][:1].upper())}</span><div><b>{h(user["name"])}</b><small>{ROLES[user["role"]]}</small></div></div>' +
                    f'<form class="logout" method="post" action="/sair">{csrf_field(csrf)}<button class="linkbtn">Sair da conta →</button></form></aside>')
+    chip = ""
+    if user and presenter in PRESENTERS:
+        chip = (f'<a class="guide-chip" href="/apresentador?seguinte=/" title="Mudar de guia"><img src="/static/presenters/{presenter}.png" alt="">'
+                f'<span><small>O seu guia</small><b>{PRESENTERS[presenter]["name"]}</b></span></a>')
     flash_html = f'<div class="flash" role="status">{flash}</div>' if flash else ""
-    header = (f'<div class="workspace-label">Área de aprendizagem <span>/</span> <b>{h(title)}</b></div><a class="account-link" href="/conta">{h(user["name"].split()[0])} <span class="avatar avatar-{h(profile_color)}">{h(user["name"][:1].upper())}</span></a>' if user else brand)
+    header = (f'<div class="workspace-label">Área de aprendizagem <span>/</span> <b>{h(title)}</b></div>{chip}<a class="account-link" href="/conta">{h(user["name"].split()[0])} <span class="avatar avatar-{h(profile_color)}">{h(user["name"][:1].upper())}</span></a>' if user else brand)
     return f"""<!doctype html><html lang="pt-PT"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{h(title)} · ATC Formação</title><link rel="icon" href="/static/logo-200.png">
-<link rel="stylesheet" href="/static/atc.css?v=3"><meta name="csrf" content="{h(csrf)}"><script src="/static/ui.js?v=3" defer></script></head>
+<link rel="stylesheet" href="/static/atc.css?v=4"><meta name="csrf" content="{h(csrf)}"><script src="/static/ui.js?v=3" defer></script></head>
 <body class="{'app' if user else 'public'}"><a class="skip-link" href="#conteudo">Saltar para o conteúdo</a>{sidebar}<div class="workspace"><header class="top"><div class="wrap">{header}</div></header>
 <main id="conteudo" class="wrap{' wide' if wide else ''}">{flash_html}{body}</main>
 <footer><div class="wrap"><span>ATC · Angbu Training Centre</span><span>Luanda, Angola · Aprendizagem com propósito</span></div></footer></div></body></html>"""
@@ -692,7 +702,8 @@ class Handler(BaseHTTPRequestHandler):
 
     # -- ajudas para as páginas --------------------------------------------
     def render(self, title, body, **kw):
-        return page(title, body, self.user, self.csrf, profile=learner_profile(self), **kw)
+        return page(title, body, self.user, self.csrf, profile=learner_profile(self),
+                    presenter=selected_presenter(self) if self.user else None, **kw)
 
     def is_staff(self):
         return self.user and self.user["role"] in ("admin", "formador")
@@ -767,13 +778,31 @@ def learner_profile(r):
     return dict(row) if row else {"display_name": r.user["name"], "occupation": "", "goal": "", "color": "sand"}
 
 
-def selected_presenter(r, cid):
-    row = r.con.execute("SELECT presenter FROM course_presenters WHERE user_id=? AND course_id=?", (r.user["id"], cid)).fetchone()
-    return row["presenter"] if row else None
+def selected_presenter(r, cid=None):
+    """O guia é escolhido uma vez e vale para toda a plataforma (cid mantém-se por compatibilidade)."""
+    uid = r.user["id"]
+    row = r.con.execute("SELECT presenter FROM learner_presenter WHERE user_id=?", (uid,)).fetchone()
+    if row:
+        return row["presenter"]
+    legacy = r.con.execute("SELECT presenter FROM course_presenters WHERE user_id=? ORDER BY updated DESC LIMIT 1", (uid,)).fetchone()
+    if legacy:  # escolhas antigas, feitas por curso, passam a valer para tudo
+        r.con.execute("INSERT OR IGNORE INTO learner_presenter VALUES(?,?,?)", (uid, legacy["presenter"], now()))
+        return legacy["presenter"]
+    return None
 
 
-@route("POST", "/conta/perfil", "user")
-def profile_save(r):
+def set_presenter(r, key):
+    uid = r.user["id"]
+    r.con.execute("""INSERT INTO learner_presenter VALUES(?,?,?) ON CONFLICT(user_id)
+        DO UPDATE SET presenter=excluded.presenter, updated=excluded.updated""", (uid, key, now()))
+    r.con.execute("UPDATE course_presenters SET presenter=?, updated=? WHERE user_id=?", (key, now(), uid))
+
+
+def safe_next(url, default="/"):
+    return url if url and url.startswith("/") and not url.startswith("//") and "\\" not in url else default
+
+
+def save_profile(r):
     name = r.data.get("display_name", "").strip()
     occupation = r.data.get("occupation", "").strip()
     goal = r.data.get("goal", "").strip()
@@ -783,6 +812,11 @@ def profile_save(r):
     r.con.execute("""INSERT INTO learner_profiles VALUES(?,?,?,?,?,?) ON CONFLICT(user_id) DO UPDATE SET
         display_name=excluded.display_name, occupation=excluded.occupation, goal=excluded.goal,
         color=excluded.color, updated=excluded.updated""", (r.user["id"], name, occupation, goal, color, now()))
+
+
+@route("POST", "/conta/perfil", "user")
+def profile_save(r):
+    save_profile(r)
     raise Redirect("/conta?guardado=1")
 
 
@@ -851,6 +885,8 @@ def course_card(r, c, enrolled):
 
 @route("GET", "/", "user")
 def home(r):
+    if r.user["role"] == "formando" and not selected_presenter(r) and not r.query.get("saltar"):
+        raise Redirect("/comecar")  # primeiro acesso: escolher o guia e seguir o percurso de entrada
     courses = r.con.execute("SELECT * FROM courses WHERE active=1 ORDER BY sort, title").fetchall()
     enrolled = {row["course_id"] for row in r.con.execute("SELECT course_id FROM enrolments WHERE user_id=?", (r.user["id"],))}
     mine = [c for c in courses if c["id"] in enrolled and c["status"] == "publicado"]
@@ -881,7 +917,14 @@ def home(r):
 <div class="featured-art" aria-hidden="true"><div class="orbit orbit-one"></div><div class="orbit orbit-two"></div><div class="art-window"><div class="window-dots">● ● ●</div><span class="art-symbol">⌘</span><div class="art-line"></div><div class="art-line short"></div><span class="art-label">O conhecimento abre portas.</span></div><span class="art-badge">ATC / ACADEMIA DIGITAL</span></div></section>'''
     else:
         feature = '<section class="welcome-empty card"><span class="eyebrow">O SEU PERCURSO COMEÇA AQUI</span><h2>Novas competências. Novas possibilidades.</h2><p>Explore a oferta de formação e fale com a ATC para se inscrever.</p><a class="btn" href="#catalogo">Explorar catálogo ↗</a></section>'
-    profile_hint = (f'<section class="profile-prompt"><div><b>Bem-vindo à sua academia.</b><span>Personalize o perfil e conte-nos o que gostaria de aprender.</span></div><a class="btn ghost small" href="/conta">Personalizar perfil →</a></section>' if not r.con.execute("SELECT 1 FROM learner_profiles WHERE user_id=?", (r.user["id"],)).fetchone() else (f'<section class="profile-prompt"><div><span class="eyebrow">O SEU OBJETIVO</span><b>{h(profile["goal"])}</b></div><a href="/conta">Editar</a></section>' if profile['goal'] else ''))
+    nxt_step = onboarding_next(r) if r.user["role"] == "formando" else None
+    if nxt_step:
+        done_n = len(onboarding_done(r))
+        profile_hint = (f'<section class="profile-prompt"><div><b>Primeiros passos · {done_n} de {len(ONBOARD)}</b><span>O seu guia acompanha-o em cada passo.</span></div>'
+                        f'<a class="btn small" href="/comecar/{nxt_step}">Continuar →</a></section>')
+    else:
+        profile_hint = ""
+    profile_hint = profile_hint or (f'<section class="profile-prompt"><div><b>Bem-vindo à sua academia.</b><span>Personalize o perfil e conte-nos o que gostaria de aprender.</span></div><a class="btn ghost small" href="/conta">Personalizar perfil →</a></section>' if not r.con.execute("SELECT 1 FROM learner_profiles WHERE user_id=?", (r.user["id"],)).fetchone() else (f'<section class="profile-prompt"><div><span class="eyebrow">O SEU OBJETIVO</span><b>{h(profile["goal"])}</b></div><a href="/conta">Editar</a></section>' if profile['goal'] else ''))
     return r.render("Os meus cursos", f'''{profile_hint}<div class="page-heading"><div><span class="eyebrow">A SUA ACADEMIA DIGITAL</span><h1>Olá, {h(first)}<span class="greeting-dot">.</span></h1><p class="muted">É um bom dia para dar o próximo passo.</p></div><span class="learning-badge">● Ao seu ritmo. Com a ATC.</span></div>
 <div class="learning-stats"><div><span class="stat-icon">◫</span><div><b>{len(mine):02d}</b><span>Cursos inscritos</span></div></div><div><span class="stat-icon">✓</span><div><b>{lessons_done:02d}</b><span>Aulas concluídas</span></div></div><div><span class="stat-icon">◎</span><div><b>{cert_count:02d}</b><span>Certificados obtidos</span></div></div></div>
 {feature}<div class="section-heading"><div><span class="eyebrow">PASSO A PASSO</span><h2>Os meus cursos <span class="count">{len(mine)}</span></h2></div><span class="muted">{completed} concluídos</span></div><div class="courses my-courses">{mine_html}</div>
@@ -900,9 +943,13 @@ def lesson_state(r, lesson_ids):
 @route("GET", "/cursos/([a-z0-9-]+)/apresentador", "user")
 def presenter_page(r, slug):
     c = r.course_for(slug)
-    selected = selected_presenter(r, c["id"])
+    raise Redirect(f"/apresentador?seguinte=/cursos/{slug}/introducao")
+
+
+def presenter_choice_page(r, slug_unused=None, nxt="/", onboarding=False):
+    selected = selected_presenter(r)
     cards = "".join(f'''<label class="presenter-option"><input type="radio" name="presenter" value="{key}" required {"checked" if key == selected else ""}><span class="presenter-portrait"><img src="/static/presenters/{key}.png" alt="{p['name']}, {p['label'].lower()}, com vestuário profissional"><span class="selection-check" aria-hidden="true">✓</span></span><span class="presenter-info"><span class="eyebrow">{p['label']}</span><strong>{p['name']}</strong><span>O seu guia virtual na formação ATC.</span></span></label>''' for key, p in PRESENTERS.items())
-    return r.render("Escolher apresentador", f'''<p class="crumbs"><a href="/cursos/{slug}">{h(c['title'])}</a> › Apresentador</p><section class="presenter-heading"><span class="eyebrow">UMA FORMAÇÃO À SUA MEDIDA</span><h1>Quem vai acompanhar<br>o seu percurso?</h1><p>Escolha a Helena ou o Miguel. O conteúdo e a avaliação são iguais.<br>Pode mudar a sua escolha a qualquer momento.</p></section><form method="post" action="/cursos/{slug}/apresentador">{csrf_field(r.csrf)}<div class="presenter-options">{cards}</div><div class="presenter-submit"><p class="muted">Personagens virtuais criadas para a ATC.</p><button class="btn">Guardar e conhecer o apresentador →</button></div></form>''')
+    return r.render("Escolher o guia", f'''{steps_bar(r, "guia") if onboarding else ""}<section class="presenter-heading"><span class="eyebrow">UMA FORMAÇÃO À SUA MEDIDA</span><h1>Quem vai acompanhar<br>o seu percurso?</h1><p>Escolha a Helena ou o Miguel. O seu guia vai acompanhá-lo em todos os ecrãs, vídeos e imagens da plataforma. O conteúdo e a avaliação são iguais.<br>Pode mudar a sua escolha a qualquer momento.</p></section><form method="post" action="{"/comecar/guia" if onboarding else "/apresentador"}">{csrf_field(r.csrf)}<input type="hidden" name="seguinte" value="{h(nxt)}"><div class="presenter-options">{cards}</div><div class="presenter-submit"><p class="muted">Personagens virtuais criadas para a ATC.</p><button class="btn">Escolher este guia →</button></div></form>''')
 
 
 @route("POST", "/cursos/([a-z0-9-]+)/apresentador", "user")
@@ -913,14 +960,192 @@ def presenter_save(r, slug):
         raise HttpError(400, "Escolha um dos apresentadores disponíveis.")
     r.con.execute("""INSERT INTO course_presenters VALUES(?,?,?,?) ON CONFLICT(user_id,course_id)
         DO UPDATE SET presenter=excluded.presenter, updated=excluded.updated""", (r.user["id"], c["id"], key, now()))
+    set_presenter(r, key)
+    onboarding_mark(r, "guia")
     raise Redirect(f"/cursos/{slug}/introducao")
+
+
+# ---------------------------------------------------------------------------
+# O guia escolhido (Helena ou Miguel) acompanha o formando em toda a plataforma
+# ---------------------------------------------------------------------------
+
+PLATAFORMA_DIR = BASE / "plataforma" / "apresentadores"
+ONBOARD = [("guia", "Escolha o seu guia"), ("boas-vindas", "Boas-vindas"), ("perfil", "O seu perfil"),
+           ("passeio", "A plataforma"), ("curso", "O primeiro curso")]
+ONBOARD_CLIP = {"boas-vindas": "boas-vindas", "perfil": "perfil", "passeio": "passeio", "curso": "escolher-curso"}
+
+
+def read_json(path):
+    try:
+        return json.loads(Path(path).read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return {}
+
+
+def clip_html(key, base, name, meta):
+    """Vídeo do guia com legendas do próprio leitor (sem legendas gravadas no vídeo) e transcrição."""
+    texto = (meta.get("texto") or {}).get(key, "")
+    track = f'<track kind="subtitles" srclang="pt" label="Português" src="{base}.vtt" default>'
+    transcript = f'<details><summary>Ler o texto</summary><p>{h(texto)}</p></details>' if texto else ""
+    return (f'<figure class="guide-clip"><video controls playsinline preload="metadata">'
+            f'<source src="{base}.mp4" type="video/mp4">{track}</video><figcaption><span class="eyebrow">{PRESENTERS[key]["name"].upper()} · O SEU GUIA</span>'
+            f'<b>{h(meta.get("titulo", ""))}</b>{transcript}</figcaption></figure>')
+
+
+def platform_clip_html(key, name):
+    if key not in PRESENTERS or not (PLATAFORMA_DIR / key / f"{name}.mp4").is_file():
+        return ""
+    meta = read_json(BASE / "plataforma" / "clips.json").get(name, {})
+    return clip_html(key, f"/plataforma/{key}/{name}", name, meta)
+
+
+def course_flow(slug):
+    return read_json(COURSES_DIR / slug / "apresentadores" / "fluxo.json")
+
+
+def course_clip(slug, key, name):
+    if not name or key not in PRESENTERS or not (COURSES_DIR / slug / "apresentadores" / key / f"{name}.mp4").is_file():
+        return ""
+    meta = read_json(COURSES_DIR / slug / "apresentadores" / "clips.json").get(name, {})
+    return clip_html(key, f"/media/{slug}/apresentadores/{key}/{name}", name, meta)
+
+
+def guide_panel(slug, key, names, title):
+    clips = "".join(course_clip(slug, key, n) for n in names if n)
+    return f'<section class="guide-panel"><h2>{h(title)}</h2><div class="guide-clips">{clips}</div></section>' if clips else ""
+
+
+@route("GET", r"/plataforma/(helena|miguel)/([a-z0-9-]+\.(?:mp4|vtt))", "user")
+def platform_clip(r, key, filename):
+    r.serve_file(PLATAFORMA_DIR / key / filename, ctype="text/vtt; charset=utf-8" if filename.endswith(".vtt") else "video/mp4")
+
+
+def onboarding_done(r):
+    done = {row["step"] for row in r.con.execute("SELECT step FROM onboarding WHERE user_id=?", (r.user["id"],))}
+    if selected_presenter(r):
+        done.add("guia")
+    return done
+
+
+def onboarding_mark(r, step):
+    r.con.execute("INSERT OR REPLACE INTO onboarding VALUES(?,?,?)", (r.user["id"], step, now()))
+
+
+def onboarding_next(r):
+    done = onboarding_done(r)
+    return next((s for s, _ in ONBOARD if s not in done), None)
+
+
+def steps_bar(r, current):
+    done = onboarding_done(r)
+    items = "".join(f'<li class="{"done" if s in done else ""}{" current" if s == current else ""}"><span>{i}</span>{h(t)}</li>'
+                    for i, (s, t) in enumerate(ONBOARD, 1))
+    return f'<ol class="steps-bar" aria-label="Primeiros passos">{items}</ol>'
+
+
+@route("GET", "/comecar", "user")
+def onboarding_start(r):
+    nxt = onboarding_next(r)
+    raise Redirect(f"/comecar/{nxt}" if nxt else "/")
+
+
+@route("GET", "/apresentador", "user")
+def presenter_change_page(r):
+    return presenter_choice_page(r, nxt=safe_next(r.query.get("seguinte"), "/"))
+
+
+@route("POST", "/apresentador", "user")
+def presenter_change_save(r):
+    key = r.data.get("presenter", "")
+    if key not in PRESENTERS:
+        raise HttpError(400, "Escolha um dos guias disponíveis.")
+    set_presenter(r, key)
+    onboarding_mark(r, "guia")
+    raise Redirect(safe_next(r.data.get("seguinte"), "/"))
+
+
+@route("GET", "/comecar/guia", "user")
+def onboarding_guide(r):
+    return presenter_choice_page(r, nxt="/comecar/boas-vindas", onboarding=True)
+
+
+@route("POST", "/comecar/guia", "user")
+def onboarding_guide_save(r):
+    key = r.data.get("presenter", "")
+    if key not in PRESENTERS:
+        raise HttpError(400, "Escolha um dos guias disponíveis.")
+    set_presenter(r, key)
+    onboarding_mark(r, "guia")
+    raise Redirect("/comecar/boas-vindas")
+
+
+def profile_fields(profile):
+    colors = "".join(f'<label class="color-choice"><input type="radio" name="color" value="{key}" {"checked" if profile["color"] == key else ""}>'
+                     f'<span class="color-swatch avatar-{key}"></span>{label}</label>' for key, label in PROFILE_COLORS.items())
+    return (f'<div class="grid2"><label>Nome de apresentação<input name="display_name" maxlength="60" required value="{h(profile["display_name"])}" autocomplete="nickname"></label>'
+            f'<label>Profissão ou área de interesse<input name="occupation" maxlength="100" value="{h(profile["occupation"])}"></label></div>'
+            f'<label>O que gostaria de aprender?<textarea name="goal" maxlength="300" rows="3" placeholder="O seu objetivo de aprendizagem…">{h(profile["goal"])}</textarea></label>'
+            f'<fieldset class="profile-colors"><legend>Cor do perfil</legend>{colors}</fieldset>')
+
+
+@route("GET", "/comecar/(boas-vindas|perfil|passeio|curso)", "user")
+def onboarding_step(r, step):
+    key = selected_presenter(r)
+    if not key:
+        raise Redirect("/comecar/guia")
+    name = PRESENTERS[key]["name"]
+    title = dict(ONBOARD)[step]
+    clip = platform_clip_html(key, ONBOARD_CLIP[step])
+    idx = [s for s, _ in ONBOARD].index(step)
+    following = ONBOARD[idx + 1][0] if idx + 1 < len(ONBOARD) else None
+    skip = (f'<form method="post" action="/comecar/{step}" class="inline">{csrf_field(r.csrf)}<input type="hidden" name="saltar" value="1">'
+            f'<button class="btn ghost">Saltar este passo</button></form>')
+    if step == "boas-vindas":
+        body = (f'<p class="lead">{name} dá-lhe as boas-vindas à plataforma da ATC e vai estar consigo em cada ecrã.</p>'
+                f'<form method="post" action="/comecar/boas-vindas">{csrf_field(r.csrf)}<button class="btn">Seguinte: o seu perfil →</button></form>')
+    elif step == "perfil":
+        body = (f'<form method="post" action="/comecar/perfil" class="card profile-editor">{csrf_field(r.csrf)}{profile_fields(learner_profile(r))}'
+                f'<div class="actions"><button class="btn">Guardar e continuar →</button></div></form>')
+        skip = skip
+    elif step == "passeio":
+        body = ('<div class="tour"><div class="card"><b>Os meus cursos</b><p>O seu percurso, o progresso e a próxima aula.</p></div>'
+                '<div class="card"><b>Catálogo</b><p>Todos os cursos da ATC e os cursos de amostra.</p></div>'
+                '<div class="card"><b>A minha conta</b><p>O perfil, o guia e os certificados.</p></div></div>'
+                f'<form method="post" action="/comecar/passeio">{csrf_field(r.csrf)}<button class="btn">Seguinte: escolher o curso →</button></form>')
+    else:
+        courses = r.con.execute("SELECT * FROM courses WHERE active=1 ORDER BY sort, title").fetchall()
+        enrolled = {row["course_id"] for row in r.con.execute("SELECT course_id FROM enrolments WHERE user_id=?", (r.user["id"],))}
+        options = [c for c in courses if c["status"] == "amostra" or (c["status"] == "publicado" and (c["id"] in enrolled or r.is_staff()))]
+        cards = "".join(f'<form method="post" action="/comecar/curso" class="course-pick card">{csrf_field(r.csrf)}<input type="hidden" name="slug" value="{h(c["slug"])}">'
+                        f'<b>{h(c["title"])}</b><p>{h(c["subtitle"])}</p><span class="tag">{"Amostra · Módulo 1" if c["status"] == "amostra" else "O meu curso"}</span> '
+                        f'<button class="btn small">Escolher este curso →</button></form>' for c in options)
+        body = f'<div class="course-picks">{cards or "<p class=muted>Ainda não há cursos disponíveis para si.</p>"}</div>'
+        skip = f'<form method="post" action="/comecar/curso" class="inline">{csrf_field(r.csrf)}<input type="hidden" name="saltar" value="1"><button class="btn ghost">Ver todos os cursos</button></form>'
+    return r.render(f"{title} · {name}", f'''{steps_bar(r, step)}<section class="onboard"><span class="eyebrow">PASSO {idx + 1} DE {len(ONBOARD)} · {h(title).upper()}</span>
+<div class="onboard-layout"><div class="guide-clips">{clip}</div><div class="onboard-copy">{body}<div class="actions">{skip}<a class="btn ghost" href="/apresentador?seguinte=/comecar/{step}">Mudar de guia</a></div></div></div></section>''')
+
+
+@route("POST", "/comecar/(boas-vindas|perfil|passeio|curso)", "user")
+def onboarding_step_done(r, step):
+    if not selected_presenter(r):
+        raise Redirect("/comecar/guia")
+    target = None
+    if step == "perfil" and not r.data.get("saltar"):
+        save_profile(r)
+    if step == "curso" and not r.data.get("saltar"):
+        slug = r.data.get("slug", "")
+        r.course_for(slug)
+        target = f"/cursos/{slug}/introducao"
+    onboarding_mark(r, step)
+    nxt = onboarding_next(r)
+    raise Redirect(target or (f"/comecar/{nxt}" if nxt else "/?saltar=1"))
 
 
 def presenter_banner(r, c):
     key = selected_presenter(r, c["id"])
     if not key:
-        return f'<section class="profile-prompt"><div><b>Escolha o seu apresentador</b><span>Helena ou Miguel: a formação ao seu ritmo.</span></div><a class="btn small" href="/cursos/{h(c["slug"])}/apresentador">Escolher →</a></section>'
-    return f'<section class="presenter-banner"><img src="/static/presenters/{key}.png" alt=""><div><span class="eyebrow">O SEU GUIA VIRTUAL</span><b>{PRESENTERS[key]["name"]}</b></div><a href="/cursos/{h(c["slug"])}/introducao">Introdução</a><a href="/cursos/{h(c["slug"])}/apresentador">Mudar apresentador</a></section>'
+        return f'<section class="profile-prompt"><div><b>Escolha o seu apresentador</b><span>Helena ou Miguel: a formação ao seu ritmo.</span></div><a class="btn small" href="/apresentador?seguinte=/cursos/{h(c["slug"])}">Escolher →</a></section>'
+    return f'<section class="presenter-banner"><img src="/static/presenters/{key}.png" alt=""><div><span class="eyebrow">O SEU GUIA VIRTUAL</span><b>{PRESENTERS[key]["name"]}</b></div><a href="/cursos/{h(c["slug"])}/introducao">Introdução</a><a href="/apresentador?seguinte=/cursos/{h(c["slug"])}">Mudar de guia</a></section>'
 
 
 @route("GET", "/cursos/([a-z0-9-]+)/introducao", "user")
@@ -928,10 +1153,16 @@ def presenter_intro(r, slug):
     c = r.course_for(slug)
     key = selected_presenter(r, c["id"])
     if not key:
-        raise Redirect(f"/cursos/{slug}/apresentador")
+        raise Redirect(f"/apresentador?seguinte=/cursos/{slug}/introducao")
     name = PRESENTERS[key]["name"]
     scripts = json.loads((STATIC / "presenters/scripts.json").read_text(encoding="utf-8"))
     intro = scripts[key]["courses"].get(slug, scripts[key]["welcome"])
+    clips = "".join(course_clip(slug, key, n) for n in course_flow(slug).get("introducao", []))
+    if clips:
+        lesson = r.con.execute("""SELECT l.slug FROM lessons l LEFT JOIN lesson_progress p ON p.lesson_id=l.id AND p.user_id=?
+            WHERE l.course_id=? AND l.active=1 AND COALESCE(p.completed,0)=0 ORDER BY l.sort LIMIT 1""", (r.user["id"], c["id"])).fetchone()
+        url = f'/cursos/{slug}/aula/{lesson["slug"]}' if lesson else f'/cursos/{slug}'
+        return r.render(f"Conheça {name}", f'''<p class="crumbs"><a href="/cursos/{slug}">{h(c['title'])}</a> › Introdução</p><section class="guide-intro"><span class="eyebrow">O SEU GUIA VIRTUAL · ATC</span><h1>Olá, sou {"a" if key == "helena" else "o"} {name}.</h1><p class="lead">{h(c['title'])}</p><div class="guide-clips">{clips}</div><div class="actions"><a class="btn" href="{h(url)}">{"Ir para a aula" if lesson else "Voltar ao curso"} →</a><a class="btn ghost" href="/apresentador?seguinte=/cursos/{slug}/introducao">Mudar de guia</a></div></section>''')
     video = COURSES_DIR / slug / "apresentadores" / f"{key}-introducao.mp4"
     intro_track = (f'<track kind="subtitles" srclang="pt" label="Português" src="/media/{slug}/apresentadores/{key}-introducao.vtt" default>' if video.with_suffix('.vtt').is_file() else '')
     media = (f'<video controls playsinline preload="metadata" poster="/static/presenters/{key}.png"><source src="/media/{slug}/apresentadores/{key}-introducao.mp4" type="video/mp4">{intro_track}</video>' if video.is_file() else f'<img src="/static/presenters/{key}.png" alt="{name}, apresentador virtual">')
@@ -1033,7 +1264,7 @@ def lesson_page(r, slug, lslug):
     if not l:
         raise HttpError(404)
     if not selected_presenter(r, c["id"]):
-        raise Redirect(f"/cursos/{slug}/apresentador")
+        raise Redirect(f"/apresentador?seguinte=/cursos/{slug}/aula/{lslug}")
     m = r.con.execute("SELECT * FROM modules WHERE id=?", (l["module_id"],)).fetchone()
     seq = r.con.execute("SELECT slug, title FROM lessons WHERE course_id=? AND active=1 ORDER BY sort", (c["id"],)).fetchall()
     idx = [s["slug"] for s in seq].index(lslug)
@@ -1090,7 +1321,7 @@ def lesson_page(r, slug, lslug):
 <button class="btn small">Perguntar</button></form><div id="answer" class="answer" hidden></div></section>"""
     return r.render(l["title"], f"""<p class="crumbs"><a href="/">Os meus cursos</a> › <a href="/cursos/{slug}">{h(c['title'])}</a> › Módulo {m['num']}</p>
 {presenter_banner(r, c)}<h1>{h(l['title'])}</h1>
-{media_note}<div class="player"><video id="v" controls preload="metadata" playsinline{poster} data-lesson="{l['id']}" data-media="{medium['key']}" data-pos="{pos}" data-seen="{h(seen)}">
+{guide_panel(slug, selected_presenter(r, c["id"]), course_flow(slug).get("aulas", {}).get(lslug, []), "Antes de começar")}{media_note}<div class="player"><video id="v" controls preload="metadata" playsinline{poster} data-lesson="{l['id']}" data-media="{medium['key']}" data-pos="{pos}" data-seen="{h(seen)}">
 <source src="/media/{slug}/{h(medium['video'])}">{track}O seu navegador não suporta vídeo.</video></div>
 <p id="status" class="{'okmsg' if st and st['completed'] else 'muted'}">{'✓ Aula concluída' if st and st['completed'] else 'Veja a aula até ao fim para a marcar como concluída.'}</p>
 <div class="lessonnav">{''.join(nav)}</div>
@@ -1232,7 +1463,7 @@ def example_image(r, slug, filename):
         raise HttpError(404)
     r.serve_file(COURSES_DIR / slug / "manual/figures" / filename)
 
-def render_blocks(blocks, figbase):
+def render_blocks(blocks, figbase, presenter=None):
     out = []
     for b in blocks:
         if "p" in b:
@@ -1245,7 +1476,8 @@ def render_blocks(blocks, figbase):
         elif "steps" in b:
             out.append("<ol class='steps'>" + "".join(f"<li>{md(s)}</li>" for s in b["steps"]) + "</ol>")
         elif "figure" in b:
-            out.append(f'<figure><img src="{figbase}/{h(b["figure"])}" alt="{h(b.get("caption", ""))}" loading="lazy">'
+            figure = (b.get("variants") or {}).get(presenter) or b["figure"]  # imagem do guia escolhido, se existir
+            out.append(f'<figure><img src="{figbase}/{h(figure)}" alt="{h(b.get("caption", ""))}" loading="lazy">'
                        f'<figcaption>{h(b.get("caption", ""))}</figcaption>'
                        + (f'<a class="asset-credit" href="{h(b["source"])}" target="_blank" rel="noopener noreferrer">Fonte da imagem ↗</a>' if b.get("source", "").startswith("https://") else "") + "</figure>")
         for k, label in (("tip", "Dica"), ("note", "Nota"), ("warn", "Atenção")):
@@ -1262,6 +1494,7 @@ def manual_page(r, slug, num):
         raise HttpError(404)
     data = json.loads((COURSES_DIR / slug / m["manual_json"]).read_text(encoding="utf-8"))
     figbase = f"/media/{slug}/{m['manual_figures'] or ''}".rstrip("/")
+    presenter = selected_presenter(r, c["id"])
     parts = []
     for mod in data.get("modules", []):
         toc = "".join(f'<li><a href="#s{i}">{h(s["title"])}</a></li>' for i, s in enumerate(mod.get("sections", [])))
@@ -1271,7 +1504,7 @@ def manual_page(r, slug, num):
                          "".join(f"<li>{md(o)}</li>" for o in mod["objectives"]) + "</ul></div>")
         parts.append(f'<nav class="toc"><b>Neste módulo</b><ol>{toc}</ol></nav>')
         for i, s in enumerate(mod.get("sections", [])):
-            parts.append(f'<h2 id="s{i}">{h(s["title"])}</h2>{render_blocks(s.get("blocks", []), figbase)}')
+            parts.append(f'<h2 id="s{i}">{h(s["title"])}</h2>{render_blocks(s.get("blocks", []), figbase, presenter)}')
         ex = mod.get("exercise")
         if ex:
             parts.append(f'<div class="box exercise"><h2>{h(ex["title"])}</h2><p class="muted">Duração: {ex.get("minutes", "")} min · '
@@ -1286,7 +1519,7 @@ def manual_page(r, slug, num):
     if m["manual_docx"]:
         foot += f'<a class="btn ghost" href="/media/{slug}/{h(m["manual_docx"])}?descarregar=1">Descarregar em Word</a>'
     return r.render(f"Manual · Módulo {num}", f"""<p class="crumbs"><a href="/">Os meus cursos</a> › <a href="/cursos/{slug}">{h(c['title'])}</a> › Manual</p>
-<article class="card manual">{''.join(parts)}<div class="actions">{foot}</div></article>""")
+{guide_panel(slug, presenter, [course_flow(slug).get("manual")], "Antes de ler o manual")}<article class="card manual">{''.join(parts)}<div class="actions">{foot}</div></article>""")
 
 
 # -- questionários ----------------------------------------------------------
@@ -1383,7 +1616,7 @@ def cert_page(r, code):
     hours = row["hours_class"] or row["hours_video"]
     verify = f"http://{r.headers.get('Host', 'localhost')}/verificar?codigo={code}"
     return f"""<!doctype html><html lang="pt-PT"><head><meta charset="utf-8"><title>Certificado {h(code)}</title>
-<meta name="viewport" content="width=device-width, initial-scale=1"><link rel="stylesheet" href="/static/atc.css?v=3"></head>
+<meta name="viewport" content="width=device-width, initial-scale=1"><link rel="stylesheet" href="/static/atc.css?v=4"></head>
 <body class="certbody"><div class="noprint certbar"><a href="/">← Voltar</a> <button onclick="print()" class="btn small">Imprimir / guardar PDF</button></div>
 <div class="cert"><div class="certin"><img src="/static/logo-600.png" alt="ATC"><p class="k">Certificado de conclusão</p>
 <p>Certifica-se que</p><h1>{h(row['name'])}</h1><p>concluiu com aproveitamento o curso</p><h2>{h(row['title'])}</h2>

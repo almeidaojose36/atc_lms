@@ -1,0 +1,8 @@
+{
+  "introducao": ["curso-boas-vindas", "curso-conteudos"],
+  "aulas": {
+    "aula-1-1": ["aula-1-1-abertura", "ver-demonstracao"],
+    "aula-1-2": ["ver-demonstracao"]
+  },
+  "manual": "manual"
+}

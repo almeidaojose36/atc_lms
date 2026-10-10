@@ -66,7 +66,7 @@ class PersonalisationTests(unittest.TestCase):
 
     def test_presenter_gate_change_and_account_isolation(self):
         with self.assertRaises(app.Redirect) as e: app.lesson_page(self.r,'informatica',self.lesson['slug'])
-        self.assertTrue(e.exception.url.endswith('/apresentador'))
+        self.assertTrue(e.exception.url.startswith('/apresentador'))
         self.choose('helena');self.assertEqual(app.selected_presenter(self.r,self.c['id']),'helena')
         self.assertIn('Olá, sou a Helena.',app.presenter_intro(self.r,'informatica'))
         self.choose('miguel');self.assertIn('Olá, sou o Miguel.',app.presenter_intro(self.r,'informatica'))

@@ -67,6 +67,22 @@
               "p": "Quando liga o computador, o Windows mostra primeiro o **ecrã de bloqueio**, com a hora e a data. Para entrar, siga estes passos:"
             },
             {
+              "figure": "windows-atc/helena/05-recuperar-pin.png",
+              "variants": {
+                "helena": "windows-atc/helena/05-recuperar-pin.png",
+                "miguel": "windows-atc/miguel/05-recuperar-pin.png"
+              },
+              "caption": "Simulação pedagógica ATC, imagem editada por IA (não é uma captura oficial do Windows). Ecrã de início de sessão do Windows 11 com o nome do formando e a opção «Esqueci-me do meu PIN»."
+            },
+            {
+              "figure": "windows-atc/helena/01-opcoes-inicio-sessao.png",
+              "variants": {
+                "helena": "windows-atc/helena/01-opcoes-inicio-sessao.png",
+                "miguel": "windows-atc/miguel/01-opcoes-inicio-sessao.png"
+              },
+              "caption": "Simulação pedagógica ATC, imagem editada por IA (não é uma captura oficial do Windows). Definições › Contas › Opções de início de sessão."
+            },
+            {
               "steps": [
                 "Prima o botão de ligar da unidade central (ou do portátil).",
                 "Aguarde até aparecer o ecrã de bloqueio.",
@@ -74,10 +90,6 @@
                 "Escreva o seu **PIN** ou a sua **palavra-passe**.",
                 "Prima **Enter**."
               ]
-            },
-            {
-              "figure": "fig_login.jpg",
-              "caption": "Ilustração da demonstração — Ecrã de início de sessão do Windows 11 (não é uma captura real)."
             },
             {
               "warn": "Nunca partilhe o seu PIN ou a sua palavra-passe. Se alguém a souber, altere-a em Definições > Contas > Opções de início de sessão."
@@ -91,8 +103,8 @@
               "p": "Depois de iniciar sessão, vê o **ambiente de trabalho**. É o ponto de partida para todo o trabalho no Windows."
             },
             {
-              "figure": "fig_desktop.jpg",
-              "caption": "Ilustração da demonstração — As quatro partes do ambiente de trabalho (não é uma captura real)."
+              "figure": "windows-atc/comuns/04-barra-tarefas.png",
+              "caption": "Simulação pedagógica ATC, imagem editada por IA (não é uma captura oficial do Windows). As partes da barra de tarefas, numeradas de 1 a 6."
             },
             {
               "table": [
@@ -130,15 +142,27 @@
               "p": "O menu Iniciar reúne as **aplicações afixadas**, os **ficheiros recomendados** (os que usou recentemente) e o **botão de energia**."
             },
             {
+              "figure": "windows-atc/helena/04-menu-iniciar-anotado.png",
+              "variants": {
+                "helena": "windows-atc/helena/04-menu-iniciar-anotado.png",
+                "miguel": "windows-atc/miguel/04-menu-iniciar-anotado.png"
+              },
+              "caption": "Simulação pedagógica ATC, imagem editada por IA (não é uma captura oficial do Windows). O menu Iniciar com as suas zonas numeradas."
+            },
+            {
+              "figure": "windows-atc/helena/06-pesquisa-bloco-notas.png",
+              "variants": {
+                "helena": "windows-atc/helena/06-pesquisa-bloco-notas.png",
+                "miguel": "windows-atc/miguel/06-pesquisa-bloco-notas.png"
+              },
+              "caption": "Simulação pedagógica ATC, imagem editada por IA (não é uma captura oficial do Windows). Pesquisa no menu Iniciar: «Bloco de notas»."
+            },
+            {
               "steps": [
                 "Clique no botão Iniciar ou prima a tecla **Windows** do teclado.",
                 "Para procurar um programa, comece a escrever o nome, por exemplo **Word**.",
                 "Clique no resultado em **Melhor correspondência** para o abrir."
               ]
-            },
-            {
-              "figure": "fig_start.jpg",
-              "caption": "Ilustração da demonstração — Pesquisa no menu Iniciar (não é uma captura real)."
             },
             {
               "tip": "Não precisa de clicar na caixa de pesquisa: com o menu Iniciar aberto, basta começar a escrever."
@@ -150,6 +174,14 @@
           "blocks": [
             {
               "p": "Cada programa abre numa **janela**. No canto superior direito de todas as janelas há três botões:"
+            },
+            {
+              "figure": "windows-atc/comuns/02-bloco-notas.png",
+              "caption": "Simulação pedagógica ATC, imagem editada por IA (não é uma captura oficial do Windows). Bloco de notas com um documento de exemplo."
+            },
+            {
+              "figure": "windows-atc/comuns/05-controlos-janela-detalhe.png",
+              "caption": "Simulação pedagógica ATC, imagem editada por IA (não é uma captura oficial do Windows). Botões da janela e opções de organização lado a lado."
             },
             {
               "table": [
@@ -176,10 +208,6 @@
               ]
             },
             {
-              "figure": "fig_window.jpg",
-              "caption": "Ilustração da demonstração — Botões de uma janela (Bloco de Notas) (não é uma captura real)."
-            },
-            {
               "tip": "Para passar de uma janela para outra, use Alt + Tab."
             }
           ]
@@ -191,16 +219,24 @@
               "p": "No final do trabalho, encerre sempre o computador pelo Windows. Desligar diretamente da tomada pode danificar ficheiros."
             },
             {
+              "figure": "windows-atc/helena/03-encerrar.png",
+              "variants": {
+                "helena": "windows-atc/helena/03-encerrar.png",
+                "miguel": "windows-atc/miguel/03-encerrar.png"
+              },
+              "caption": "Simulação pedagógica ATC, imagem editada por IA (não é uma captura oficial do Windows). Encerrar a partir do menu Iniciar: botão Ligar/Desligar."
+            },
+            {
+              "figure": "windows-atc/comuns/01-encerrar-dialogo.png",
+              "caption": "Simulação pedagógica ATC, imagem editada por IA (não é uma captura oficial do Windows). A janela «Encerrar o Windows» (Alt + F4 no ambiente de trabalho)."
+            },
+            {
               "steps": [
                 "Guarde e feche os ficheiros abertos.",
                 "Abra o menu **Iniciar**.",
                 "Clique no botão de **energia**.",
                 "Escolha **Encerrar**."
               ]
-            },
-            {
-              "figure": "fig_shutdown.jpg",
-              "caption": "Ilustração da demonstração — Encerrar a partir do menu Iniciar (não é uma captura real)."
             },
             {
               "warn": "Guarde sempre os seus ficheiros antes de encerrar. O trabalho que não foi guardado perde-se."

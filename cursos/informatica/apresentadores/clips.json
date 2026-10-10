@@ -1,0 +1,37 @@
+{
+ "curso-boas-vindas": {
+  "titulo": "Boas-vindas ao curso",
+  "texto": {
+   "helena": "Seja muito bem-vindo ao curso prático de Informática na ótica do utilizador. Vamos iniciar esta jornada juntos",
+   "miguel": "Seja muito bem-vindo ao Curso Prático de Informática na Ótica do Utilizador. Vamos iniciar esta jornada juntos"
+  }
+ },
+ "curso-conteudos": {
+  "titulo": "O que vai aprender",
+  "texto": {
+   "helena": "Ao longo do curso, vai conhecer em detalhe o computador, o sistema operativo Windows 11, a navegação na internet e a segurança digital",
+   "miguel": "Ao longo do curso, vai conhecer em detalhe o computador, o sistema operativo Windows 11, a navegação na internet e a segurança digital"
+  }
+ },
+ "aula-1-1-abertura": {
+  "titulo": "Abertura da primeira aula",
+  "texto": {
+   "helena": "Nesta primeira aula, vamos explorar as principais partes do computador e o seu funcionamento. Preparado para começar?",
+   "miguel": "Nesta primeira aula, vamos explorar as principais partes do computador e o seu funcionamento. Preparado para começar?"
+  }
+ },
+ "ver-demonstracao": {
+  "titulo": "Como ver a demonstração",
+  "texto": {
+   "helena": "Assista atentamente à demonstração em vídeo. Faça uma pausa no momento certo e repita passo a passo os exercícios no seu computador",
+   "miguel": "Assista atentamente à demonstração em vídeo, faça uma pausa no momento certo e repita passo a passo os exercícios no seu próprio computador"
+  }
+ },
+ "manual": {
+  "titulo": "O manual do curso",
+  "texto": {
+   "helena": "Lembre-se de que o manual do curso acompanha cada um dos módulos e ajuda a rever com detalhe todas as tarefas realizadas",
+   "miguel": "Lembre-se de que o manual do curso acompanha cada um dos módulos e ajuda a rever com detalhe todas as tarefas realizadas."
+  }
+ }
+}

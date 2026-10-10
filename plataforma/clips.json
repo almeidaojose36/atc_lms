@@ -1,0 +1,30 @@
+{
+ "boas-vindas": {
+  "titulo": "Boas-vindas à plataforma",
+  "texto": {
+   "helena": "Olá, sejam muito bem-vindos. Eu sou a Helena e serei o vosso guia de aprendizagem na plataforma ATC.",
+   "miguel": "Olá, sejam muito bem-vindos. Eu sou o Miguel e serei o vosso guia de aprendizagem na plataforma ATC."
+  }
+ },
+ "perfil": {
+  "titulo": "O seu perfil e o seu guia",
+  "texto": {
+   "helena": "Personalize o seu perfil de utilizador, indique o seu principal objetivo e escolha o apresentador virtual que prefere acompanhar",
+   "miguel": "Personalize o seu perfil de utilizador, indique o seu principal objetivo e escolha o apresentador virtual que prefere acompanhar."
+  }
+ },
+ "passeio": {
+  "titulo": "Como funciona a plataforma",
+  "texto": {
+   "helena": "Aqui pode aprender inteiramente ao seu próprio ritmo, rever as aulas sempre que precisar e praticar novas competências de forma simples",
+   "miguel": "Aqui pode aprender inteiramente ao seu próprio ritmo, rever as aulas sempre que precisar e praticar novas competências de forma simples."
+  }
+ },
+ "escolher-curso": {
+  "titulo": "Escolher o primeiro curso",
+  "texto": {
+   "helena": "Para começar, escolha o seu primeiro curso. Realize a prática recomendada. Coloque todas as suas dúvidas diretamente ao formador",
+   "miguel": "Para começar, escolha o seu primeiro curso. Realize a prática recomendada e coloque todas as tuas dúvidas diretamente ao formador"
+  }
+ }
+}
