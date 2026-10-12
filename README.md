@@ -127,6 +127,15 @@ formacao.grupoangbu.com {
 }
 ```
 
+**Shared hosting with cPanel ("Setup Python App").** `passenger_wsgi.py` runs the same LMS under Passenger, without changing `atc_lms.py`:
+
+1. Create the subdomain (for example `lms.<domain>`) and turn on AutoSSL for it. The voice guide needs HTTPS for the microphone.
+2. Upload `atc_lms.py`, `passenger_wsgi.py`, `static/`, `cursos/`, `plataforma/` and `dados/` (about 140 MB). `producao/` stays off the server.
+3. In "Setup Python App", create an application with Python 3.9 or later. Set the application root to the uploaded folder, the URL to the subdomain, the startup file to `passenger_wsgi.py` and the entry point to `application`.
+4. Add the environment variables `ATC_DADOS` (a writable folder outside the public web root) and `ATC_ELEVEN_KEY`, then restart the app. No `pip install` is needed.
+
+The adapter adds `Secure` to the session cookie when the request is HTTPS. Long videos are streamed from disk in chunks and support byte ranges.
+
 **Backups:** copy the `dados/` folder (one SQLite file) and `cursos/`.
 
 **Settings** are environment variables:

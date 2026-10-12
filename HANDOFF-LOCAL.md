@@ -22,7 +22,7 @@ Build working **samples** of the courses and the LMS for ATC (Angbu Training Cen
 - **No burned-in captions:** clips carry no captions in the picture; the player shows `.vtt` subtitles, and "Ler o texto" gives the transcript.
 - **Guide portraits:** `static/presenters/{helena,miguel}.png` are the blazer portraits the user supplied.
 - **Voice guide:** on lessons 1.1 and 1.2. See `producao/GUIA_POR_VOZ.md` and the section below.
-- **Tests:** `python -m unittest discover -s tests`, 30 tests, all passing.
+- **Tests:** `python -m unittest discover -s tests`, 34 tests, all passing (4 cover the WSGI adapter, `passenger_wsgi.py`).
 
 ### Media and documents
 - **Avatar clips:** 18 approved clips (H1–H9, M1–M9) in `producao/videos/avatar-video-final/`. They are placed in the LMS through `plataforma/apresentadores/` and `cursos/informatica/apresentadores/`.
