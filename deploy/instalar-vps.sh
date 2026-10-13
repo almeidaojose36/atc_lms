@@ -15,7 +15,7 @@ PORTA="${PORTA:-8080}"
 
 [ "$(id -u)" = 0 ] || { echo "Corra como root."; exit 1; }
 
-dono_porta() { ss -ltnpH "sport = :$1" | grep -o 'users:(("[^"]*' | cut -d'"' -f2 | sort -u | tr '\n' ' '; }
+dono_porta() { ss -ltnpH "sport = :$1" | { grep -o 'users:(("[^"]*' || true; } | cut -d'"' -f2 | sort -u | tr '\n' ' '; }
 
 # 1. Verificações antes de mudar seja o que for.
 d=$(dono_porta "$PORTA")
