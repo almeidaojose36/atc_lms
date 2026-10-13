@@ -52,6 +52,11 @@ class WsgiTests(unittest.TestCase):
     def test_cookie_is_secure_over_https(self):
         self.assertIn("Secure", self.entrar(https=True)["h"]["set-cookie"])
 
+    def test_cookie_is_secure_behind_https_proxy(self):
+        r = pedido("/entrar", "POST", b"email=formando%40atc.ao&pw=formando123",
+                   headers={"X-Forwarded-Proto": "https"})
+        self.assertEqual(r["h"]["set-cookie"].count("Secure"), 1)
+
     def test_no_hop_by_hop_headers(self):
         for k in pedido("/entrar")["h"]:
             self.assertNotIn(k, passenger_wsgi.HOP_BY_HOP)

@@ -94,7 +94,7 @@ def application(environ, start_response):
     r = WsgiHandler(environ)
     status, headers, body = r.run()
     if environ.get("wsgi.url_scheme") == "https" or environ.get("HTTP_X_FORWARDED_PROTO") == "https":
-        headers = [(k, v + "; Secure" if k.lower() == "set-cookie" else v) for k, v in headers]
+        headers = [(k, v + "; Secure" if k.lower() == "set-cookie" and "Secure" not in v else v) for k, v in headers]
     start_response(status, headers)
     if r.stream is None or r.command == "HEAD" or not status.startswith(("200", "206")):
         return [body]

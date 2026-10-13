@@ -912,8 +912,9 @@ def login_post(r):
     nxt = r.data.get("seguinte", "/")
     if not nxt.startswith("/") or nxt.startswith("//"):
         nxt = "/"
+    seguro = "; Secure" if r.headers.get("X-Forwarded-Proto") == "https" else ""  # atrás do nginx com HTTPS
     r.send(303, "", headers={"Location": nxt, "Set-Cookie":
-           f"{COOKIE}={tok}; Path=/; HttpOnly; SameSite=Lax; Max-Age={SESSION_DAYS * 86400}"})
+           f"{COOKIE}={tok}; Path=/; HttpOnly; SameSite=Lax; Max-Age={SESSION_DAYS * 86400}{seguro}"})
 
 
 @route("POST", "/sair", "user")
