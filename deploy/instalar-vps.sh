@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Instala o ATC LMS num VPS Ubuntu (testado para Ubuntu 24.04), com HTTPS automático pelo Caddy.
+# Instala o ATC LMS num VPS Ubuntu (feito para Ubuntu 24.04), com HTTPS automático pelo Caddy.
 # Uso (como root):  DOMINIO=lms.atc-lda.com bash instalar-vps.sh
 # Pode correr de novo para atualizar o código: os dados em /var/lib/atc-lms não são tocados.
 set -euo pipefail
