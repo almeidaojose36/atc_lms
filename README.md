@@ -122,7 +122,7 @@ Run it on any small Linux VPS (1 vCPU / 1 GB is plenty for a few hundred learner
 ```bash
 # /etc/systemd/system/atc-lms.service  → ExecStart=/usr/bin/python3 /opt/atc-lms/atc_lms.py --porta 8080 --host 127.0.0.1
 # Caddyfile:
-formacao.grupoangbu.com {
+lms.atc-lda.com {
     reverse_proxy 127.0.0.1:8080
 }
 ```
