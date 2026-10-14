@@ -1,0 +1,407 @@
+{
+  "course": "CompTIA Network+ (N10-009)",
+  "subtitle": "Fundamentos de redes, configuração e resolução de problemas",
+  "version": "1.0 · amostra",
+  "date": "Outubro de 2026",
+  "hours_class": 6,
+  "hours_video": 6,
+  "producer": "ATC · Angbu Training Centre",
+  "reviewer": "A rever pelo formador certificado da ATC",
+  "intro": "Este manual acompanha o Módulo 1 do curso de preparação para o exame CompTIA Network+ (N10-009). É uma amostra: apresenta os conceitos de base que vai usar em todos os módulos seguintes.",
+  "modules": [
+    {
+      "num": 1,
+      "title": "Conceitos de redes",
+      "intro": "Neste módulo vai conhecer o modelo OSI, os tipos de rede e as topologias, o endereçamento IPv4, as portas e protocolos mais usados e o papel de cada equipamento de rede. Corresponde ao domínio 1 do exame (Conceitos de redes).",
+      "objectives": [
+        "Descrever as sete camadas do modelo OSI e dar um exemplo de cada uma.",
+        "Distinguir LAN, WAN, WLAN e as topologias em estrela, malha e híbrida.",
+        "Reconhecer endereços IPv4 públicos, privados, de loopback e APIPA.",
+        "Explicar como o DHCP atribui endereços (processo DORA).",
+        "Associar os protocolos mais comuns às suas portas TCP/UDP.",
+        "Identificar a função do router, do switch, do ponto de acesso e da firewall."
+      ],
+      "sections": [
+        {
+          "title": "1.1 O que é uma rede?",
+          "blocks": [
+            {
+              "p": "Uma **rede** é um conjunto de dispositivos ligados entre si para partilhar dados e recursos: ficheiros, impressoras, a ligação à Internet ou aplicações. Cada dispositivo ligado chama-se **nó** ou **anfitrião** (host)."
+            },
+            {
+              "table": [
+                [
+                  "Tipo",
+                  "Alcance",
+                  "Exemplo"
+                ],
+                [
+                  "LAN",
+                  "Um edifício ou um piso",
+                  "A rede da sala de formação da ATC"
+                ],
+                [
+                  "WLAN",
+                  "Uma LAN sem fios (Wi-Fi)",
+                  "O Wi-Fi do escritório"
+                ],
+                [
+                  "MAN",
+                  "Uma cidade",
+                  "Ligação entre as delegações de Luanda"
+                ],
+                [
+                  "WAN",
+                  "Países e continentes",
+                  "A Internet; a ligação Luanda–Lisboa de uma empresa"
+                ]
+              ]
+            },
+            {
+              "p": "A **topologia** descreve a forma como os nós estão ligados. Na topologia em **estrela**, todos ligam a um equipamento central (normalmente um switch). Na topologia em **malha**, cada nó liga a vários outros, o que dá caminhos alternativos se uma ligação falhar. Uma rede **híbrida** combina várias topologias."
+            },
+            {
+              "tip": "Nas empresas, a topologia mais comum dentro do edifício é a estrela: se um cabo falhar, só esse computador fica sem rede."
+            }
+          ]
+        },
+        {
+          "title": "1.2 O modelo OSI",
+          "blocks": [
+            {
+              "p": "O **modelo OSI** divide a comunicação em sete camadas e ajuda a localizar problemas: um cabo partido é da camada 1; um endereço IP errado, da camada 3."
+            },
+            {
+              "table": [
+                [
+                  "Camada",
+                  "Nome",
+                  "Unidade de dados",
+                  "Exemplo"
+                ],
+                [
+                  "7",
+                  "Aplicação",
+                  "Dados",
+                  "HTTP, DNS, SMTP"
+                ],
+                [
+                  "6",
+                  "Apresentação",
+                  "Dados",
+                  "Cifragem TLS, formatos de ficheiro"
+                ],
+                [
+                  "5",
+                  "Sessão",
+                  "Dados",
+                  "Abrir e fechar sessões entre aplicações"
+                ],
+                [
+                  "4",
+                  "Transporte",
+                  "Segmento (TCP) / datagrama (UDP)",
+                  "TCP, UDP, portas"
+                ],
+                [
+                  "3",
+                  "Rede",
+                  "Pacote",
+                  "IP, router"
+                ],
+                [
+                  "2",
+                  "Ligação de dados",
+                  "Trama",
+                  "Endereço MAC, switch"
+                ],
+                [
+                  "1",
+                  "Física",
+                  "Bits",
+                  "Cabo, fibra, sinal Wi-Fi"
+                ]
+              ]
+            },
+            {
+              "note": "O **TCP** confirma a entrega e reenvia o que se perde (web, correio). O **UDP** não confirma, mas é mais rápido (voz, vídeo em direto, DNS)."
+            }
+          ]
+        },
+        {
+          "title": "1.3 Endereçamento IPv4",
+          "blocks": [
+            {
+              "p": "Um endereço **IPv4** tem 32 bits, escritos em quatro números de 0 a 255 separados por pontos, por exemplo **192.168.1.20**. A **máscara de sub-rede** (por exemplo 255.255.255.0, ou /24) indica que parte do endereço identifica a rede e que parte identifica o dispositivo."
+            },
+            {
+              "table": [
+                [
+                  "Tipo de endereço",
+                  "Intervalo",
+                  "Para que serve"
+                ],
+                [
+                  "Privado (classe A)",
+                  "10.0.0.0 – 10.255.255.255 (/8)",
+                  "Redes internas grandes"
+                ],
+                [
+                  "Privado (classe B)",
+                  "172.16.0.0 – 172.31.255.255 (/12)",
+                  "Redes internas médias"
+                ],
+                [
+                  "Privado (classe C)",
+                  "192.168.0.0 – 192.168.255.255 (/16)",
+                  "Casas e pequenos escritórios"
+                ],
+                [
+                  "Loopback",
+                  "127.0.0.1",
+                  "O próprio computador (testes)"
+                ],
+                [
+                  "APIPA",
+                  "169.254.0.0 – 169.254.255.255",
+                  "Atribuído sozinho quando o DHCP não responde"
+                ]
+              ]
+            },
+            {
+              "p": "Os endereços privados não circulam na Internet. O router usa **NAT** para traduzir os endereços privados da rede interna para o endereço **público** fornecido pelo operador."
+            },
+            {
+              "warn": "Se um computador tiver um endereço 169.254.x.x, não está a receber endereço do servidor DHCP. Verifique o cabo, o Wi-Fi e o servidor DHCP antes de mexer noutras definições."
+            }
+          ]
+        },
+        {
+          "title": "1.4 DHCP e DNS",
+          "blocks": [
+            {
+              "p": "O **DHCP** atribui automaticamente a cada dispositivo um endereço IP, a máscara de sub-rede, o **gateway predefinido** (o router) e o servidor **DNS**. O processo tem quatro mensagens, conhecidas pela sigla **DORA**:"
+            },
+            {
+              "table": [
+                [
+                  "Passo",
+                  "Mensagem",
+                  "Quem envia"
+                ],
+                [
+                  "1",
+                  "Discover (descoberta)",
+                  "O cliente procura um servidor DHCP"
+                ],
+                [
+                  "2",
+                  "Offer (oferta)",
+                  "O servidor propõe um endereço"
+                ],
+                [
+                  "3",
+                  "Request (pedido)",
+                  "O cliente aceita a oferta"
+                ],
+                [
+                  "4",
+                  "Acknowledge (confirmação)",
+                  "O servidor confirma a concessão"
+                ]
+              ]
+            },
+            {
+              "p": "O **DNS** traduz nomes fáceis de lembrar (por exemplo, atc-lda.com) em endereços IP. Sem DNS, teria de escrever o endereço IP de cada site."
+            },
+            {
+              "tip": "No Windows, o comando **ipconfig /all** mostra o endereço IP, o gateway, o servidor DNS e se o endereço veio do DHCP."
+            }
+          ]
+        },
+        {
+          "title": "1.5 Portas e protocolos",
+          "blocks": [
+            {
+              "p": "Um servidor pode oferecer vários serviços ao mesmo tempo. A **porta** indica a que serviço se destina cada ligação. No exame tem de associar os protocolos mais comuns às suas portas."
+            },
+            {
+              "table": [
+                [
+                  "Protocolo",
+                  "Porta",
+                  "Para que serve"
+                ],
+                [
+                  "FTP",
+                  "20/21 TCP",
+                  "Transferir ficheiros (sem cifragem)"
+                ],
+                [
+                  "SSH / SFTP",
+                  "22 TCP",
+                  "Acesso remoto seguro; transferência segura de ficheiros"
+                ],
+                [
+                  "Telnet",
+                  "23 TCP",
+                  "Acesso remoto sem cifragem (a evitar)"
+                ],
+                [
+                  "SMTP",
+                  "25 TCP",
+                  "Enviar correio entre servidores"
+                ],
+                [
+                  "DNS",
+                  "53 TCP/UDP",
+                  "Traduzir nomes em endereços"
+                ],
+                [
+                  "DHCP",
+                  "67/68 UDP",
+                  "Atribuir endereços automaticamente"
+                ],
+                [
+                  "HTTP",
+                  "80 TCP",
+                  "Páginas web sem cifragem"
+                ],
+                [
+                  "NTP",
+                  "123 UDP",
+                  "Acertar a hora"
+                ],
+                [
+                  "SNMP",
+                  "161/162 UDP",
+                  "Monitorizar equipamentos de rede"
+                ],
+                [
+                  "LDAP",
+                  "389 TCP",
+                  "Consultar diretórios de utilizadores"
+                ],
+                [
+                  "HTTPS",
+                  "443 TCP",
+                  "Páginas web cifradas"
+                ],
+                [
+                  "SMB",
+                  "445 TCP",
+                  "Partilha de ficheiros e impressoras no Windows"
+                ],
+                [
+                  "RDP",
+                  "3389 TCP",
+                  "Ambiente de trabalho remoto"
+                ]
+              ]
+            },
+            {
+              "tip": "Comece por memorizar as portas que usa todos os dias: 80 (HTTP), 443 (HTTPS), 53 (DNS) e 3389 (RDP)."
+            }
+          ]
+        },
+        {
+          "title": "1.6 Equipamentos de rede",
+          "blocks": [
+            {
+              "table": [
+                [
+                  "Equipamento",
+                  "Camada OSI",
+                  "Função"
+                ],
+                [
+                  "Switch",
+                  "2 (Ligação de dados)",
+                  "Liga os dispositivos da LAN e envia cada trama só para a porta certa, pelo endereço MAC"
+                ],
+                [
+                  "Router",
+                  "3 (Rede)",
+                  "Liga redes diferentes (por exemplo, a LAN à Internet) e escolhe o caminho pelo endereço IP"
+                ],
+                [
+                  "Ponto de acesso (AP)",
+                  "2",
+                  "Liga dispositivos sem fios à rede com fios"
+                ],
+                [
+                  "Firewall",
+                  "3 a 7",
+                  "Permite ou bloqueia tráfego segundo regras de segurança"
+                ],
+                [
+                  "Balanceador de carga",
+                  "4 a 7",
+                  "Distribui os pedidos por vários servidores"
+                ]
+              ]
+            },
+            {
+              "p": "Num pequeno escritório, um único aparelho pode fazer de router, switch, ponto de acesso e firewall. Numa empresa, cada função costuma ter o seu equipamento."
+            }
+          ]
+        }
+      ],
+      "exercise": {
+        "title": "Exercício prático · Conhecer a rede do seu computador",
+        "minutes": 20,
+        "file": "Linha de comandos do Windows (cmd)",
+        "tasks": [
+          "Abra a linha de comandos: prima a tecla Windows, escreva **cmd** e prima Enter.",
+          "Escreva **ipconfig /all** e anote o endereço IPv4, a máscara de sub-rede, o gateway predefinido e o servidor DNS.",
+          "Indique se o endereço é privado ou público e a que intervalo pertence.",
+          "Confirme se o endereço foi atribuído por DHCP (linha «DHCP Ativado»).",
+          "Escreva **ping 127.0.0.1** e explique o que está a testar.",
+          "Escreva **nslookup atc-lda.com** e anote o endereço IP devolvido pelo DNS."
+        ]
+      },
+      "summary": [
+        "Modelo OSI: sete camadas, da Física (1) à Aplicação (7).",
+        "LAN, WLAN, MAN e WAN distinguem-se pelo alcance.",
+        "Endereços privados: 10.x, 172.16–31.x e 192.168.x; 169.254.x indica falha do DHCP.",
+        "DHCP em quatro passos: Discover, Offer, Request, Acknowledge.",
+        "Portas essenciais: 22 SSH, 53 DNS, 80 HTTP, 443 HTTPS, 3389 RDP.",
+        "Switch: endereços MAC (camada 2). Router: endereços IP (camada 3)."
+      ]
+    }
+  ],
+  "glossary": [
+    [
+      "APIPA",
+      "Endereço 169.254.x.x que o Windows atribui a si próprio quando não recebe resposta do DHCP."
+    ],
+    [
+      "DHCP",
+      "Serviço que atribui automaticamente endereços IP e outras definições de rede."
+    ],
+    [
+      "DNS",
+      "Serviço que traduz nomes de domínio em endereços IP."
+    ],
+    [
+      "Gateway predefinido",
+      "O router para onde o computador envia o tráfego destinado a outras redes."
+    ],
+    [
+      "Endereço MAC",
+      "Identificador físico de uma placa de rede, usado pelo switch na camada 2."
+    ],
+    [
+      "NAT",
+      "Tradução de endereços privados para um endereço público, feita pelo router."
+    ],
+    [
+      "Porta",
+      "Número que identifica o serviço de destino de uma ligação TCP ou UDP."
+    ],
+    [
+      "Topologia",
+      "Forma como os dispositivos de uma rede estão ligados entre si."
+    ]
+  ]
+}

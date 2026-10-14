@@ -1,0 +1,281 @@
+{
+  "course": "CompTIA A+ (220-1201/1202)",
+  "subtitle": "Suporte técnico de hardware, sistemas operativos e redes",
+  "version": "1.0 · amostra",
+  "date": "Outubro de 2026",
+  "hours_class": 8,
+  "hours_video": 8,
+  "producer": "ATC · Angbu Training Centre",
+  "reviewer": "A rever pelo formador certificado da ATC",
+  "intro": "Este manual acompanha o Módulo 1 do curso de preparação para o exame CompTIA A+ Core 1 (220-1201). É uma amostra: mostra como a ATC ensina a reparar e a configurar dispositivos móveis, com procedimentos passo a passo.",
+  "modules": [
+    {
+      "num": 1,
+      "title": "Dispositivos móveis",
+      "intro": "Neste módulo vai aprender a substituir componentes de um portátil em segurança, a ligar acessórios e redes sem fios a dispositivos móveis e a sincronizar correio, contactos e calendário. Corresponde ao domínio 1 do exame Core 1 (Dispositivos móveis).",
+      "objectives": [
+        "Preparar uma intervenção num portátil com as regras de segurança e de proteção contra descargas eletrostáticas.",
+        "Substituir ou acrescentar memória RAM SO-DIMM num portátil.",
+        "Identificar e substituir o armazenamento (SATA de 2,5 polegadas e M.2) e a placa sem fios.",
+        "Emparelhar um acessório Bluetooth com um telemóvel ou portátil.",
+        "Distinguir Wi-Fi, rede móvel, hotspot, tethering e NFC.",
+        "Configurar a sincronização de correio, contactos e calendário."
+      ],
+      "sections": [
+        {
+          "title": "1.1 Antes de abrir um portátil",
+          "blocks": [
+            {
+              "p": "Um portátil tem componentes pequenos e sensíveis. Antes de qualquer intervenção, siga sempre o mesmo procedimento: é a forma de proteger o equipamento, os dados do cliente e a sua própria segurança."
+            },
+            {
+              "steps": [
+                "Faça uma cópia de segurança dos dados do cliente, se o equipamento ainda arrancar.",
+                "Encerre o sistema operativo e desligue o carregador.",
+                "Desligue ou retire a bateria; nos modelos com bateria interna, desligue o conector da bateria logo que abrir a tampa.",
+                "Coloque a pulseira antiestática (ESD) e ligue-a a um ponto de terra; trabalhe sobre um tapete antiestático.",
+                "Fotografe o interior e guarde os parafusos por ordem, porque costumam ter tamanhos diferentes.",
+                "Consulte o manual de serviço do fabricante antes de retirar peças."
+              ]
+            },
+            {
+              "warn": "Uma descarga eletrostática que nem sente pode danificar a memória ou a placa principal. Use sempre a pulseira antiestática."
+            }
+          ]
+        },
+        {
+          "title": "1.2 Memória RAM",
+          "blocks": [
+            {
+              "p": "Os portáteis usam memória no formato **SO-DIMM** (Small Outline DIMM), mais pequena do que a DIMM dos computadores de secretária. Em muitos portáteis finos, a memória vem soldada à placa principal e não pode ser trocada."
+            },
+            {
+              "table": [
+                [
+                  "Formato",
+                  "Onde se usa",
+                  "Nota"
+                ],
+                [
+                  "DIMM",
+                  "Computadores de secretária",
+                  "Módulo comprido"
+                ],
+                [
+                  "SO-DIMM",
+                  "Portáteis e mini PC",
+                  "Módulo curto; encaixa em ângulo e baixa até prender"
+                ],
+                [
+                  "Soldada (onboard)",
+                  "Ultraportáteis e tablets",
+                  "Não se substitui; confirme antes de vender um upgrade"
+                ]
+              ]
+            },
+            {
+              "steps": [
+                "Confirme no manual o tipo de memória (por exemplo DDR4 ou DDR5) e o máximo suportado.",
+                "Abra a tampa de acesso à memória ou a tampa inferior.",
+                "Afaste as duas patilhas laterais: o módulo antigo levanta-se em ângulo.",
+                "Encaixe o novo módulo a cerca de 30 graus, com o entalhe alinhado, e baixe-o até as patilhas prenderem.",
+                "Ligue o portátil e confirme a memória total nas Definições do Windows (Sistema › Acerca de)."
+              ]
+            },
+            {
+              "tip": "A memória DDR4 e a DDR5 têm o entalhe em posições diferentes: um módulo de outra geração não encaixa. Nunca force."
+            }
+          ]
+        },
+        {
+          "title": "1.3 Armazenamento e placa sem fios",
+          "blocks": [
+            {
+              "table": [
+                [
+                  "Componente",
+                  "Formato comum",
+                  "O que verificar"
+                ],
+                [
+                  "Disco SSD ou HDD de 2,5\"",
+                  "SATA",
+                  "Espessura (7 mm ou 9,5 mm) e o suporte do disco"
+                ],
+                [
+                  "SSD M.2",
+                  "M.2 SATA ou M.2 NVMe",
+                  "O tipo aceite pela ranhura e o comprimento (por exemplo 2280)"
+                ],
+                [
+                  "Placa sem fios",
+                  "M.2 (em modelos antigos, Mini PCIe)",
+                  "Os cabos de antena e a compatibilidade Wi-Fi/Bluetooth"
+                ]
+              ]
+            },
+            {
+              "p": "Para substituir a **placa sem fios**, desligue com cuidado os pequenos conectores das antenas, retire o parafuso de fixação e puxe a placa em ângulo. Na placa nova, volte a ligar as antenas nos mesmos terminais (normalmente marcados como MAIN e AUX)."
+            },
+            {
+              "note": "Um SSD M.2 NVMe é muito mais rápido do que um SSD SATA, mas só funciona numa ranhura M.2 que suporte NVMe. Confirme sempre no manual."
+            }
+          ]
+        },
+        {
+          "title": "1.4 Emparelhar acessórios Bluetooth",
+          "blocks": [
+            {
+              "p": "O **Bluetooth** liga acessórios a curta distância (normalmente até 10 metros): auriculares, teclados, ratos, colunas e o sistema de som do carro. A primeira ligação chama-se **emparelhamento**."
+            },
+            {
+              "steps": [
+                "Ative o Bluetooth no telemóvel ou no portátil.",
+                "Coloque o acessório em modo de emparelhamento (consulte as instruções; muitas vezes, mantém-se premido um botão até a luz piscar).",
+                "No telemóvel ou no portátil, procure dispositivos e escolha o acessório na lista.",
+                "Se for pedido, confirme ou introduza o código PIN.",
+                "Teste: reproduza som, escreva no teclado ou mova o rato."
+              ]
+            },
+            {
+              "tip": "Estas instruções são gerais. Cada fabricante pode usar botões ou passos ligeiramente diferentes."
+            }
+          ]
+        },
+        {
+          "title": "1.5 Ligações dos dispositivos móveis",
+          "blocks": [
+            {
+              "table": [
+                [
+                  "Ligação",
+                  "Para que serve",
+                  "Exemplo"
+                ],
+                [
+                  "Wi-Fi",
+                  "Ligar a uma rede local sem fios",
+                  "O Wi-Fi do escritório"
+                ],
+                [
+                  "Rede móvel (4G/5G)",
+                  "Dados através do operador",
+                  "Navegar na rua"
+                ],
+                [
+                  "Hotspot",
+                  "O telemóvel partilha os dados móveis por Wi-Fi",
+                  "Dar Internet ao portátil numa reunião"
+                ],
+                [
+                  "Tethering USB",
+                  "Partilhar os dados móveis por cabo",
+                  "Ligação mais estável ao portátil"
+                ],
+                [
+                  "NFC",
+                  "Comunicação a poucos centímetros",
+                  "Pagamentos com o telemóvel"
+                ],
+                [
+                  "Bluetooth",
+                  "Acessórios a curta distância",
+                  "Auriculares e teclados"
+                ]
+              ]
+            },
+            {
+              "p": "Uma **estação de ancoragem** (docking station) ou um **replicador de portas** liga o portátil, com um só cabo, ao monitor, ao teclado, ao rato e à rede da secretária."
+            }
+          ]
+        },
+        {
+          "title": "1.6 Sincronização",
+          "blocks": [
+            {
+              "p": "A **sincronização** mantém os mesmos dados em vários dispositivos. Quando lê um e-mail no telemóvel, ele aparece como lido no portátil, porque ambos sincronizam com o servidor da conta (por exemplo, Microsoft 365 ou Google)."
+            },
+            {
+              "table": [
+                [
+                  "O que se sincroniza",
+                  "Onde se configura"
+                ],
+                [
+                  "Correio",
+                  "Aplicação de correio, com a conta da empresa"
+                ],
+                [
+                  "Contactos e calendário",
+                  "Definições › Contas, na mesma conta"
+                ],
+                [
+                  "Fotografias e ficheiros",
+                  "Serviço de nuvem (OneDrive, Google Drive, iCloud)"
+                ]
+              ]
+            },
+            {
+              "warn": "Ao configurar a conta de um cliente, nunca peça nem anote a palavra-passe. Peça ao cliente que a introduza ele próprio."
+            }
+          ]
+        }
+      ],
+      "exercise": {
+        "title": "Exercício prático · Ficha de intervenção num portátil",
+        "minutes": 25,
+        "file": "Portátil de formação da ATC (ou fotografias do manual de serviço)",
+        "tasks": [
+          "Preencha a lista de verificação de segurança da secção 1.1 antes de abrir o equipamento.",
+          "Identifique o tipo e a quantidade de memória instalada e o máximo suportado pelo modelo.",
+          "Identifique o tipo de armazenamento (SATA de 2,5\", M.2 SATA ou M.2 NVMe).",
+          "Localize a placa sem fios e os cabos de antena MAIN e AUX.",
+          "Emparelhe um rato ou auriculares Bluetooth e registe os passos que seguiu.",
+          "Ative o hotspot de um telemóvel de formação e ligue o portátil a essa rede."
+        ]
+      },
+      "summary": [
+        "Antes de abrir: cópia de segurança, bateria desligada, pulseira antiestática.",
+        "Portáteis usam memória SO-DIMM; nos ultraportáteis pode estar soldada.",
+        "Armazenamento: SATA de 2,5\" ou M.2 (SATA ou NVMe).",
+        "Bluetooth: ativar, emparelhar, escolher, confirmar o PIN, testar.",
+        "Hotspot e tethering partilham os dados móveis; o NFC atua a centímetros.",
+        "A sincronização mantém correio, contactos e calendário iguais."
+      ]
+    }
+  ],
+  "glossary": [
+    [
+      "ESD",
+      "Descarga eletrostática: eletricidade estática que pode danificar componentes eletrónicos."
+    ],
+    [
+      "SO-DIMM",
+      "Formato de memória RAM mais pequeno, usado em portáteis."
+    ],
+    [
+      "M.2",
+      "Formato de ranhura e de cartão para SSD e placas sem fios."
+    ],
+    [
+      "NVMe",
+      "Protocolo de armazenamento rápido para SSD ligados por PCIe."
+    ],
+    [
+      "Emparelhamento",
+      "Primeira ligação entre dois dispositivos Bluetooth."
+    ],
+    [
+      "Hotspot",
+      "Função que transforma o telemóvel num ponto de acesso Wi-Fi."
+    ],
+    [
+      "Tethering",
+      "Partilha dos dados móveis do telemóvel com outro dispositivo."
+    ],
+    [
+      "Sincronização",
+      "Manter os mesmos dados atualizados em vários dispositivos."
+    ]
+  ]
+}

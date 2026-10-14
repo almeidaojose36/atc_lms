@@ -77,13 +77,16 @@ class PersonalisationTests(unittest.TestCase):
         self.r.data={'presenter':'../../bad'}
         with self.assertRaises(app.HttpError): app.presenter_save(self.r,'informatica')
         self.r.data={'presenter':'helena'}
+        self.con.execute("UPDATE courses SET status='em_breve' WHERE slug='comptia-a-plus'")
         with self.assertRaises(app.HttpError) as e: app.presenter_save(self.r,'comptia-a-plus')
         self.assertEqual(e.exception.code,403)
 
     def test_fallback_and_optional_media(self):
         self.choose('helena')
-        medium=app.lesson_media('informatica',self.lesson,'helena')
+        with patch.object(app,'mp4_duration',return_value=0):   # versão do guia indisponível → vídeo original
+            medium=app.lesson_media('informatica',self.lesson,'helena')
         self.assertEqual(medium['key'],'original')
+        self.assertEqual(app.lesson_media('informatica',self.lesson,'miguel')['key'],'miguel')   # locução angolana do Miguel
         with patch.object(app,'ollama_available',return_value=False): html=app.lesson_page(self.r,'informatica',self.lesson['slug'])
         self.assertNotIn('Vídeo de demonstração comum',html)   # nota técnica retirada do ecrã do formando
         self.assertIn('Passo 2 de 5',html); self.assertIn('data-proximo-passo',html); self.assertIn('Só legendas',html)
@@ -107,7 +110,7 @@ class PersonalisationTests(unittest.TestCase):
             self.assertEqual(row['position'],0);self.assertEqual(row['seen'],'')
 
     def test_progress_rejects_nonfinite_values_and_missing_variant(self):
-        for pos,key in [('nan','original'),('inf','original'),(5,'helena'),(5,'bad')]:
+        for pos,key in [('nan','original'),('inf','original'),(5,'bad'),(5,'../helena')]:
             self.r.data=dict(lesson=self.lesson['id'],media=key,pos=pos,seen='1'*200,dur=100)
             with self.assertRaises(app.HttpError): app.progress_api(self.r)
 

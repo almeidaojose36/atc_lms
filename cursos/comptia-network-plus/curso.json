@@ -1,1 +1,25 @@
-{ "slug": "comptia-network-plus", "title": "CompTIA Network+ (N10-009)", "subtitle": "Fundamentos de redes, configuração e resolução de problemas", "status": "em_breve", "order": 7, "hours_video": 6, "cover": "capa.svg", "modules": [] }
+{
+  "slug": "comptia-network-plus",
+  "title": "CompTIA Network+ (N10-009)",
+  "subtitle": "Fundamentos de redes, configuração e resolução de problemas",
+  "status": "amostra",
+  "order": 7,
+  "hours_video": 6,
+  "cover": "capa.svg",
+  "modules": [
+    {
+      "num": 1,
+      "title": "Conceitos de redes",
+      "intro": "Fundamentos de redes, configuração e resolução de problemas",
+      "manual_json": "manual/modulo-1.json",
+      "manual_figures": "manual/figures",
+      "lessons": [],
+      "quiz": {
+        "title": "Questionário do Módulo 1 · Conceitos de redes",
+        "gift": "quiz/modulo-1.gift.txt",
+        "pass_mark": 70
+      }
+    }
+  ],
+  "description": "Preparação para o exame CompTIA Network+ (N10-009). Este módulo de amostra apresenta o modelo OSI, o endereçamento IPv4, o DHCP, as portas e os equipamentos de rede, com manual online, exercício na linha de comandos e questionário."
+}

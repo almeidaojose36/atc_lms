@@ -1478,8 +1478,10 @@ def lesson_page(r, slug, lslug):
              f'{" default" if l["subtitles_on"] else ""}>' if l["subtitles"] else "")
     if medium["key"] != "original":
         track = (f'<track kind="subtitles" srclang="pt" label="Português" src="/media/{slug}/{medium["subtitles"]}" default>' if medium["subtitles"] else '')
+    if lslug in course_flow(slug).get("legendas_na_imagem", []):
+        track = ""   # as legendas já estão na imagem do vídeo; uma segunda faixa repetia o texto
     poster = f' poster="/media/{slug}/{h(l["poster"])}"' if l["poster"] else ""
-    if medium["key"] != "original":
+    if medium["key"] != "original" and not l["poster"]:
         poster = f' poster="/static/presenters/{medium["key"]}.png"'
     transcript_text = l["transcript"] or ""
     if medium["key"] != "original":

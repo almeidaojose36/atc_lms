@@ -1,0 +1,17 @@
+$CATEGORY: $course$/CompTIA A+/Módulo 1
+
+::AP1-Q1:: Qual é o primeiro cuidado antes de abrir um portátil para trocar uma peça? { ~Ligar o carregador para não perder dados =Desligar o carregador e a bateria e usar a pulseira antiestática ~Retirar todos os parafusos de uma vez ~Atualizar o Windows }
+
+::AP1-Q2:: Que formato de memória RAM usam a maioria dos portáteis? { ~DIMM =SO-DIMM ~M.2 ~SATA }
+
+::AP1-Q3:: Um cliente quer mais memória num ultraportátil com a RAM soldada à placa. O que faz? { ~Instala um módulo SO-DIMM adicional =Explica que a memória não pode ser substituída nesse modelo ~Instala memória DDR de outra geração ~Troca a placa sem fios }
+
+::AP1-Q4:: Um SSD M.2 NVMe só funciona: { ~Em qualquer ranhura SATA =Numa ranhura M.2 que suporte NVMe ~Ligado por Bluetooth ~Num computador de secretária }
+
+::AP1-Q5:: Ao substituir a placa sem fios, o que tem de voltar a ligar? { ~O cabo SATA =Os cabos de antena MAIN e AUX ~O módulo de memória ~O ecrã }
+
+::AP1-Q6:: Qual é o passo que falta no emparelhamento Bluetooth: ativar o Bluetooth, ____, escolher o acessório, confirmar o PIN, testar? { =Colocar o acessório em modo de emparelhamento ~Desligar o Wi-Fi ~Reiniciar o telemóvel ~Instalar um controlador }
+
+::AP1-Q7:: O telemóvel partilha os dados móveis com o portátil por Wi-Fi. Como se chama esta função? { ~NFC =Hotspot ~Sincronização ~Replicador de portas }
+
+::AP1-Q8:: Verdadeiro ou falso: ao configurar o correio de um cliente, o técnico deve anotar a palavra-passe para a próxima visita. {F}

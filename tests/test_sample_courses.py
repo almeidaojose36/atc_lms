@@ -36,8 +36,10 @@ class SampleCourseTests(unittest.TestCase):
             app.cert_issue(req, 'word')
 
     def test_coming_soon_courses_stay_closed(self):
-        meta = json.loads((COURSES / 'comptia-a-plus' / 'curso.json').read_text(encoding='utf-8'))
-        self.assertEqual(meta['status'], 'em_breve')
+        for slug in ('comptia-a-plus', 'comptia-network-plus'):   # amostras do Módulo 1 desde outubro de 2026
+            meta = json.loads((COURSES / slug / 'curso.json').read_text(encoding='utf-8'))
+            self.assertEqual(meta['status'], 'amostra')
+            self.assertTrue((COURSES / slug / meta['modules'][0]['manual_json']).is_file())
         req = SimpleNamespace(is_staff=lambda: False, user={'id': 1},
                               con=SimpleNamespace(execute=lambda *a, **k: SimpleNamespace(fetchone=lambda: None)))
         self.assertFalse(app.Handler.can_access(req, {'status': 'em_breve', 'id': 2}))

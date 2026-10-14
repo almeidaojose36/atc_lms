@@ -19,6 +19,8 @@ const CURSOS = {
   excel: { farda: "polo", cor: "217346", abre: "miguel", ficheiro: "Excel_Modulo1" },
   powerpoint: { farda: "casaco", cor: "C43E1C", abre: "helena", ficheiro: "PowerPoint_Modulo1" },
   outlook: { farda: "blazer", cor: "0F6CBD", abre: "miguel", ficheiro: "Outlook_Modulo1" },
+  "comptia-a-plus": { farda: "polo", cor: "B5272D", abre: "miguel", ficheiro: "CompTIA_A+_Modulo1" },
+  "comptia-network-plus": { farda: "casaco", cor: "1F5F99", abre: "helena", ficheiro: "CompTIA_Network+_Modulo1" },
 };
 const NOMES = { helena: "Helena", miguel: "Miguel" };
 const outro = (g) => (g === "helena" ? "miguel" : "helena");
@@ -128,11 +130,11 @@ async function gerar(slug) {
       options: i === 0 ? { bold: true, color: "FFFFFF", fill: { color: "0B2137" } } : { color: "1D2733", fill: { color: i % 2 ? "FFFFFF" : "F2F4F7" } },
     })));
     const n = t[0].length;
-    const colW = n === 2 ? [w * 0.34, w * 0.66] : [w * 0.22, w * 0.46, w * 0.32];
+    const colW = n === 2 ? [w * 0.34, w * 0.66] : n === 3 ? [w * 0.22, w * 0.46, w * 0.32] : Array(n).fill(w / n);
     s.addTable(linhasT, { x, y, w, colW, fontSize: pt, fontFace: "Calibri", border: { type: "solid", pt: 0.75, color: "DCE3E9" }, margin: [5, 8, 5, 8], valign: "middle" });
   }
   const alturaTabela = (t, w, pt) => {
-    const n = t[0].length; const colW = n === 2 ? [w * 0.34, w * 0.66] : [w * 0.22, w * 0.46, w * 0.32];
+    const n = t[0].length; const colW = n === 2 ? [w * 0.34, w * 0.66] : n === 3 ? [w * 0.22, w * 0.46, w * 0.32] : Array(n).fill(w / n);
     return t.reduce((acc, r) => acc + Math.max(...r.map((c, j) => linhas(c, colW[j] - 0.25, pt))) * pt * 1.2 / 72 + 0.16, 0);
   };
   const notasSeccao = (sec) => sec.blocks.map((b) =>

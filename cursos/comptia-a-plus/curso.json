@@ -1,1 +1,25 @@
-{ "slug": "comptia-a-plus", "title": "CompTIA A+ (220-1201/1202)", "subtitle": "Suporte técnico de hardware, sistemas operativos e redes", "status": "em_breve", "order": 6, "hours_video": 8, "cover": "capa.svg", "modules": [] }
+{
+  "slug": "comptia-a-plus",
+  "title": "CompTIA A+ (220-1201/1202)",
+  "subtitle": "Suporte técnico de hardware, sistemas operativos e redes",
+  "status": "amostra",
+  "order": 6,
+  "hours_video": 8,
+  "cover": "capa.svg",
+  "modules": [
+    {
+      "num": 1,
+      "title": "Dispositivos móveis",
+      "intro": "Suporte técnico de hardware, sistemas operativos e redes",
+      "manual_json": "manual/modulo-1.json",
+      "manual_figures": "manual/figures",
+      "lessons": [],
+      "quiz": {
+        "title": "Questionário do Módulo 1 · Dispositivos móveis",
+        "gift": "quiz/modulo-1.gift.txt",
+        "pass_mark": 70
+      }
+    }
+  ],
+  "description": "Preparação para o exame CompTIA A+ Core 1 (220-1201). Este módulo de amostra mostra como a ATC ensina a reparar e a configurar portáteis e telemóveis, com procedimentos passo a passo, manual online e questionário."
+}

@@ -1,8 +1,20 @@
 {
-  "introducao": ["curso-boas-vindas", "curso-conteudos"],
+  "introducao": [
+    "curso-boas-vindas",
+    "curso-conteudos"
+  ],
   "aulas": {
-    "aula-1-1": ["aula-1-1-abertura", "ver-demonstracao"],
-    "aula-1-2": ["ver-demonstracao"]
+    "aula-1-1": [
+      "aula-1-1-abertura",
+      "ver-demonstracao"
+    ],
+    "aula-1-2": [
+      "ver-demonstracao"
+    ]
   },
-  "manual": "manual"
+  "manual": "manual",
+  "legendas_na_imagem": [
+    "aula-1-1",
+    "aula-1-2"
+  ]
 }

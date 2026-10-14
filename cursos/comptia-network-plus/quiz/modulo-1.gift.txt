@@ -1,0 +1,17 @@
+$CATEGORY: $course$/CompTIA Network+/Módulo 1
+
+::NP1-Q1:: Em que camada do modelo OSI trabalha o router? { ~Camada 1 (Física) ~Camada 2 (Ligação de dados) =Camada 3 (Rede) ~Camada 7 (Aplicação) }
+
+::NP1-Q2:: Qual destes endereços é privado? { ~8.8.8.8 =192.168.10.25 ~41.63.12.7 ~172.32.0.1 }
+
+::NP1-Q3:: Um computador tem o endereço 169.254.33.10. O que é mais provável? { ~Está ligado diretamente à Internet =Não recebeu resposta do servidor DHCP ~Tem o DNS bem configurado ~É um servidor web }
+
+::NP1-Q4:: Qual é a ordem correta das mensagens DHCP? { =Discover, Offer, Request, Acknowledge ~Request, Offer, Discover, Acknowledge ~Offer, Discover, Acknowledge, Request ~Discover, Request, Offer, Acknowledge }
+
+::NP1-Q5:: Que porta usa o HTTPS? { ~80 ~22 =443 ~3389 }
+
+::NP1-Q6:: Que protocolo permite o ambiente de trabalho remoto na porta 3389? { ~SSH ~SMB =RDP ~SNMP }
+
+::NP1-Q7:: Que equipamento liga os dispositivos de uma LAN e encaminha as tramas pelo endereço MAC? { =Switch ~Router ~Modem ~Balanceador de carga }
+
+::NP1-Q8:: Verdadeiro ou falso: o UDP confirma a entrega de cada mensagem e volta a enviar o que se perde. {F}
