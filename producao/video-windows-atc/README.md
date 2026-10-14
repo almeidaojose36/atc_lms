@@ -1,6 +1,6 @@
 # Amostra Windows ATC
 
-1920 × 1080, 32 segundos, quatro cenas de 8 segundos. Demonstração silenciosa com legendas visíveis; preparada para receber as vozes de Helena e Miguel com sotaque angolano. Ver `GUIAO.md` e `cenas.json`. Os guiões devem ser cronometrados com as vozes reais antes da montagem final.
+1920 × 1080, 32 segundos, quatro cenas de 8 segundos, com legendas visíveis. Desde 14/10/2026 tem locução: Helena nas cenas 1 e 3, Miguel nas 2 e 4 (vozes ElevenLabs do guia por voz, em `voz/`). Para refazer a montagem depois de um novo render silencioso: `bash juntar_voz.sh <render-sem-som.mp4> ../../cursos/informatica/video/amostra-windows-atc.mp4`. Ver `GUIAO.md` e `cenas.json`. Os guiões devem ser cronometrados com as vozes reais antes da montagem final.
 
 O MP4 usado pelo LMS fica em `../../cursos/informatica/video/amostra-windows-atc.mp4`, com poster e VTT. Os clips individuais de 8 segundos estão em `cenas/`.
 

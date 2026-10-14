@@ -620,14 +620,14 @@ def bar(pct):
     return f'<div class="bar" role="progressbar" aria-valuenow="{pct}" aria-valuemin="0" aria-valuemax="100"><span style="width:{pct}%"></span></div>'
 
 
-def page(title, body, user=None, csrf="", wide=False, flash="", profile=None, presenter=None, here="/"):
+def page(title, body, user=None, csrf="", wide=False, flash="", profile=None, presenter=None, here="/", foco=False):
     if user:
         user = dict(user)
         user["name"] = (profile or {}).get("display_name") or user["name"]
     profile_color = (profile or {}).get("color", "sand")
     brand = '<a class="brand" href="/"><img src="/static/logo-200.png" alt=""><span><b>ATC</b> Formação<small>Angbu Training Centre</small></span></a>'
     sidebar = ""
-    if user:
+    if user and not foco:
         links = [("/", "◫", "Os meus cursos"), ("/#catalogo", "▦", "Catálogo")]
         if user["role"] in ("admin", "formador"):
             links.append(("/admin", "▤", "Gestão"))
@@ -638,16 +638,17 @@ def page(title, body, user=None, csrf="", wide=False, flash="", profile=None, pr
                    f'<div class="profile"><span class="avatar avatar-{h(profile_color)}">{h(user["name"][:1].upper())}</span><div><b>{h(user["name"])}</b><small>{ROLES[user["role"]]}</small></div></div>' +
                    f'<form class="logout" method="post" action="/sair">{csrf_field(csrf)}<button class="linkbtn">Sair da conta →</button></form></aside>')
     chip = ""
-    if user and presenter in PRESENTERS:
+    if user and presenter in PRESENTERS and not foco:
         chip = (f'<a class="guide-chip" href="/apresentador?seguinte={urllib.parse.quote(safe_next(here), safe="/")}" title="Mudar de guia"><img src="/static/presenters/{presenter}.png" alt="">'
                 f'<span><small>O seu guia</small><b>{PRESENTERS[presenter]["name"]}</b></span></a>')
     flash_html = f'<div class="flash" role="status">{flash}</div>' if flash else ""
-    header = (f'<div class="workspace-label">Área de aprendizagem <span>/</span> <b>{h(title)}</b></div>{chip}<a class="account-link" href="/conta">{h(user["name"].split()[0])} <span class="avatar avatar-{h(profile_color)}">{h(user["name"][:1].upper())}</span></a>' if user else brand)
+    header = (brand + f'<a class="account-link" href="/conta">{h(user["name"].split()[0])} <span class="avatar avatar-{h(profile_color)}">{h(user["name"][:1].upper())}</span></a>' if user and foco else
+              f'<div class="workspace-label">Área de aprendizagem <span>/</span> <b>{h(title)}</b></div>{chip}<a class="account-link" href="/conta">{h(user["name"].split()[0])} <span class="avatar avatar-{h(profile_color)}">{h(user["name"][:1].upper())}</span></a>' if user else brand)
     return f"""<!doctype html><html lang="pt-PT"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{h(title)} · ATC Formação</title><link rel="icon" href="/static/logo-200.png">
-<link rel="stylesheet" href="/static/atc.css?v=8"><meta name="csrf" content="{h(csrf)}"><script src="/static/ui.js?v=4" defer></script></head>
-<body class="{'app' if user else 'public'}"{f' data-u="{user["id"]}"' if user else ''}><a class="skip-link" href="#conteudo">Saltar para o conteúdo</a>{sidebar}<div class="workspace"><header class="top"><div class="wrap">{header}</div></header>
+<link rel="stylesheet" href="/static/atc.css?v=9"><meta name="csrf" content="{h(csrf)}"><script src="/static/ui.js?v=5" defer></script></head>
+<body class="{('app foco' if foco else 'app') if user else 'public'}"{f' data-u="{user["id"]}"' if user else ''}><a class="skip-link" href="#conteudo">Saltar para o conteúdo</a>{sidebar}<div class="workspace"><header class="top"><div class="wrap">{header}</div></header>
 <main id="conteudo" class="wrap{' wide' if wide else ''}">{flash_html}{body}</main>
 <footer><div class="wrap"><span>ATC · Angbu Training Centre</span><span>Luanda, Angola · Aprendizagem com propósito</span></div></footer></div></body></html>"""
 
@@ -1058,14 +1059,15 @@ def home(r):
         p = course_progress(r.con, r.user["id"], target["id"])
         lesson = r.con.execute("""SELECT l.* FROM lessons l LEFT JOIN lesson_progress p ON p.lesson_id=l.id AND p.user_id=?
             WHERE l.course_id=? AND l.active=1 AND COALESCE(p.completed,0)=0 ORDER BY l.sort LIMIT 1""", (r.user["id"], target["id"])).fetchone()
-        url = f'/cursos/{target["slug"]}' + (f'/aula/{lesson["slug"]}' if lesson else '')
+        prox = next_step(course_path(r, target))
+        url = prox["url"] if prox else f'/cursos/{target["slug"]}'
         if not selected_presenter(r, target["id"]):
             url = f'/cursos/{target["slug"]}/apresentador'
         label = "Continuar a aprender" if p["pct"] or (lesson and r.con.execute("SELECT 1 FROM lesson_progress WHERE user_id=? AND lesson_id=? AND position>0", (r.user["id"], lesson["id"])).fetchone()) else "Começar a aprender"
         if p["complete"]:
             label = "Rever o curso"
         feature = f'''<section class="featured"><div class="featured-copy"><span class="eyebrow">O SEU PERCURSO · INFORMÁTICA E TECNOLOGIA</span>
-<h2>{h(target['title'])}</h2><p>{h(lesson['title'] if lesson else 'Reveja os conteúdos e consulte o seu progresso.')}</p>
+<h2>{h(target['title'])}</h2><p>{h(("A seguir: " + prox["titulo"]) if prox else 'Reveja os conteúdos e consulte o seu progresso.')}</p>
 <a class="btn" href="{h(url)}">{label} <span aria-hidden="true">↗</span></a><div class="feature-progress"><span>{p['pct']}% concluído</span><span>{p['lessons_done']} de {p['lessons']} aulas</span>{bar(p['pct'])}</div></div>
 <div class="featured-art" aria-hidden="true"><div class="orbit orbit-one"></div><div class="orbit orbit-two"></div><div class="art-window"><div class="window-dots">● ● ●</div><span class="art-symbol">⌘</span><div class="art-line"></div><div class="art-line short"></div><span class="art-label">O conhecimento abre portas.</span></div><span class="art-badge">ATC / ACADEMIA DIGITAL</span></div></section>'''
     else:
@@ -1123,8 +1125,7 @@ def presenter_save(r, slug):
 # ---------------------------------------------------------------------------
 
 PLATAFORMA_DIR = BASE / "plataforma" / "apresentadores"
-ONBOARD = [("guia", "Escolha o seu guia"), ("boas-vindas", "Boas-vindas"), ("perfil", "O seu perfil"),
-           ("passeio", "A plataforma"), ("curso", "O primeiro curso")]
+ONBOARD = [("guia", "Escolha o seu guia")]   # o perfil fica em «A minha conta»; o curso abre logo a seguir
 ONBOARD_CLIP = {"boas-vindas": "boas-vindas", "perfil": "perfil", "passeio": "passeio", "curso": "escolher-curso"}
 
 
@@ -1219,9 +1220,18 @@ def presenter_change_save(r):
     raise Redirect(safe_next(r.data.get("seguinte"), "/"))
 
 
+def first_course_url(r):
+    c = r.con.execute("""SELECT c.slug FROM enrolments e JOIN courses c ON c.id=e.course_id
+        WHERE e.user_id=? AND c.active=1 ORDER BY c.sort, c.title LIMIT 1""", (r.user["id"],)).fetchone()
+    return f'/cursos/{c["slug"]}' if c else "/"
+
+
 @route("GET", "/comecar/guia", "user")
 def onboarding_guide(r):
-    return presenter_choice_page(r, nxt="/comecar/boas-vindas", onboarding=True)
+    """Primeira visita: escolher o guia, ouvi-lo dar as boas-vindas e seguir para o curso. Um só ecrã."""
+    selected = selected_presenter(r)
+    cards = "".join(f'''<label class="presenter-option"><input type="radio" name="presenter" value="{key}" required {"checked" if key == selected else ""}><span class="presenter-portrait"><img src="/static/presenters/{key}.png" alt="{p['name']}, {p['label'].lower()}"><video class="boas-vindas-video" playsinline preload="none" hidden><source src="/plataforma/{key}/boas-vindas.mp4" type="video/mp4"><track kind="subtitles" srclang="pt" label="Português" src="/plataforma/{key}/boas-vindas.vtt" default></video><span class="selection-check" aria-hidden="true">✓</span></span><span class="presenter-info"><span class="eyebrow">{p['label']}</span><strong>{p['name']}</strong><span>Toque para {"a" if key == "helena" else "o"} ouvir.</span></span></label>''' for key, p in PRESENTERS.items())
+    return r.render("Bem-vindo", f'''<section class="presenter-heading boas-vindas"><span class="eyebrow">BEM-VINDO À ATC FORMAÇÃO</span><h1>Quem vai acompanhá-lo?</h1><p>Toque na Helena ou no Miguel para ouvir as boas-vindas. O guia que escolher fala consigo nos vídeos do curso. Pode mudar mais tarde.</p></section><form method="post" action="/comecar/guia" class="primeira-visita">{csrf_field(r.csrf)}<div class="presenter-options">{cards}</div><div class="presenter-submit"><p class="muted">Personagens virtuais criadas para a ATC.</p><button class="btn grande">Começar o meu curso →</button></div></form><script src="/static/boas-vindas.js?v=1" defer></script>''', foco=True)
 
 
 @route("POST", "/comecar/guia", "user")
@@ -1231,7 +1241,7 @@ def onboarding_guide_save(r):
         raise HttpError(400, "Escolha um dos guias disponíveis.")
     set_presenter(r, key)
     onboarding_mark(r, "guia")
-    raise Redirect("/comecar/boas-vindas")
+    raise Redirect(first_course_url(r))
 
 
 def profile_fields(profile):
@@ -1245,55 +1255,109 @@ def profile_fields(profile):
 
 @route("GET", "/comecar/(boas-vindas|perfil|passeio|curso)", "user")
 def onboarding_step(r, step):
-    key = selected_presenter(r)
-    if not key:
-        raise Redirect("/comecar/guia")
-    name = PRESENTERS[key]["name"]
-    title = dict(ONBOARD)[step]
-    clip = platform_clip_html(key, ONBOARD_CLIP[step])
-    idx = [s for s, _ in ONBOARD].index(step)
-    following = ONBOARD[idx + 1][0] if idx + 1 < len(ONBOARD) else None
-    skip = (f'<form method="post" action="/comecar/{step}" class="inline">{csrf_field(r.csrf)}<input type="hidden" name="saltar" value="1">'
-            f'<button class="btn ghost">Saltar este passo</button></form>')
-    if step == "boas-vindas":
-        body = (f'<p class="lead">{name} dá-lhe as boas-vindas à plataforma da ATC e vai estar consigo em cada ecrã.</p>'
-                f'<form method="post" action="/comecar/boas-vindas">{csrf_field(r.csrf)}<button class="btn">Seguinte: o seu perfil →</button></form>')
-    elif step == "perfil":
-        body = (f'<form method="post" action="/comecar/perfil" class="card profile-editor">{csrf_field(r.csrf)}{profile_fields(learner_profile(r))}'
-                f'<div class="actions"><button class="btn">Guardar e continuar →</button></div></form>')
-        skip = skip
-    elif step == "passeio":
-        body = ('<div class="tour"><div class="card"><b>Os meus cursos</b><p>O seu percurso, o progresso e a próxima aula.</p></div>'
-                '<div class="card"><b>Catálogo</b><p>Todos os cursos da ATC e os cursos de amostra.</p></div>'
-                '<div class="card"><b>A minha conta</b><p>O perfil, o guia e os certificados.</p></div></div>'
-                f'<form method="post" action="/comecar/passeio">{csrf_field(r.csrf)}<button class="btn">Seguinte: escolher o curso →</button></form>')
-    else:
-        courses = r.con.execute("SELECT * FROM courses WHERE active=1 ORDER BY sort, title").fetchall()
-        enrolled = {row["course_id"] for row in r.con.execute("SELECT course_id FROM enrolments WHERE user_id=?", (r.user["id"],))}
-        options = [c for c in courses if c["status"] == "amostra" or (c["status"] == "publicado" and (c["id"] in enrolled or r.is_staff()))]
-        cards = "".join(f'<form method="post" action="/comecar/curso" class="course-pick card">{csrf_field(r.csrf)}<input type="hidden" name="slug" value="{h(c["slug"])}">'
-                        f'<b>{h(c["title"])}</b><p>{h(c["subtitle"])}</p><span class="tag">{"Amostra · Módulo 1" if c["status"] == "amostra" else "O meu curso"}</span> '
-                        f'<button class="btn small">Escolher este curso →</button></form>' for c in options)
-        body = f'<div class="course-picks">{cards or "<p class=muted>Ainda não há cursos disponíveis para si.</p>"}</div>'
-        skip = f'<form method="post" action="/comecar/curso" class="inline">{csrf_field(r.csrf)}<input type="hidden" name="saltar" value="1"><button class="btn ghost">Ver todos os cursos</button></form>'
-    return r.render(f"{title} · {name}", f'''{steps_bar(r, step)}<section class="onboard"><span class="eyebrow">PASSO {idx + 1} DE {len(ONBOARD)} · {h(title).upper()}</span>
-<div class="onboard-layout"><div class="guide-clips">{clip}</div><div class="onboard-copy">{body}<div class="actions">{skip}<a class="btn ghost" href="/apresentador?seguinte=/comecar/{step}">Mudar de guia</a></div></div></div></section>''')
+    raise Redirect("/comecar")
 
 
 @route("POST", "/comecar/(boas-vindas|perfil|passeio|curso)", "user")
 def onboarding_step_done(r, step):
-    if not selected_presenter(r):
-        raise Redirect("/comecar/guia")
-    target = None
-    if step == "perfil" and not r.data.get("saltar"):
-        save_profile(r)
-    if step == "curso" and not r.data.get("saltar"):
-        slug = r.data.get("slug", "")
-        r.course_for(slug)
-        target = f"/cursos/{slug}/introducao"
-    onboarding_mark(r, step)
-    nxt = onboarding_next(r)
-    raise Redirect(target or (f"/comecar/{nxt}" if nxt else "/?saltar=1"))
+    raise Redirect("/comecar")
+
+
+def course_path(r, c):
+    """Os passos do curso por ordem: introdução, aulas, manual, exemplos e questionário de cada módulo.
+    Para o formando, cada passo abre quando o anterior estiver feito; formadores e administradores veem tudo."""
+    slug = c["slug"]
+    feitos = {row["step"] for row in r.con.execute("SELECT step FROM onboarding WHERE user_id=?", (r.user["id"],))}
+    key = selected_presenter(r, c["id"])
+    passos = []
+    if key and course_flow(slug).get("introducao"):
+        nome = PRESENTERS[key]["name"]
+        passos.append({"tipo": "intro", "titulo": f'Conheça {"a" if key == "helena" else "o"} {nome}', "sub": "Boas-vindas ao curso · 2 vídeos curtos",
+                       "url": f"/cursos/{slug}/introducao", "feito": f"intro:{slug}" in feitos, "modulo": None})
+    mods = r.con.execute("SELECT * FROM modules WHERE course_id=? AND active=1 ORDER BY num", (c["id"],)).fetchall()
+    lessons = r.con.execute("SELECT * FROM lessons WHERE course_id=? AND active=1 ORDER BY sort", (c["id"],)).fetchall()
+    state = lesson_state(r, [l["id"] for l in lessons])
+    exemplos = (COURSES_DIR / slug / "manual/exemplos-atc.json").is_file()
+    for i, m in enumerate(mods):
+        for l in (l for l in lessons if l["module_id"] == m["id"]):
+            passos.append({"tipo": "aula", "titulo": l["title"], "sub": f'Vídeo · {fmt_dur(l["duration"])}', "url": f'/cursos/{slug}/aula/{l["slug"]}',
+                           "feito": bool(state.get(l["id"]) and state[l["id"]]["completed"]), "modulo": m, "slug": l["slug"]})
+        if m["manual_json"]:
+            passos.append({"tipo": "manual", "titulo": f'Ler o manual do Módulo {m["num"]}', "sub": "Texto com imagens, passo a passo",
+                           "url": f'/cursos/{slug}/modulo/{m["num"]}/manual', "feito": f'manual:{slug}:{m["num"]}' in feitos, "modulo": m})
+        if exemplos and i == 0:
+            passos.append({"tipo": "exemplos", "titulo": "Ver exemplos práticos", "sub": "Imagens de cada passo no programa",
+                           "url": f"/cursos/{slug}/exemplos", "feito": f"exemplos:{slug}" in feitos, "modulo": m})
+        quiz = r.con.execute("SELECT * FROM quizzes WHERE module_id=? AND active=1", (m["id"],)).fetchone()
+        if quiz:
+            best = r.con.execute("SELECT MAX(pct) b, COUNT(*) n FROM quiz_attempts WHERE quiz_id=? AND user_id=?", (quiz["id"], r.user["id"])).fetchone()
+            passos.append({"tipo": "quiz", "titulo": quiz["title"],
+                           "sub": f'Melhor resultado: {best["b"]}% · aprovação com {quiz["pass_mark"]}%' if best["n"] else f'Aprovação com {quiz["pass_mark"]}%',
+                           "url": f'/cursos/{slug}/modulo/{m["num"]}/questionario', "feito": best["b"] is not None and best["b"] >= quiz["pass_mark"], "modulo": m})
+    livre = r.is_staff()
+    anteriores = True
+    for n, p in enumerate(passos, 1):
+        p["n"] = n
+        p["trancado"] = not livre and not anteriores
+        anteriores = anteriores and p["feito"]
+    return passos
+
+
+def next_step(passos):
+    return next((p for p in passos if not p["feito"]), None)
+
+
+PASSO_ICONE = {"intro": "👋", "aula": "▶", "manual": "📖", "exemplos": "🖼", "quiz": "✎"}
+
+
+def path_html(passos, atual=None):
+    prox = next_step(passos)
+    itens, modulo = [], None
+    for p in passos:
+        if p["modulo"] is not None and p["modulo"] is not modulo:
+            modulo = p["modulo"]
+            itens.append(f'<li class="percurso-modulo">Módulo {modulo["num"]} · {h(modulo["title"])}</li>')
+        estado = "feito" if p["feito"] else "trancado" if p["trancado"] else "seguinte" if p is prox else "aberto"
+        marca = "✓" if p["feito"] else "🔒" if p["trancado"] else str(p["n"])
+        etiqueta = {"feito": "Feito", "trancado": "Abre depois do passo anterior", "seguinte": "A seguir"}.get(estado, "")
+        titulo = f'<span class="percurso-titulo">{h(p["titulo"])}</span>' if p["trancado"] else f'<a class="percurso-titulo" href="{h(p["url"])}">{h(p["titulo"])}</a>'
+        aqui = ' aria-current="step"' if atual is not None and p["url"] == atual else ""
+        itens.append(f'<li class="percurso-passo {estado}"{aqui}><span class="percurso-marca" aria-hidden="true">{marca}</span><span class="percurso-texto">{titulo}'
+                     f'<small>{PASSO_ICONE.get(p["tipo"], "")} {h(p["sub"])}</small></span><span class="percurso-estado">{etiqueta}</span></li>')
+    return f'<ol class="percurso" aria-label="O seu percurso">{"".join(itens)}</ol>'
+
+
+def next_step_card(passos, aqui, concluido, texto_espera, texto_pronto="Muito bem! Pode avançar."):
+    """O cartão «Próximo passo» no fim de cada página do percurso."""
+    i = next((k for k, p in enumerate(passos) if p["url"] == aqui), None)
+    seguinte = passos[i + 1] if i is not None and i + 1 < len(passos) else None
+    if not seguinte:
+        return ('<section class="proximo-passo pronto"><span class="eyebrow">PRÓXIMO PASSO</span><b>Chegou ao fim do percurso deste curso.</b>'
+                f'<div class="actions"><a class="btn grande" href="/cursos/{aqui.split("/")[2]}">Ver o curso e o certificado →</a></div></section>') if i is not None else ""
+    aberto = concluido or not seguinte["trancado"] or (i is not None and passos[i]["feito"])
+    dica = texto_pronto if aberto else texto_espera
+    fechado = "" if aberto else ' aria-disabled="true" tabindex="-1"'
+    botao = f'<a class="btn grande" data-seguinte href="{h(seguinte["url"])}"{fechado}>{h(seguinte["titulo"])} →</a>'
+    return (f'<section class="proximo-passo{" pronto" if aberto else ""}" data-proximo-passo><span class="eyebrow">PRÓXIMO PASSO · {seguinte["n"]} DE {len(passos)}</span>'
+            f'<p class="proximo-dica" data-espera="{h(texto_espera)}">{dica}</p><div class="actions">{botao}</div></section>')
+
+
+def guide_message(slug, key, names):
+    """Os vídeos curtos do guia, recolhidos numa mensagem opcional para não ficarem à frente da aula."""
+    clips = [x for x in (course_clip(slug, key, n) for n in names if n) if x]
+    if not clips or key not in PRESENTERS:
+        return ""
+    nome = PRESENTERS[key]["name"]
+    quantos = "1 vídeo curto" if len(clips) == 1 else f"{len(clips)} vídeos curtos"
+    ordem = ' data-ordem' if len(clips) > 1 else ''
+    return (f'<details class="guia-msg"><summary><img src="/static/presenters/{key}.png" alt=""><span><b>Mensagem {"da" if key == "helena" else "do"} {nome}</b>'
+            f'<small>{quantos} · opcional</small></span></summary><div class="guide-clips"{ordem}>{"".join(clips)}</div></details>')
+
+
+def som_escolha():
+    return ('<div class="som-escolha" role="group" aria-label="Som dos vídeos"><span>Vídeos:</span>'
+            '<button type="button" data-som="on" aria-pressed="true">🔊 Com som</button>'
+            '<button type="button" data-som="off" aria-pressed="false">💬 Só legendas</button></div>')
 
 
 def presenter_banner(r, c):
@@ -1314,22 +1378,13 @@ def presenter_intro(r, slug):
     intro = scripts[key]["courses"].get(slug, scripts[key]["welcome"])
     clips = [x for x in (course_clip(slug, key, n) for n in course_flow(slug).get("introducao", [])) if x]
     if clips:
-        aulas = r.con.execute("""SELECT l.slug, l.title, COALESCE(p.completed,0) feita FROM lessons l
-            LEFT JOIN lesson_progress p ON p.lesson_id=l.id AND p.user_id=?
-            WHERE l.course_id=? AND l.active=1 ORDER BY l.sort""", (r.user["id"], c["id"])).fetchall()
-        seguinte = next((a for a in aulas if not a["feita"]), None)
-        if seguinte:
-            botao = f'Começar: {h(seguinte["title"])} →'
-            dica = "Veja os vídeos pela ordem: cada um abre quando o anterior terminar. Depois, siga para a aula."
-        elif aulas:
-            seguinte = aulas[0]
-            botao = f'Rever: {h(seguinte["title"])} →'
-            dica = "Já concluiu as aulas deste curso. Pode revê-las quando quiser."
-        else:
-            botao, dica = "Ver o curso →", "Veja os vídeos pela ordem: cada um abre quando o anterior terminar."
-        url = f'/cursos/{slug}/aula/{seguinte["slug"]}' if seguinte else f'/cursos/{slug}'
+        onboarding_mark(r, f"intro:{slug}")
+        passos = course_path(r, c)
+        aqui = f"/cursos/{slug}/introducao"
+        n = next((p["n"] for p in passos if p["url"] == aqui), 1)
         ordem = ' data-ordem' if len(clips) > 1 else ''
-        return r.render(f"Conheça {name}", f'''<p class="crumbs"><a href="/cursos/{slug}">{h(c['title'])}</a> › Introdução</p><section class="guide-intro"><span class="eyebrow">O SEU GUIA VIRTUAL · ATC</span><h1>Olá, sou {"a" if key == "helena" else "o"} {name}.</h1><p class="lead">{h(c['title'])}</p><div class="guide-clips"{ordem}>{"".join(clips)}</div><div class="next-step"><p class="next-hint">{dica}</p><div class="actions"><a class="btn" data-proximo href="{h(url)}">{botao}</a><a class="btn ghost" href="/cursos/{slug}">Ver o curso</a><a class="btn ghost" href="/apresentador?seguinte=/cursos/{slug}/introducao">Mudar de guia</a></div></div></section>''')
+        cartao = next_step_card(passos, aqui, True, "", "Depois dos vídeos, continue para a primeira aula.")
+        return r.render(f"Conheça {name}", f'''<p class="crumbs"><a href="/cursos/{slug}">{h(c['title'])}</a> › Passo {n} de {len(passos)}</p><section class="guide-intro"><span class="eyebrow">PASSO {n} DE {len(passos)} · O SEU GUIA</span><h1>Olá, sou {"a" if key == "helena" else "o"} {name}.</h1><p class="lead">Veja os dois vídeos pela ordem: o segundo abre quando o primeiro terminar.</p><div class="guide-clips"{ordem}>{"".join(clips)}</div>{cartao}<p class="muted pequeno"><a href="/apresentador?seguinte=/cursos/{slug}/introducao">Prefere outro guia? Mudar de guia</a></p></section>''')
     video = COURSES_DIR / slug / "apresentadores" / f"{key}-introducao.mp4"
     intro_track = (f'<track kind="subtitles" srclang="pt" label="Português" src="/media/{slug}/apresentadores/{key}-introducao.vtt" default>' if video.with_suffix('.vtt').is_file() else '')
     media = (f'<video controls playsinline preload="metadata" poster="/static/presenters/{key}.png"><source src="/media/{slug}/apresentadores/{key}-introducao.mp4" type="video/mp4">{intro_track}</video>' if video.is_file() else f'<img src="/static/presenters/{key}.png" alt="{name}, apresentador virtual">')
@@ -1343,36 +1398,11 @@ def presenter_intro(r, slug):
 @route("GET", "/cursos/([a-z0-9-]+)", "user")
 def course_page(r, slug):
     c = r.course_for(slug)
-    mods = r.con.execute("SELECT * FROM modules WHERE course_id=? AND active=1 ORDER BY num", (c["id"],)).fetchall()
-    lessons = r.con.execute("SELECT * FROM lessons WHERE course_id=? AND active=1 ORDER BY sort", (c["id"],)).fetchall()
-    state = lesson_state(r, [l["id"] for l in lessons])
+    if not selected_presenter(r, c["id"]) and r.user["role"] == "formando":
+        raise Redirect("/comecar")
+    passos = course_path(r, c)
     p = course_progress(r.con, r.user["id"], c["id"])
-    next_lesson = next((l for l in lessons if not (state.get(l["id"]) and state[l["id"]]["completed"])), None)
-    out = []
-    for m in mods:
-        items = []
-        for l in (l for l in lessons if l["module_id"] == m["id"]):
-            st = state.get(l["id"])
-            done = st and st["completed"]
-            icon = '<span class="ok" title="Vista">✓</span>' if done else '<span class="todo">▶</span>'
-            items.append(f'<li>{icon}<a href="/cursos/{slug}/aula/{h(l["slug"])}">{h(l["title"])}</a>'
-                         f'<span class="muted">{fmt_dur(l["duration"])}</span></li>')
-        quiz = r.con.execute("SELECT * FROM quizzes WHERE module_id=? AND active=1", (m["id"],)).fetchone()
-        if quiz:
-            best = r.con.execute("SELECT MAX(pct) b, COUNT(*) n FROM quiz_attempts WHERE quiz_id=? AND user_id=?",
-                                 (quiz["id"], r.user["id"])).fetchone()
-            passed = best["b"] is not None and best["b"] >= quiz["pass_mark"]
-            icon = '<span class="ok">✓</span>' if passed else '<span class="todo">?</span>'
-            info = f'Melhor resultado: {best["b"]}%' if best["n"] else f'Aprovação com {quiz["pass_mark"]}%'
-            items.append(f'<li>{icon}<a href="/cursos/{slug}/modulo/{m["num"]}/questionario">{h(quiz["title"])}</a>'
-                         f'<span class="muted">{info}</span></li>')
-        res = []
-        if m["manual_json"]:
-            res.append(f'<a class="btn ghost" href="/cursos/{slug}/modulo/{m["num"]}/manual">Ler o manual</a>')
-        if m["manual_docx"]:
-            res.append(f'<a class="btn ghost" href="/media/{slug}/{h(m["manual_docx"])}?descarregar=1">Descarregar manual (Word)</a>')
-        out.append(f'<section class="card module"><h2><span class="num">Módulo {m["num"]}</span>{h(m["title"])}</h2>'
-                   f'<p>{h(m["intro"])}</p><ul class="items">{"".join(items)}</ul><div class="actions">{"".join(res)}</div></section>')
+    prox = next_step(passos)
     cert = r.con.execute("SELECT code FROM certificates WHERE user_id=? AND course_id=?", (r.user["id"], c["id"])).fetchone()
     if c["status"] == "amostra":
         cert_html = '<p class="muted">Curso de amostra: inclui o Módulo 1 e não emite certificado.</p>'
@@ -1382,33 +1412,26 @@ def course_page(r, slug):
         cert_html = (f'<form method="post" action="/cursos/{slug}/certificado">{csrf_field(r.csrf)}'
                      f'<button class="btn">Obter certificado</button></form>')
     else:
-        cert_html = '<p class="muted">O certificado fica disponível quando concluir todas as aulas e questionários.</p>'
-    cont = (f'<a class="btn" href="/cursos/{slug}/aula/{h(next_lesson["slug"])}">'
-            f'{"Continuar" if p["pct"] else "Começar"}: {h(next_lesson["title"])}</a>' if next_lesson else "")
-    if not next_lesson and c["status"] == "amostra" and mods and mods[0]["manual_json"]:
-        cont = f'<a class="btn" href="/cursos/{slug}/modulo/{mods[0]["num"]}/manual">Começar: ler o manual</a>'
+        cert_html = '<p class="muted">O certificado fica disponível quando concluir todos os passos.</p>'
+    if prox:
+        cont = f'<a class="btn grande" href="{h(prox["url"])}">{"Continuar" if any(x["feito"] for x in passos) else "Começar"}: {h(prox["titulo"])} →</a>'
+        feitos = sum(x["feito"] for x in passos)
+        onde = f'<p class="muted">Passo {prox["n"]} de {len(passos)} · {feitos} {"feito" if feitos == 1 else "feitos"}</p>'
+    elif passos:
+        cont, onde = f'<a class="btn grande" href="{h(passos[0]["url"])}">Rever o curso desde o início →</a>', '<p class="okmsg">✓ Concluiu todos os passos deste curso.</p>'
+    else:
+        cont, onde = "", ""
     hours = " · ".join(x for x in [f'{fmt_h(c["hours_video"])} h de vídeo' if c["hours_video"] else "",
                                    f'{fmt_h(c["hours_class"])} h presenciais' if c["hours_class"] else ""] if x)
     staff = (f' <a class="btn ghost" href="/admin/relatorio/{slug}">Relatório de turma</a>' if r.is_staff() else "")
-    if (COURSES_DIR / slug / "manual/exemplos-atc.json").is_file():
-        staff += f' <a class="btn ghost" href="/cursos/{slug}/exemplos">Ver exemplos →</a>'
-    sample = ""
-    if slug == "informatica" and (COURSES_DIR / slug / "video/amostra-windows-atc.mp4").is_file():
-        sample = '''<section class="card module" id="amostra-windows">
-<span class="eyebrow">AMOSTRA ATC · 32 SEGUNDOS</span><h2>Primeiros passos no Windows</h2>
-<p>Explore os ecrãs personalizados com Helena e Miguel. Quatro cenas de 8 segundos, com legendas em português europeu.</p>
-<video controls playsinline preload="none" style="width:100%;max-height:640px;border-radius:12px"
-poster="/media/informatica/video/amostra-windows-atc.png" aria-label="Amostra ATC: primeiros passos no Windows">
-<source src="/media/informatica/video/amostra-windows-atc.mp4" type="video/mp4">
-O seu navegador não suporta vídeo.</video>
-<p class="muted">Simulação pedagógica com imagens editadas. Amostra sem áudio, preparada para as vozes dos formadores.</p>
-<div class="actions"><a class="btn ghost" href="/media/informatica/video/amostra-windows-atc.mp4?descarregar=1">Descarregar amostra</a>
-<a class="btn ghost" href="/media/informatica/video/amostra-windows-atc.vtt?descarregar=1">Descarregar legendas</a></div></section>'''
+    docx = [m for m in r.con.execute("SELECT num, manual_docx FROM modules WHERE course_id=? AND active=1 AND manual_docx IS NOT NULL ORDER BY num", (c["id"],))]
+    extras = "".join(f'<a href="/media/{slug}/{h(m["manual_docx"])}?descarregar=1">Descarregar o manual do Módulo {m["num"]} (Word)</a>' for m in docx if m["manual_docx"])
     return r.render(c["title"], f"""<p class="crumbs"><a href="/">Os meus cursos</a></p>
-{presenter_banner(r, c)}<section class="hero"><div><h1>{h(c['title'])}</h1><p class="lead">{h(c['subtitle'])}</p><p>{h(c['description'])}</p>
-<p class="muted">{hours}</p><div class="actions">{cont}{staff}</div></div>
-<aside class="card"><h3>O seu progresso</h3>{bar(p['pct'])}<p><b>{p['pct']}%</b> · {p['lessons_done']}/{p['lessons']} aulas ·
-{p['quizzes_done']}/{p['quizzes']} questionários</p>{cert_html}</aside></section>{sample}{''.join(out)}""")
+<section class="hero curso-topo"><div><span class="eyebrow">O SEU CURSO</span><h1>{h(c['title'])}</h1><p class="lead">{h(c['subtitle'])}</p>
+<div class="actions">{cont}{staff}</div>{onde}</div>
+<aside class="card"><h3>O seu progresso</h3>{bar(p['pct'])}<p><b>{p['pct']}%</b>{f" · {p['lessons_done']}/{p['lessons']} aulas" if p['lessons'] else ""}{f" · {p['quizzes_done']}/{p['quizzes']} questionários" if p['quizzes'] else ""}</p>{cert_html}</aside></section>
+<section class="card"><h2>O seu percurso</h2><p class="muted">Siga os passos pela ordem. Cada passo abre quando terminar o anterior.</p>{path_html(passos)}</section>
+<details class="card sobre-curso"><summary>Sobre este curso</summary><p>{h(c['description'])}</p><p class="muted">{hours}</p><p class="actions">{extras}</p></details>""")
 
 
 def lesson_media(slug, lesson, presenter):
@@ -1462,7 +1485,6 @@ def lesson_page(r, slug, lslug):
     if medium["key"] != "original":
         transcript_text = "\n".join(t for _, _, t in parse_subtitles((COURSES_DIR / slug / medium["subtitles"]).read_text(encoding="utf-8-sig"))) if medium["subtitles"] else ""
     transcript = "".join(f"<p>{h(t)}</p>" for t in transcript_text.split("\n") if t)
-    media_note = '<p class="muted">Vídeo de demonstração comum aos dois apresentadores. A versão com o seu avatar ainda não está disponível.</p>' if medium["key"] == "original" else '' 
     comments = r.con.execute("""SELECT cm.*, u.name, u.role FROM comments cm JOIN users u ON u.id=cm.user_id
                                 WHERE cm.lesson_id=? ORDER BY cm.created""", (l["id"],)).fetchall()
 
@@ -1496,21 +1518,34 @@ def lesson_page(r, slug, lslug):
 <p class="muted">Faça uma pergunta sobre esta aula. O assistente responde com base no vídeo e no manual.</p>
 <form id="ask"><textarea name="q" rows="2" required placeholder="Ex.: Qual é a diferença entre hardware e software?"></textarea>
 <button class="btn small">Perguntar</button></form><div id="answer" class="answer" hidden></div></section>"""
-    return r.render(l["title"], f"""<p class="crumbs"><a href="/">Os meus cursos</a> › <a href="/cursos/{slug}">{h(c['title'])}</a> › Módulo {m['num']}</p>
-{presenter_banner(r, c)}<h1>{h(l['title'])}</h1>
-{guide_panel(slug, selected_presenter(r, c["id"]), course_flow(slug).get("aulas", {}).get(lslug, []), "Antes de começar")}{media_note}<div class="player"><video id="v" controls preload="metadata" playsinline{poster} data-lesson="{l['id']}" data-media="{medium['key']}" data-pos="{pos}" data-seen="{h(seen)}">
+    passos = course_path(r, c)
+    aqui = f"/cursos/{slug}/aula/{lslug}"
+    n = next((p["n"] for p in passos if p["url"] == aqui), None)
+    feita = bool(st and st["completed"])
+    cartao = next_step_card(passos, aqui, feita, "Veja a aula até ao fim para abrir o passo seguinte.")
+    demo = ""
+    amostra = COURSES_DIR / slug / "video/amostra-windows-atc.mp4"
+    if slug == "informatica" and lslug == "aula-1-1" and amostra.is_file():
+        demo = f"""<section class="card demo"><span class="eyebrow">DEMONSTRAÇÃO · 32 SEGUNDOS</span><h2>Primeiros passos no Windows</h2>
+<p class="muted">A Helena e o Miguel mostram quatro ecrãs do Windows 11, com legendas no próprio vídeo. Simulação com imagens editadas.</p>
+<div class="player"><video class="aula-video" controls playsinline preload="none" poster="/media/{slug}/video/amostra-windows-atc.png">
+<source src="/media/{slug}/video/amostra-windows-atc.mp4" type="video/mp4">O seu navegador não suporta vídeo.</video></div></section>"""
+    prev_link = f'<a class="anterior" href="/cursos/{slug}/aula/{h(prev["slug"])}">← Aula anterior: {h(prev["title"])}</a>' if prev else ""
+    return r.render(l["title"], f"""<p class="crumbs"><a href="/">Os meus cursos</a> › <a href="/cursos/{slug}">{h(c['title'])}</a>{f" › Passo {n} de {len(passos)}" if n else ""}</p>
+<div class="aula-topo"><div><span class="eyebrow">{f"PASSO {n} DE {len(passos)} · " if n else ""}MÓDULO {m['num']}</span><h1>{h(l['title'])}</h1></div>{som_escolha()}</div>
+<div class="player"><video id="v" class="aula-video" controls preload="metadata" playsinline{poster} data-lesson="{l['id']}" data-media="{medium['key']}" data-pos="{pos}" data-seen="{h(seen)}">
 <source src="/media/{slug}/{h(medium['video'])}">{track}O seu navegador não suporta vídeo.</video></div>
-<p id="status" class="{'okmsg' if st and st['completed'] else 'muted'}">{'✓ Aula concluída' if st and st['completed'] else 'Veja a aula até ao fim para a marcar como concluída.'}</p>
-<div class="lessonnav">{''.join(nav)}</div>
+<p id="status" class="{'okmsg' if feita else 'muted'}">{'✓ Aula concluída' if feita else 'Veja a aula até ao fim para a marcar como concluída.'}</p>
+{cartao}{guide_message(slug, selected_presenter(r, c["id"]), course_flow(slug).get("aulas", {}).get(lslug, []))}{demo}
 <div class="grid2"><section class="card"><h2>Sobre esta aula</h2><p>{h(l['summary'])}</p>
-<details><summary>Transcrição</summary><div class="transcript">{transcript or '<p class="muted">Sem transcrição.</p>'}</div></details>
-<p class="actions">{f'<a class="btn ghost small" href="/cursos/{slug}/modulo/{m["num"]}/manual">Ler o manual do módulo</a>' if m['manual_json'] else ''}</p></section>
+<details><summary>Ler o texto da aula</summary><div class="transcript">{transcript or '<p class="muted">Sem transcrição.</p>'}</div></details>
+<p class="actions">{f'<a class="btn ghost small" href="/cursos/{slug}/modulo/{m["num"]}/manual">Ler o manual do módulo</a>' if m['manual_json'] else ''}</p>{prev_link}</section>
 {assistant}</div>
-<section class="card" id="perguntas"><h2>Perguntas e dúvidas</h2><p class="muted">Deixe aqui a sua dúvida. O formador responde nesta página.</p>
+<details class="card" id="perguntas"><summary><b>Perguntas ao formador</b> <span class="muted">· {len(comments)} {"pergunta" if len(comments) == 1 else "perguntas"}</span></summary><p class="muted">Deixe aqui a sua dúvida. O formador responde nesta página.</p>
 <ul class="comments">{thread(None) or '<li class="muted">Ainda não há perguntas sobre esta aula.</li>'}</ul>
 <form method="post" action="/cursos/{slug}/aula/{lslug}/comentar">{csrf_field(r.csrf)}
-<textarea name="body" rows="3" required placeholder="Escreva a sua pergunta…"></textarea><button class="btn small">Publicar pergunta</button></form></section>
-<script src="/static/player.js?v=3"></script>{'<script src="/static/voz.js?v=1"></script>' if voz else ''}""")
+<textarea name="body" rows="3" required placeholder="Escreva a sua pergunta…"></textarea><button class="btn small">Publicar pergunta</button></form></details>
+<script src="/static/player.js?v=4"></script>{'<script src="/static/voz.js?v=1"></script>' if voz else ''}""")
 
 
 @route("POST", "/cursos/([a-z0-9-]+)/aula/([a-z0-9-]+)/comentar", "user")
@@ -1668,6 +1703,8 @@ def instruction_examples(slug):
 @route("GET", r"/cursos/([a-z0-9-]+)/exemplos", "user")
 def examples_page(r, slug):
     c = r.course_for(slug, need_access=False)
+    if getattr(r, "con", None) is not None and getattr(r, "user", None):
+        onboarding_mark(r, f"exemplos:{slug}")
     data = instruction_examples(slug)
     # Captures can be replaced during review; avoid displaying cached earlier frames.
     for section in data["sections"]:
@@ -1726,6 +1763,7 @@ def manual_page(r, slug, num):
     data = json.loads((COURSES_DIR / slug / m["manual_json"]).read_text(encoding="utf-8"))
     figbase = f"/media/{slug}/{m['manual_figures'] or ''}".rstrip("/")
     presenter = selected_presenter(r, c["id"])
+    onboarding_mark(r, f"manual:{slug}:{int(num)}")
     parts = []
     for mod in data.get("modules", []):
         toc = "".join(f'<li><a href="#s{i}">{h(s["title"])}</a></li>' for i, s in enumerate(mod.get("sections", [])))
@@ -1745,12 +1783,13 @@ def manual_page(r, slug, num):
     if data.get("glossary"):
         parts.append("<h2>Glossário</h2><dl class='gloss'>" +
                      "".join(f"<dt>{h(t)}</dt><dd>{md(d)}</dd>" for t, d in data["glossary"]) + "</dl>")
-    quiz = r.con.execute("SELECT 1 FROM quizzes WHERE module_id=? AND active=1", (m["id"],)).fetchone()
-    foot = (f'<a class="btn" href="/cursos/{slug}/modulo/{num}/questionario">Fazer o questionário</a> ' if quiz else "")
-    if m["manual_docx"]:
-        foot += f'<a class="btn ghost" href="/media/{slug}/{h(m["manual_docx"])}?descarregar=1">Descarregar em Word</a>'
-    return r.render(f"Manual · Módulo {num}", f"""<p class="crumbs"><a href="/">Os meus cursos</a> › <a href="/cursos/{slug}">{h(c['title'])}</a> › Manual</p>
-{guide_panel(slug, presenter, [course_flow(slug).get("manual")], "Antes de ler o manual")}<article class="card manual">{''.join(parts)}<div class="actions">{foot}</div></article>""")
+    foot = f'<a class="btn ghost" href="/media/{slug}/{h(m["manual_docx"])}?descarregar=1">Descarregar em Word</a>' if m["manual_docx"] else ""
+    passos = course_path(r, c) if r.user else []
+    aqui = f"/cursos/{slug}/modulo/{int(num)}/manual"
+    n = next((p["n"] for p in passos if p["url"] == aqui), None)
+    cartao = next_step_card(passos, aqui, True, "", "Quando terminar de ler, siga para o passo seguinte.")
+    return r.render(f"Manual · Módulo {num}", f"""<p class="crumbs"><a href="/">Os meus cursos</a> › <a href="/cursos/{slug}">{h(c['title'])}</a>{f" › Passo {n} de {len(passos)}" if n else " › Manual"}</p>
+{guide_message(slug, presenter, [course_flow(slug).get("manual")])}<article class="card manual">{''.join(parts)}<div class="actions">{foot}</div></article>{cartao}""")
 
 
 # -- questionários ----------------------------------------------------------
@@ -1847,7 +1886,7 @@ def cert_page(r, code):
     hours = row["hours_class"] or row["hours_video"]
     verify = f"http://{r.headers.get('Host', 'localhost')}/verificar?codigo={code}"
     return f"""<!doctype html><html lang="pt-PT"><head><meta charset="utf-8"><title>Certificado {h(code)}</title>
-<meta name="viewport" content="width=device-width, initial-scale=1"><link rel="stylesheet" href="/static/atc.css?v=8"></head>
+<meta name="viewport" content="width=device-width, initial-scale=1"><link rel="stylesheet" href="/static/atc.css?v=9"></head>
 <body class="certbody"><div class="noprint certbar"><a href="/">← Voltar</a> <button onclick="print()" class="btn small">Imprimir / guardar PDF</button></div>
 <div class="cert"><div class="certin"><img src="/static/logo-600.png" alt="ATC"><p class="k">Certificado de conclusão</p>
 <p>Certifica-se que</p><h1>{h(row['name'])}</h1><p>concluiu com aproveitamento o curso</p><h2>{h(row['title'])}</h2>

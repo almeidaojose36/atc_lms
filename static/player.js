@@ -27,7 +27,7 @@
       for (var i = 0; i < Math.ceil(v.duration); i++) s += seen[i] === '1' ? '1' : '0';
       post('/api/progresso', { lesson: lesson, media: v.dataset.media || "original", pos: v.currentTime, seen: s, dur: v.duration })
         .then(function (r) {
-          if (r.completed && !done) { done = true; status.textContent = '✓ Aula concluída'; status.className = 'okmsg'; }
+          if (r.completed && !done) { done = true; status.textContent = '✓ Aula concluída'; status.className = 'okmsg'; document.dispatchEvent(new Event('aula-concluida')); }
         }).catch(function () {});
     }
     // Só conta o que foi realmente reproduzido: saltos para a frente não marcam segundos como vistos.

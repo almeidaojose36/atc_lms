@@ -85,7 +85,8 @@ class PersonalisationTests(unittest.TestCase):
         medium=app.lesson_media('informatica',self.lesson,'helena')
         self.assertEqual(medium['key'],'original')
         with patch.object(app,'ollama_available',return_value=False): html=app.lesson_page(self.r,'informatica',self.lesson['slug'])
-        self.assertIn('Vídeo de demonstração comum',html)
+        self.assertNotIn('Vídeo de demonstração comum',html)   # nota técnica retirada do ecrã do formando
+        self.assertIn('Passo 2 de 5',html); self.assertIn('data-proximo-passo',html); self.assertIn('Só legendas',html)
         with patch.object(Path,'is_file',return_value=True),patch.object(app,'mp4_duration',return_value=75):
             medium=app.lesson_media('informatica',self.lesson,'helena')
         self.assertEqual(medium['key'],'helena');self.assertEqual(medium['duration'],75)

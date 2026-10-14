@@ -30,7 +30,7 @@
   document.querySelectorAll('.guide-clips[data-ordem]').forEach(grupo => {
     const clips = [...grupo.querySelectorAll('.guide-clip')];
     const seccao = grupo.closest('section');
-    const proximo = seccao && seccao.querySelector('[data-proximo]');
+    const proximo = seccao && seccao.querySelector('[data-proximo], [data-seguinte]');
     const titulo = clip => (clip.querySelector('figcaption b') || {}).textContent || 'o vídeo anterior';
     const vistos = clips.map(clip => visto(clip.querySelector('video')));
     function trancar(clip, i) {
@@ -62,7 +62,7 @@
     function concluir() {
       if (!proximo) return;
       proximo.classList.add('destaque');
-      const dica = seccao.querySelector('.next-hint');
+      const dica = seccao.querySelector('.next-hint, .proximo-dica');
       if (dica) dica.textContent = 'Muito bem! Já viu os vídeos. Continue para a aula.';
     }
     clips.forEach((clip, i) => {
@@ -86,4 +86,47 @@
     });
     if (vistos.every(Boolean)) concluir();
   });
+
+  // Som dos vídeos: «Com som» (narração) ou «Só legendas» (sem som, legendas ligadas). A escolha fica guardada.
+  const lerSom = () => { try { return localStorage.getItem('atc-som') || 'on'; } catch (e) { return 'on'; } };
+  function aplicarSom(modo) {
+    document.querySelectorAll('video.aula-video').forEach(video => {
+      video.muted = modo === 'off';
+      [...video.textTracks].forEach(t => { if (modo === 'off') t.mode = 'showing'; });
+    });
+    document.querySelectorAll('.som-escolha button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.som === modo)));
+  }
+  document.querySelectorAll('.som-escolha button').forEach(b => b.addEventListener('click', () => {
+    try { localStorage.setItem('atc-som', b.dataset.som); } catch (e) { /* vale só nesta página */ }
+    aplicarSom(b.dataset.som);
+  }));
+  if (document.querySelector('.som-escolha')) aplicarSom(lerSom());
+
+  // Botão grande de reproduzir sobre os vídeos das aulas: mais fácil de encontrar do que o ícone pequeno.
+  document.querySelectorAll('.player video').forEach(video => {
+    const botao = document.createElement('button');
+    botao.type = 'button';
+    botao.className = 'play-grande';
+    botao.innerHTML = '<span aria-hidden="true">▶</span> Ver o vídeo';
+    video.parentElement.appendChild(botao);
+    botao.addEventListener('click', () => { video.play().catch(() => {}); });
+    video.addEventListener('play', () => { botao.hidden = true; });
+  });
+
+  // Quando a aula fica concluída, o próximo passo abre sem recarregar a página.
+  document.addEventListener('aula-concluida', () => {
+    const cartao = document.querySelector('[data-proximo-passo]');
+    if (!cartao) return;
+    cartao.classList.add('pronto');
+    const dica = cartao.querySelector('.proximo-dica');
+    if (dica) dica.textContent = 'Muito bem! Já pode avançar para o passo seguinte.';
+    const botao = cartao.querySelector('[data-seguinte]');
+    if (botao) { botao.removeAttribute('aria-disabled'); botao.removeAttribute('tabindex'); botao.classList.add('destaque'); }
+    cartao.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  });
+  document.querySelectorAll('[data-seguinte][aria-disabled="true"]').forEach(a => a.addEventListener('click', e => {
+    e.preventDefault();
+    const dica = a.closest('[data-proximo-passo]').querySelector('.proximo-dica');
+    if (dica) { dica.classList.remove('abanar'); void dica.offsetWidth; dica.classList.add('abanar'); }
+  }));
 })();

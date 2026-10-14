@@ -98,8 +98,8 @@ class IntroNextStepTests(unittest.TestCase):
     def test_new_learner_is_told_to_start_the_first_lesson(self):
         html = self.intro()
         self.assertIn('class="guide-clips" data-ordem', html)
-        self.assertIn('data-proximo href="/cursos/informatica/aula/aula-1-1"', html)
-        self.assertIn("Começar:", html)
+        self.assertIn('data-seguinte href="/cursos/informatica/aula/aula-1-1"', html)
+        self.assertIn("Passo 1 de 5", html)
         self.assertIn('data-u="%d"' % self.uid, html)
 
     def test_learner_who_finished_is_offered_to_review_not_stranded(self):
@@ -108,9 +108,54 @@ class IntroNextStepTests(unittest.TestCase):
             for (lid,) in con.execute("SELECT id FROM lessons WHERE course_id=(SELECT id FROM courses WHERE slug='informatica')").fetchall():
                 con.execute("INSERT OR REPLACE INTO lesson_progress(user_id,lesson_id,completed) VALUES(?,?,?)", (self.uid, lid, "2026"))
         html = self.intro()
-        self.assertIn('data-proximo href="/cursos/informatica/aula/aula-1-1"', html)
-        self.assertIn("Rever:", html)
-        self.assertIn("Já concluiu as aulas", html)
+        self.assertIn('data-seguinte href="/cursos/informatica/aula/aula-1-1"', html)
+        self.assertNotIn('aria-disabled', html)
+
+
+class BeginnerPathTests(unittest.TestCase):
+    """Percurso de quem está a começar: um ecrã de entrada e passos que abrem pela ordem."""
+
+    def setUp(self):
+        self.app = passenger_wsgi.atc_lms
+        with self.app.db() as con:
+            self.uid = con.execute("SELECT id FROM users WHERE email='formando@atc.ao'").fetchone()[0]
+            for t in ("learner_presenter", "lesson_progress", "onboarding", "course_presenters"):
+                con.execute(f"DELETE FROM {t} WHERE user_id=?", (self.uid,))
+        self.cookie = pedido("/entrar", "POST", b"email=formando%40atc.ao&pw=formando123")["h"]["set-cookie"].split(";")[0]
+
+    tearDown = setUp
+
+    def get(self, path):
+        return pedido(path, headers={"Cookie": self.cookie})
+
+    def test_first_visit_is_one_screen_then_the_course(self):
+        self.assertEqual(self.get("/comecar")["h"]["location"], "/comecar/guia")
+        r = self.get("/comecar/guia")
+        html = r["body"].decode()
+        self.assertIn("Começar o meu curso", html)
+        self.assertIn('class="app foco"', html)          # sem menu lateral
+        self.assertNotIn('class="sidebar"', html)
+        self.assertIn("/plataforma/helena/boas-vindas.mp4", html)
+        csrf = html.split('name="csrf" content="')[1].split('"')[0]
+        r = pedido("/comecar/guia", "POST", ("presenter=helena&csrf=" + csrf).encode(), headers={"Cookie": self.cookie})
+        self.assertEqual(r["h"]["location"], "/cursos/informatica")
+        self.assertEqual(self.get("/comecar/perfil")["h"]["location"], "/comecar")   # passos antigos já não existem
+
+    def test_course_path_opens_one_step_at_a_time(self):
+        with self.app.db() as con:
+            con.execute("INSERT INTO learner_presenter VALUES(?,?,?)", (self.uid, "miguel", "2026"))
+        html = self.get("/cursos/informatica")["body"].decode()
+        self.assertIn("Começar: Conheça o Miguel", html)
+        self.assertEqual(html.count('class="percurso-passo seguinte"'), 1)
+        self.assertEqual(html.count('class="percurso-passo trancado"'), 4)
+        self.assertNotIn("Primeiros passos no Windows", html)      # a demonstração passou para dentro da aula 1.1
+        self.get("/cursos/informatica/introducao")                 # ver a introdução abre a aula 1.1
+        html = self.get("/cursos/informatica")["body"].decode()
+        self.assertIn("Continuar: Aula 1.1", html)
+        aula = self.get("/cursos/informatica/aula/aula-1-1")["body"].decode()
+        self.assertIn('data-seguinte href="/cursos/informatica/aula/aula-1-2" aria-disabled="true"', aula)
+        self.assertIn("Primeiros passos no Windows", aula)
+        self.assertIn("amostra-windows-atc.mp4", aula)
 
 
 if __name__ == "__main__":

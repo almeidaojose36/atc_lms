@@ -294,3 +294,63 @@ form.inline{display:inline}
 .btn.destaque{animation:btn-pulso 1.6s ease-in-out 3;box-shadow:0 0 0 0 #DA6D2466}
 @keyframes btn-pulso{0%,100%{box-shadow:0 0 0 0 #DA6D2466}50%{box-shadow:0 0 0 12px #DA6D2400}}
 @media (prefers-reduced-motion:reduce){.guide-clip.desbloqueado,.btn.destaque{animation:none}}
+
+/* ---- Percurso para principiantes (primeira visita, curso, aula) ---- */
+.btn.grande{font-size:15px;padding:15px 24px;border-radius:10px}
+.pequeno{font-size:12px}
+/* Primeira visita sem menu lateral */
+.app.foco .workspace{margin-left:0}
+.boas-vindas h1{font-size:40px}
+.primeira-visita .presenter-portrait video{width:100%;height:100%;object-fit:cover;object-position:50% 20%;display:block;background:#000}
+.primeira-visita .presenter-option>input{width:26px;height:26px}
+.primeira-visita .presenter-info strong{font-size:28px}
+.primeira-visita .presenter-info>span:last-child{font-size:13px;color:var(--orange);font-weight:600}
+.primeira-visita .presenter-option:has(input:checked) .presenter-info>span:last-child{color:var(--muted)}
+/* O percurso do curso */
+.curso-topo .actions{margin:14px 0 6px}
+.percurso{list-style:none;margin:14px 0 0;padding:0;display:flex;flex-direction:column;gap:8px}
+.percurso-modulo{margin:14px 0 2px;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--orange)}
+.percurso-passo{display:flex;align-items:center;gap:14px;padding:14px 16px;border:1px solid var(--line);border-radius:12px;background:#fff}
+.percurso-marca{flex:0 0 38px;height:38px;border-radius:50%;display:grid;place-items:center;font-weight:700;background:#edf1f5;color:var(--navy)}
+.percurso-texto{flex:1;display:flex;flex-direction:column;gap:2px;min-width:0}
+.percurso-titulo{font-weight:700;font-size:15px;color:var(--navy);text-decoration:none}
+a.percurso-titulo:hover{color:var(--orange)}
+.percurso-texto small{font-size:12px;color:var(--muted)}
+.percurso-estado{font-size:12px;font-weight:600;color:var(--muted);text-align:right}
+.percurso-passo.feito .percurso-marca{background:#2d7a52;color:#fff}
+.percurso-passo.feito .percurso-estado{color:#2d7a52}
+.percurso-passo.seguinte{border:2px solid var(--orange);box-shadow:0 6px 18px #da6d2420}
+.percurso-passo.seguinte .percurso-marca{background:var(--orange);color:#fff}
+.percurso-passo.seguinte .percurso-estado{color:var(--orange)}
+.percurso-passo.trancado{background:#f6f7f9;opacity:.75}
+.percurso-passo.trancado .percurso-titulo{color:var(--muted)}
+.sobre-curso summary{cursor:pointer;font-weight:700}
+/* A aula */
+.aula-topo{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:12px}
+.aula-topo h1{margin:4px 0 0}
+.som-escolha{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)}
+.som-escolha button{border:1px solid var(--line);background:#fff;border-radius:999px;padding:8px 14px;font:600 12px Montserrat,sans-serif;cursor:pointer;color:var(--navy)}
+.som-escolha button[aria-pressed="true"]{background:var(--navy);border-color:var(--navy);color:#fff}
+.player{position:relative}
+.play-grande{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:flex;align-items:center;gap:10px;padding:16px 26px;border:0;border-radius:999px;background:var(--orange);color:#fff;font:700 16px Montserrat,sans-serif;cursor:pointer;box-shadow:0 10px 30px #0006}
+.play-grande span{font-size:20px}
+.play-grande:hover{background:var(--orange2)}
+.proximo-passo{margin:18px 0;padding:18px 22px;border:1px solid var(--line);border-left:5px solid #c7ced6;border-radius:12px;background:#fff}
+.proximo-passo .proximo-dica{margin:6px 0 4px;font-weight:600}
+.proximo-passo.pronto{border-left-color:var(--orange)}
+.proximo-passo [aria-disabled="true"]{background:#c7ced6;cursor:not-allowed;box-shadow:none}
+.proximo-dica.abanar{animation:abanar .4s}
+@keyframes abanar{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.guia-msg{margin:0 0 18px;border:1px solid var(--line);border-radius:12px;background:#fff}
+.guia-msg summary{display:flex;align-items:center;gap:12px;padding:12px 16px;cursor:pointer;list-style:none}
+.guia-msg summary::-webkit-details-marker{display:none}
+.guia-msg summary img{width:44px;height:44px;border-radius:50%;object-fit:cover;object-position:50% 8%}
+.guia-msg summary span{display:flex;flex-direction:column}.guia-msg summary small{color:var(--muted);font-size:12px}
+.guia-msg summary::after{content:"▾";margin-left:auto;color:var(--muted)}
+.guia-msg[open] summary::after{content:"▴"}
+.guia-msg .guide-clips{padding:0 16px 16px}
+.demo{margin-bottom:18px}.demo .player{margin-top:10px}
+.anterior{display:inline-block;margin-top:10px;font-size:12px;color:var(--muted)}
+#perguntas summary{cursor:pointer}
+@media (max-width:700px){.boas-vindas h1{font-size:30px}.percurso-estado{display:none}.aula-topo{align-items:flex-start}.play-grande{padding:12px 18px;font-size:14px}}
+@media (prefers-reduced-motion:reduce){.proximo-dica.abanar{animation:none}}
