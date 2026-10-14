@@ -646,8 +646,8 @@ def page(title, body, user=None, csrf="", wide=False, flash="", profile=None, pr
     return f"""<!doctype html><html lang="pt-PT"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{h(title)} · ATC Formação</title><link rel="icon" href="/static/logo-200.png">
-<link rel="stylesheet" href="/static/atc.css?v=6"><meta name="csrf" content="{h(csrf)}"><script src="/static/ui.js?v=3" defer></script></head>
-<body class="{'app' if user else 'public'}"><a class="skip-link" href="#conteudo">Saltar para o conteúdo</a>{sidebar}<div class="workspace"><header class="top"><div class="wrap">{header}</div></header>
+<link rel="stylesheet" href="/static/atc.css?v=8"><meta name="csrf" content="{h(csrf)}"><script src="/static/ui.js?v=4" defer></script></head>
+<body class="{'app' if user else 'public'}"{f' data-u="{user["id"]}"' if user else ''}><a class="skip-link" href="#conteudo">Saltar para o conteúdo</a>{sidebar}<div class="workspace"><header class="top"><div class="wrap">{header}</div></header>
 <main id="conteudo" class="wrap{' wide' if wide else ''}">{flash_html}{body}</main>
 <footer><div class="wrap"><span>ATC · Angbu Training Centre</span><span>Luanda, Angola · Aprendizagem com propósito</span></div></footer></div></body></html>"""
 
@@ -1164,8 +1164,10 @@ def course_clip(slug, key, name):
 
 
 def guide_panel(slug, key, names, title):
-    clips = "".join(course_clip(slug, key, n) for n in names if n)
-    return f'<section class="guide-panel"><h2>{h(title)}</h2><div class="guide-clips">{clips}</div></section>' if clips else ""
+    clips = [course_clip(slug, key, n) for n in names if n]
+    clips = [c for c in clips if c]
+    ordem = ' data-ordem' if len(clips) > 1 else ''
+    return f'<section class="guide-panel"><h2>{h(title)}</h2><div class="guide-clips"{ordem}>{"".join(clips)}</div></section>' if clips else ""
 
 
 @route("GET", r"/plataforma/(helena|miguel)/([a-z0-9-]+\.(?:mp4|vtt))", "user")
@@ -1310,12 +1312,24 @@ def presenter_intro(r, slug):
     name = PRESENTERS[key]["name"]
     scripts = json.loads((STATIC / "presenters/scripts.json").read_text(encoding="utf-8"))
     intro = scripts[key]["courses"].get(slug, scripts[key]["welcome"])
-    clips = "".join(course_clip(slug, key, n) for n in course_flow(slug).get("introducao", []))
+    clips = [x for x in (course_clip(slug, key, n) for n in course_flow(slug).get("introducao", [])) if x]
     if clips:
-        lesson = r.con.execute("""SELECT l.slug FROM lessons l LEFT JOIN lesson_progress p ON p.lesson_id=l.id AND p.user_id=?
-            WHERE l.course_id=? AND l.active=1 AND COALESCE(p.completed,0)=0 ORDER BY l.sort LIMIT 1""", (r.user["id"], c["id"])).fetchone()
-        url = f'/cursos/{slug}/aula/{lesson["slug"]}' if lesson else f'/cursos/{slug}'
-        return r.render(f"Conheça {name}", f'''<p class="crumbs"><a href="/cursos/{slug}">{h(c['title'])}</a> › Introdução</p><section class="guide-intro"><span class="eyebrow">O SEU GUIA VIRTUAL · ATC</span><h1>Olá, sou {"a" if key == "helena" else "o"} {name}.</h1><p class="lead">{h(c['title'])}</p><div class="guide-clips">{clips}</div><div class="actions"><a class="btn" href="{h(url)}">{"Ir para a aula" if lesson else "Voltar ao curso"} →</a><a class="btn ghost" href="/apresentador?seguinte=/cursos/{slug}/introducao">Mudar de guia</a></div></section>''')
+        aulas = r.con.execute("""SELECT l.slug, l.title, COALESCE(p.completed,0) feita FROM lessons l
+            LEFT JOIN lesson_progress p ON p.lesson_id=l.id AND p.user_id=?
+            WHERE l.course_id=? AND l.active=1 ORDER BY l.sort""", (r.user["id"], c["id"])).fetchall()
+        seguinte = next((a for a in aulas if not a["feita"]), None)
+        if seguinte:
+            botao = f'Começar: {h(seguinte["title"])} →'
+            dica = "Veja os vídeos pela ordem: cada um abre quando o anterior terminar. Depois, siga para a aula."
+        elif aulas:
+            seguinte = aulas[0]
+            botao = f'Rever: {h(seguinte["title"])} →'
+            dica = "Já concluiu as aulas deste curso. Pode revê-las quando quiser."
+        else:
+            botao, dica = "Ver o curso →", "Veja os vídeos pela ordem: cada um abre quando o anterior terminar."
+        url = f'/cursos/{slug}/aula/{seguinte["slug"]}' if seguinte else f'/cursos/{slug}'
+        ordem = ' data-ordem' if len(clips) > 1 else ''
+        return r.render(f"Conheça {name}", f'''<p class="crumbs"><a href="/cursos/{slug}">{h(c['title'])}</a> › Introdução</p><section class="guide-intro"><span class="eyebrow">O SEU GUIA VIRTUAL · ATC</span><h1>Olá, sou {"a" if key == "helena" else "o"} {name}.</h1><p class="lead">{h(c['title'])}</p><div class="guide-clips"{ordem}>{"".join(clips)}</div><div class="next-step"><p class="next-hint">{dica}</p><div class="actions"><a class="btn" data-proximo href="{h(url)}">{botao}</a><a class="btn ghost" href="/cursos/{slug}">Ver o curso</a><a class="btn ghost" href="/apresentador?seguinte=/cursos/{slug}/introducao">Mudar de guia</a></div></div></section>''')
     video = COURSES_DIR / slug / "apresentadores" / f"{key}-introducao.mp4"
     intro_track = (f'<track kind="subtitles" srclang="pt" label="Português" src="/media/{slug}/apresentadores/{key}-introducao.vtt" default>' if video.with_suffix('.vtt').is_file() else '')
     media = (f'<video controls playsinline preload="metadata" poster="/static/presenters/{key}.png"><source src="/media/{slug}/apresentadores/{key}-introducao.mp4" type="video/mp4">{intro_track}</video>' if video.is_file() else f'<img src="/static/presenters/{key}.png" alt="{name}, apresentador virtual">')
@@ -1833,7 +1847,7 @@ def cert_page(r, code):
     hours = row["hours_class"] or row["hours_video"]
     verify = f"http://{r.headers.get('Host', 'localhost')}/verificar?codigo={code}"
     return f"""<!doctype html><html lang="pt-PT"><head><meta charset="utf-8"><title>Certificado {h(code)}</title>
-<meta name="viewport" content="width=device-width, initial-scale=1"><link rel="stylesheet" href="/static/atc.css?v=6"></head>
+<meta name="viewport" content="width=device-width, initial-scale=1"><link rel="stylesheet" href="/static/atc.css?v=8"></head>
 <body class="certbody"><div class="noprint certbar"><a href="/">← Voltar</a> <button onclick="print()" class="btn small">Imprimir / guardar PDF</button></div>
 <div class="cert"><div class="certin"><img src="/static/logo-600.png" alt="ATC"><p class="k">Certificado de conclusão</p>
 <p>Certifica-se que</p><h1>{h(row['name'])}</h1><p>concluiu com aproveitamento o curso</p><h2>{h(row['title'])}</h2>

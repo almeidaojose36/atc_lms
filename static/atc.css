@@ -278,3 +278,19 @@ form.inline{display:inline}
 .voz-resposta{align-self:flex-start;background:#fbefe4;border-bottom-left-radius:4px}.voz-resposta .linkbtn{display:block;margin-top:4px;font-size:11px}
 .voz-escrever{display:flex;gap:8px}.voz-escrever input{flex:1}
 @media (prefers-reduced-motion:reduce){.voz.a-gravar .voz-mic{animation:none}}
+
+/* Vídeos do guia por ordem e próximo passo */
+.guide-clip{position:relative}
+.clip-numero{align-self:flex-start;font-size:.72rem;font-weight:700;letter-spacing:.04em;color:var(--muted)}
+.guide-clip.visto .clip-numero::after{content:" · visto ✓";color:#2d7a52}
+.guide-clip.trancado video{filter:grayscale(1) brightness(.45);pointer-events:none}
+.clip-aviso{position:absolute;left:0;right:0;top:0;aspect-ratio:16/9;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.3rem;padding:1rem;text-align:center;color:#fff;font-size:.92rem;background:rgba(11,33,55,.78)}
+.clip-aviso span:first-child{font-size:1.8rem;line-height:1}.clip-aviso b{font-size:1rem}
+.guide-clip.desbloqueado{animation:clip-abre 1.2s ease-out}
+@keyframes clip-abre{0%{box-shadow:0 0 0 0 #DA6D2499}100%{box-shadow:0 0 0 14px #DA6D2400}}
+.next-step{margin-top:1.2rem;padding:1rem 1.2rem;border:1px solid var(--line,#d9d2c3);border-left:4px solid var(--orange);border-radius:12px;background:#fff}
+.next-step .next-hint{margin:0 0 .4rem;font-weight:600}
+.next-step .actions{margin-top:.4rem}
+.btn.destaque{animation:btn-pulso 1.6s ease-in-out 3;box-shadow:0 0 0 0 #DA6D2466}
+@keyframes btn-pulso{0%,100%{box-shadow:0 0 0 0 #DA6D2466}50%{box-shadow:0 0 0 12px #DA6D2400}}
+@media (prefers-reduced-motion:reduce){.guide-clip.desbloqueado,.btn.destaque{animation:none}}

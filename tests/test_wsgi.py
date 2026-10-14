@@ -73,5 +73,45 @@ class WsgiTests(unittest.TestCase):
         self.assertTrue(pedido("/static/../atc_lms.py")["status"].startswith("404"))
 
 
+class IntroNextStepTests(unittest.TestCase):
+    """Introdução do curso: vídeos por ordem e um próximo passo sempre visível."""
+
+    def setUp(self):
+        app = passenger_wsgi.atc_lms
+        with app.db() as con:
+            self.uid = con.execute("SELECT id FROM users WHERE email='formando@atc.ao'").fetchone()[0]
+            con.execute("INSERT OR REPLACE INTO learner_presenter VALUES(?,?,?)", (self.uid, "helena", "2026"))
+            con.execute("DELETE FROM lesson_progress WHERE user_id=?", (self.uid,))
+        r = pedido("/entrar", "POST", b"email=formando%40atc.ao&pw=formando123")
+        self.cookie = r["h"]["set-cookie"].split(";")[0]
+
+    def tearDown(self):
+        with passenger_wsgi.atc_lms.db() as con:
+            con.execute("DELETE FROM learner_presenter WHERE user_id=?", (self.uid,))
+            con.execute("DELETE FROM lesson_progress WHERE user_id=?", (self.uid,))
+
+    def intro(self):
+        r = pedido("/cursos/informatica/introducao", headers={"Cookie": self.cookie})
+        self.assertTrue(r["status"].startswith("200"), r["status"])
+        return r["body"].decode()
+
+    def test_new_learner_is_told_to_start_the_first_lesson(self):
+        html = self.intro()
+        self.assertIn('class="guide-clips" data-ordem', html)
+        self.assertIn('data-proximo href="/cursos/informatica/aula/aula-1-1"', html)
+        self.assertIn("Começar:", html)
+        self.assertIn('data-u="%d"' % self.uid, html)
+
+    def test_learner_who_finished_is_offered_to_review_not_stranded(self):
+        app = passenger_wsgi.atc_lms
+        with app.db() as con:
+            for (lid,) in con.execute("SELECT id FROM lessons WHERE course_id=(SELECT id FROM courses WHERE slug='informatica')").fetchall():
+                con.execute("INSERT OR REPLACE INTO lesson_progress(user_id,lesson_id,completed) VALUES(?,?,?)", (self.uid, lid, "2026"))
+        html = self.intro()
+        self.assertIn('data-proximo href="/cursos/informatica/aula/aula-1-1"', html)
+        self.assertIn("Rever:", html)
+        self.assertIn("Já concluiu as aulas", html)
+
+
 if __name__ == "__main__":
     unittest.main()
