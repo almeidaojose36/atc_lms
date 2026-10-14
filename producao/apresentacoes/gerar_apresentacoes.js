@@ -360,6 +360,13 @@ async function gerar(slug) {
       if (usarCall) dica(s, call, guia, z.x, Math.max(y + 0.1, fim - hCall), z.w, hCall);
     }
     s.addNotes(`${sec.title}\n\n${notasSeccao(sec)}`);
+    // Secção com imagem e tabela larga: a tabela segue num diapositivo próprio, para não ficar só nas notas.
+    if (grandes.length && tab && tab[0].length > 2) {
+      const t = novo("Conteúdo"); t.addText(`${titulo} (continuação)`, { placeholder: "title" });
+      const pt = alturaTabela(tab, 12.1, 14) + 1.45 <= 6.7 ? 14 : 12;
+      tabela(t, tab, 0.6, 1.45, 12.1, pt);
+      t.addNotes(`${sec.title} (tabela)`);
+    }
   }
 
   // ===== Resumo, exercício, questionário, glossário =====
