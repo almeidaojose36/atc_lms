@@ -1,84 +1,118 @@
-// Página inicial pública: "Do hardware à rede". Duas histórias presas ao scroll (GSAP + ScrollTrigger).
-// Sem movimento (prefers-reduced-motion) ou sem GSAP, mostra os diagramas no estado final.
+// Página inicial pública. Sequências de fotogramas num canvas presas ao scroll (GSAP ScrollTrigger),
+// scroll suave com Lenis e carrossel de cursos com Swiper. Com movimento reduzido mostra um fotograma por secção.
 (() => {
-  const parts = [...document.querySelectorAll('.pc-part')];
-  const partItems = [...document.querySelectorAll('.lp-parts li')];
-  const layers = [...document.querySelectorAll('.lp-osi li')];
-  const nodes = Object.fromEntries([...document.querySelectorAll('.net-node')].map((n) => [n.id.slice(3), n]));
-  const caption = document.querySelector('.net-caption');
-  const packet = document.getElementById('net-packet');
-  const track = document.getElementById('net-path');
-  const intro = caption ? caption.textContent : '';
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const small = window.matchMedia('(max-width: 768px)').matches;
+  const motion = !reduce && window.gsap && window.ScrollTrigger;
+  const root = document.documentElement;
+  root.classList.add(motion ? 'lp-motion' : 'lp-static');
 
-  const stages = [ // [início, fim, nó, camadas acesas, legenda]  (progresso da viagem 0–1)
-    [0, 0.17, 'pc', null, 'No computador, os dados descem as sete camadas e ganham cabeçalhos: porta, endereço IP, endereço MAC.'],
-    [0.17, 0.3, 'switch', [1, 2], 'O switch lê o endereço MAC e entrega o pacote dentro da rede local. Camada 2.'],
-    [0.3, 0.52, 'router', [1, 2, 3], 'O router lê o endereço IP e escolhe o caminho para fora da rede local. Camada 3.'],
-    [0.52, 0.8, 'internet', [1, 2, 3], 'Na Internet, dezenas de routers passam o pacote de rede em rede até ao destino.'],
-    [0.8, 1.01, 'servidor', null, 'No servidor, os dados sobem as sete camadas até chegarem à aplicação.'],
-  ];
-
-  const lit = (set) => layers.forEach((li) => li.classList.toggle('on', set.includes(+li.dataset.camada)));
-  const markParts = (n) => partItems.forEach((li, i) => li.classList.toggle('on', i < n));
-
-  function setNetwork(p) { // p: progresso da secção (0–1)
-    const travel = gsap.utils.clamp(0, 1, (p - 0.12) / 0.76);
-    const stage = stages.find(([a, b]) => travel >= a && travel < b) || stages[stages.length - 1];
-    Object.entries(nodes).forEach(([id, n]) => n.classList.toggle('on', id === stage[2]));
-    if (p < 0.12) {           // encapsulamento: 7 → 1
-      const k = Math.floor((p / 0.12) * 7);
-      lit([7, 6, 5, 4, 3, 2, 1].slice(0, k + 1));
-    } else if (p > 0.88) {    // desencapsulamento: 1 → 7
-      const k = Math.floor(((p - 0.88) / 0.12) * 7);
-      lit([1, 2, 3, 4, 5, 6, 7].slice(0, k + 1));
-    } else lit(stage[3] || [1]);
-    if (caption) caption.textContent = p <= 0.001 ? intro : stage[4];
+  if (window.Swiper) {
+    new Swiper('.lp-swiper', {
+      slidesPerView: 1.15, spaceBetween: 14, grabCursor: true, speed: reduce ? 0 : 500,
+      pagination: { el: '.lp-swiper .swiper-pagination', clickable: true },
+      navigation: { nextEl: '.lp-swiper .swiper-button-next', prevEl: '.lp-swiper .swiper-button-prev' },
+      breakpoints: { 640: { slidesPerView: 2.2, spaceBetween: 16 }, 1024: { slidesPerView: 3.2, spaceBetween: 20 } },
+      a11y: { prevSlideMessage: 'Curso anterior', nextSlideMessage: 'Curso seguinte', paginationBulletMessage: 'Ir para o curso {{index}}' },
+    });
   }
 
-  const exploded = () => {
-    parts.forEach((g) => g.setAttribute('transform', `translate(${g.dataset.dx} ${g.dataset.dy})`));
-    document.documentElement.classList.add('lp-static');
-    markParts(parts.length);
-  };
+  const pad = (n) => String(n).padStart(4, '0');
+  const src = (seq, n) => `${seq.dataset.frames}${small ? 'm/' : ''}${pad(n)}.webp`;
 
-  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if (!window.gsap || !window.ScrollTrigger || reduce) {
-    exploded();
-    layers.forEach((li) => li.classList.add('on'));
+  function canvasFor(seq) {
+    const canvas = seq.querySelector('.seq-canvas');
+    const ctx = canvas.getContext('2d');
+    let last = null;
+    const fit = () => {
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = canvas.clientWidth * dpr;
+      canvas.height = canvas.clientHeight * dpr;
+      if (last) draw(last);
+    };
+    function draw(img) { // paisagem: object-fit cover; retrato: largura total, na parte de cima, com o texto por baixo
+      last = img;
+      const portrait = canvas.height > canvas.width;
+      const s = portrait ? (canvas.width / img.naturalWidth) * 1.12
+        : Math.max(canvas.width / img.naturalWidth, canvas.height / img.naturalHeight);
+      const w = img.naturalWidth * s, h = img.naturalHeight * s;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(img, (canvas.width - w) / 2, portrait ? canvas.height * 0.3 - h / 2 : (canvas.height - h) / 2, w, h);
+    }
+    fit();
+    window.addEventListener('resize', fit);
+    return draw;
+  }
+
+  const seqs = [...document.querySelectorAll('.seq')];
+
+  if (!motion) { // um fotograma estático por secção e todos os passos visíveis
+    seqs.forEach((seq) => {
+      const draw = canvasFor(seq);
+      const img = new Image();
+      img.onload = () => draw(img);
+      img.src = src(seq, +seq.dataset.count);
+    });
     return;
   }
-  gsap.registerPlugin(ScrollTrigger, MotionPathPlugin, DrawSVGPlugin);
-  document.documentElement.classList.add('lp-motion');
 
-  // Parte 1: a tampa sai e as peças afastam-se uma a uma, com as etiquetas.
-  const hw = gsap.timeline({
-    defaults: { ease: 'power2.inOut' },
-    scrollTrigger: {
-      trigger: '#por-dentro', start: 'top top', end: () => '+=' + window.innerHeight * 2.2, pin: true, scrub: 0.8,
-      onUpdate: (st) => { const t = st.progress * hw.duration(); markParts(parts.filter((_, i) => t >= 1.4 + i * 0.7).length); },
-    },
-  });
-  hw.to('#pc-tampa', { x: 240, opacity: 0, duration: 1 })
-    .to('.pc-case', { opacity: 0.35, duration: 0.6 }, '<0.4');
-  parts.forEach((g, i) => {
-    hw.to(g, { x: +g.dataset.dx, y: +g.dataset.dy, duration: 1 }, 1 + i * 0.7)
-      .to(g.querySelector('.pc-label'), { opacity: 1, duration: 0.4 }, '>-0.3');
-  });
-  hw.to({}, { duration: 0.6 });
+  gsap.registerPlugin(ScrollTrigger);
+  if (window.Lenis) {
+    const lenis = new Lenis({ lerp: 0.1 });
+    lenis.on('scroll', ScrollTrigger.update);
+    gsap.ticker.add((t) => lenis.raf(t * 1000));
+    gsap.ticker.lagSmoothing(0);
+    document.querySelectorAll('a[href^="#"]').forEach((a) => a.addEventListener('click', (e) => {
+      const target = document.querySelector(a.getAttribute('href'));
+      if (target) { e.preventDefault(); lenis.scrollTo(target); }
+    }));
+  }
 
-  // Parte 2: o caminho desenha-se e o pacote percorre-o, com as camadas OSI ao lado.
-  gsap.set(track, { drawSVG: '0%' });
-  gsap.set(packet, { attr: { cx: 0, cy: 0 }, x: 70, y: 250 });
-  const net = gsap.timeline({
-    defaults: { ease: 'none' },
-    scrollTrigger: {
-      trigger: '.lp-net', start: 'top top', end: () => '+=' + window.innerHeight * 2.6, pin: true, scrub: 0.6,
-      onUpdate: (st) => setNetwork(st.progress),
-    },
+  // Título: linhas a subir à entrada. Manifesto: linhas acendem com o scroll.
+  gsap.from('.lp-lines > span', { yPercent: 110, opacity: 0, duration: 1, ease: 'power4.out', stagger: 0.12, delay: 0.1 });
+  gsap.from('.lp-hero .lp-actions, .lp-hero .eyebrow', { opacity: 0, y: 16, duration: 0.8, delay: 0.5, stagger: 0.1 });
+  gsap.to('.lp-reveal > span', {
+    opacity: 1, stagger: 0.5, ease: 'none',
+    scrollTrigger: { trigger: '.lp-manifesto', start: 'top 75%', end: 'bottom 45%', scrub: true },
   });
-  net.to({}, { duration: 0.12 })
-    .to(track, { drawSVG: '100%', duration: 0.76 }, 0.12)
-    .to(packet, { motionPath: { path: track }, duration: 0.76 }, 0.12)
-    .to({}, { duration: 0.12 });
-  setNetwork(0);
+
+  // Sequências: os 20 primeiros fotogramas já, o resto em segundo plano.
+  seqs.forEach((seq) => {
+    const count = +seq.dataset.count;
+    if (!count) return;
+    const draw = canvasFor(seq);
+    const frames = new Array(count + 1);
+    const load = (n) => {
+      if (frames[n]) return frames[n];
+      const img = new Image();
+      img.decoding = 'async';
+      img.src = src(seq, n);
+      frames[n] = img;
+      return img;
+    };
+    const state = { frame: 1 };
+    const render = () => {
+      let n = Math.round(state.frame);
+      while (n > 1 && !(frames[n] && frames[n].complete && frames[n].naturalWidth)) n--; // o mais próximo já carregado
+      const img = frames[n];
+      if (img && img.complete && img.naturalWidth) draw(img);
+    };
+    for (let n = 1; n <= Math.min(20, count); n++) load(n).onload = n === 1 ? render : null;
+    const rest = () => { for (let n = 21; n <= count; n++) load(n); };
+    ScrollTrigger.create({ trigger: seq, start: 'top 200%', once: true, onEnter: rest });
+
+    const steps = [...seq.querySelectorAll('.seq-step')];
+    const final = seq.querySelector('.seq-final');
+    const tl = gsap.timeline({
+      defaults: { ease: 'none' },
+      scrollTrigger: { trigger: seq, start: 'top top', end: () => '+=' + window.innerHeight * 3, pin: true, scrub: 0.5 },
+    });
+    tl.to(state, { frame: count, duration: 1, onUpdate: render }, 0);
+    const slot = 0.8 / steps.length;
+    steps.forEach((li, i) => {
+      tl.fromTo(li, { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: slot * 0.3 }, i * slot)
+        .to(li, { opacity: 0.25, y: -6, duration: slot * 0.25 }, i * slot + slot * 0.75);
+    });
+    tl.fromTo(final, { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.12 }, 0.84);
+  });
 })();

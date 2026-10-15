@@ -647,7 +647,7 @@ def page(title, body, user=None, csrf="", wide=False, flash="", profile=None, pr
     return f"""<!doctype html><html lang="pt-PT"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{h(title)} · ATC Formação</title><link rel="icon" href="/static/logo-200.png">
-<link rel="stylesheet" href="/static/atc.css?v=11"><meta name="csrf" content="{h(csrf)}"><script src="/static/ui.js?v=6" defer></script></head>
+<link rel="stylesheet" href="/static/atc.css?v=12"><meta name="csrf" content="{h(csrf)}"><script src="/static/ui.js?v=6" defer></script></head>
 <body class="{('app foco' if foco else 'app') if user else 'public'}{' ' + body_class if body_class else ''}"{f' data-u="{user["id"]}"' if user else ''}><a class="skip-link" href="#conteudo">Saltar para o conteúdo</a>{sidebar}<div class="workspace"><header class="top"><div class="wrap">{header}</div></header>
 <main id="conteudo" class="wrap{' wide' if wide else ''}">{flash_html}{body}</main>
 <footer><div class="wrap"><span>ATC · Angbu Training Centre</span><span>Cabinda, Angola · Aprendizagem com propósito</span></div></footer></div>{scripts}</body></html>"""
@@ -1040,72 +1040,42 @@ def course_card(r, c, enrolled):
             f'<span class="tag">Inscrição na ATC</span> <span class="muted">{hours}</span></div></article>')
 
 
-PC_PARTS = [  # (id, nome, descrição, desenho na posição montada, deslocação até à posição explodida, posição da etiqueta)
-    ("placa", "Placa-mãe", "Liga todos os componentes entre si.",
-     '<rect x="246" y="72" width="148" height="262" rx="6" class="pc-board"/><path d="M262 92h40M262 104h28M350 300h30M350 312h22" class="pc-trace"/>', (-226, -32), (95, 324)),
-    ("cpu", "Processador (CPU)", "Executa as instruções dos programas.",
-     '<rect x="296" y="108" width="44" height="44" rx="5" class="pc-chip"/><rect x="306" y="118" width="24" height="24" rx="3" class="pc-chip-core"/>', (-236, 236), (82, 412)),
-    ("ram", "Memória RAM", "Guarda o que está a ser usado agora.",
-     '<rect x="352" y="94" width="11" height="78" rx="2" class="pc-ram"/><rect x="368" y="94" width="11" height="78" rx="2" class="pc-ram"/>', (-208, 252), (168, 444)),
-    ("gpu", "Placa gráfica (GPU)", "Desenha a imagem que vê no monitor.",
-     '<rect x="252" y="226" width="136" height="34" rx="5" class="pc-gpu"/><circle cx="290" cy="243" r="11" class="pc-fan"/><circle cx="340" cy="243" r="11" class="pc-fan"/>', (226, -168), (546, 112)),
-    ("ssd", "Disco SSD", "Guarda ficheiros e programas.",
-     '<rect x="298" y="344" width="62" height="16" rx="3" class="pc-ssd"/>', (186, -112), (515, 272)),
-    ("psu", "Fonte de alimentação", "Converte a corrente da tomada.",
-     '<rect x="246" y="384" width="148" height="70" rx="6" class="pc-psu"/><circle cx="290" cy="419" r="22" class="pc-fan"/><path d="M350 404v30M362 404v30M374 404v30" class="pc-trace"/>', (230, -6), (545, 472)),
+LANDING_SEQUENCES = [  # (pasta em static/frames, passos sobrepostos, título final, curso)
+    ("aplus", ["Processador", "Memória RAM", "Placa-mãe", "Armazenamento"], "CompTIA A+", "Monte, configure e repare computadores."),
+    ("netplus", ["Cabos e topologias", "Endereçamento IP", "Segurança de rede"], "CompTIA Network+", "Ligue, proteja e resolva problemas de redes."),
 ]
-
-NET_NODES = [  # (id, nome, x, y, ícone)
-    ("pc", "Computador", 70, 250, '<rect x="-26" y="-22" width="52" height="34" rx="4"/><path d="M-10 18h20M0 12v6"/>'),
-    ("switch", "Switch", 215, 250, '<rect x="-30" y="-12" width="60" height="24" rx="5"/><path d="M-18 0h4M-8 0h4M2 0h4M12 0h4"/>'),
-    ("router", "Router", 355, 165, '<circle r="22"/><path d="M-10 -6l10-8 10 8M-10 6l10 8 10-8"/>'),
-    ("internet", "Internet", 505, 105, '<path d="M-30 10a14 14 0 0 1 4-27 18 18 0 0 1 34-4 14 14 0 0 1 22 18 10 10 0 0 1-4 13z"/>'),
-    ("servidor", "Servidor", 640, 215, '<rect x="-18" y="-28" width="36" height="56" rx="4"/><path d="M-10 -14h20M-10 -2h20M-10 10h20"/>'),
-]
-
-OSI = [(7, "Aplicação", "HTTP, email"), (6, "Apresentação", "Cifra, formato"), (5, "Sessão", "Diálogo"),
-       (4, "Transporte", "TCP / UDP"), (3, "Rede", "Endereço IP"), (2, "Ligação de dados", "Endereço MAC"), (1, "Física", "Cabo, Wi-Fi")]
+LANDING_COURSES = ["comptia-a-plus", "comptia-network-plus", "informatica", "excel", "word"]
 
 
 def landing(r):
-    parts_svg = "".join(
-        f'<g class="pc-part" id="parte-{pid}" data-dx="{dx}" data-dy="{dy}">{art}'
-        f'<text class="pc-label" x="{lx - dx}" y="{ly - dy}" text-anchor="middle">{h(name)}</text></g>'
-        for pid, name, _, art, (dx, dy), (lx, ly) in PC_PARTS)
-    parts_list = "".join(f'<li data-parte="{pid}"><b>{h(name)}</b><span>{h(desc)}</span></li>' for pid, name, desc, *_ in PC_PARTS)
-    nodes_svg = "".join(f'<g class="net-node" id="no-{nid}" transform="translate({x} {y})">{icon}<text y="48" text-anchor="middle">{h(name)}</text></g>'
-                        for nid, name, x, y, icon in NET_NODES)
-    osi = "".join(f'<li data-camada="{n}"><i>{n}</i><b>{h(name)}</b><span>{h(ex)}</span></li>' for n, name, ex in OSI)
-    courses = r.con.execute("SELECT slug, title, subtitle, status FROM courses WHERE active=1 ORDER BY sort, title").fetchall()
-    cards = "".join(f'<article class="lp-course{" live" if c["status"] == "publicado" else ""}"><span class="tag">{STATUS.get(c["status"], "")}</span>'
-                    f'<h3>{h(c["title"])}</h3><p>{h(c["subtitle"])}</p></article>' for c in courses)
-    path = "M70 250 L215 250 C285 250 295 165 355 165 C425 165 440 105 505 105 C575 105 600 215 640 215"
+    seqs = ""
+    for i, (folder, steps, title, line) in enumerate(LANDING_SEQUENCES, 1):
+        count = len(list((STATIC / "frames" / folder).glob("*.webp")))
+        items = "".join(f'<li class="seq-step"><span>{n:02d}</span>{h(s)}</li>' for n, s in enumerate(steps, 1))
+        seqs += (f'<section class="seq" id="seq-{folder}" data-frames="/static/frames/{folder}/" data-count="{count}" aria-label="{h(title)}">'
+                 f'<canvas class="seq-canvas" aria-hidden="true"></canvas><div class="seq-scrim" aria-hidden="true"></div>'
+                 f'<div class="seq-copy"><span class="eyebrow">PARTE {i}</span><ol class="seq-steps">{items}</ol>'
+                 f'<div class="seq-final"><h2>{h(title)}</h2><p>{h(line)}</p></div></div></section>')
+    rows = {c["slug"]: c for c in r.con.execute("SELECT slug, title, subtitle, status FROM courses WHERE active=1")}
+    mono = {"comptia-a-plus": "A+", "comptia-network-plus": "N+", "informatica": "TI", "excel": "X", "word": "W"}
+    slides = "".join(
+        f'<div class="swiper-slide"><article class="lp-course{" live" if c["status"] == "publicado" else ""}"><span class="lp-mono" aria-hidden="true">{mono[s]}</span>'
+        f'<span class="tag">{STATUS.get(c["status"], "")}</span><h3>{h(c["title"])}</h3><p>{h(c["subtitle"])}</p></article></div>'
+        for s in LANDING_COURSES if (c := rows.get(s)))
+    lines = ["Aulas em vídeo, em português,", "com a Helena ou o Miguel ao seu lado.", "Exercícios práticos, questionários", "e um certificado no fim."]
     body = f'''<section class="lp-hero"><span class="eyebrow">ANGBU TRAINING CENTRE · CABINDA</span>
-<h1>Do hardware<br>à <em>rede.</em></h1>
-<p>Aprenda como um computador funciona por dentro e como a informação viaja até ao outro lado do mundo. Formação prática em português, ao seu ritmo.</p>
-<div class="lp-actions"><a class="btn" href="/entrar">Entrar na plataforma →</a><a class="btn ghost" href="#por-dentro">Descobrir o percurso ↓</a></div>
+<h1 class="lp-lines"><span>O seu futuro</span><span>começa com</span><span><em>conhecimento.</em></span></h1>
+<div class="lp-actions"><a class="btn" href="/entrar">Entrar na plataforma →</a><a class="btn ghost" href="#seq-aplus">Descobrir ↓</a></div>
 <span class="lp-scroll" aria-hidden="true">Deslize</span></section>
-
-<section class="lp-story" id="por-dentro" aria-labelledby="t-hw"><div class="lp-story-copy">
-<span class="eyebrow">COMPTIA A+ · PARTE 1</span><h2 id="t-hw">O computador por dentro.</h2>
-<p>Abra a caixa e conheça cada componente: o que faz, como se liga e como se substitui.</p>
-<ol class="lp-parts">{parts_list}</ol></div>
-<div class="lp-visual"><svg viewBox="0 0 640 520" role="img" aria-label="Computador desmontado: placa-mãe, processador, memória RAM, placa gráfica, disco SSD e fonte de alimentação.">
-<rect x="230" y="50" width="180" height="420" rx="18" class="pc-case"/>{parts_svg}
-<rect x="230" y="50" width="180" height="420" rx="18" class="pc-panel" id="pc-tampa"/></svg></div></section>
-
-<section class="lp-story lp-net" aria-labelledby="t-net"><div class="lp-story-copy">
-<span class="eyebrow">COMPTIA NETWORK+ · PARTE 2</span><h2 id="t-net">A viagem de um pacote.</h2>
-<p class="net-caption" aria-live="polite">Do seu computador até um servidor, os dados passam por várias redes. Cada equipamento trabalha numa camada do modelo OSI.</p>
-<ol class="lp-osi" aria-label="Modelo OSI">{osi}</ol></div>
-<div class="lp-visual"><svg viewBox="0 0 710 330" role="img" aria-label="Um pacote de dados viaja do computador ao switch, ao router, à Internet e ao servidor.">
-<path d="{path}" class="net-track"/><path d="{path}" class="net-path" id="net-path"/>{nodes_svg}
-<circle r="9" class="net-packet" id="net-packet" cx="640" cy="215"/></svg></div></section>
-
-<section class="lp-courses"><span class="eyebrow">PERCURSOS ATC</span><h2>Comece pelo essencial. Vá mais longe.</h2><div class="lp-course-grid">{cards}</div></section>
+<section class="lp-manifesto"><p class="lp-reveal">{"".join(f"<span>{h(l)}</span>" for l in lines)}</p></section>
+{seqs}
+<section class="lp-courses"><span class="eyebrow">PERCURSOS ATC</span><h2>Comece pelo essencial. Vá mais longe.</h2>
+<div class="swiper lp-swiper"><div class="swiper-wrapper">{slides}</div><div class="lp-swiper-nav"><button class="swiper-button-prev" aria-label="Curso anterior"></button><div class="swiper-pagination"></div><button class="swiper-button-next" aria-label="Curso seguinte"></button></div></div></section>
 <section class="lp-final"><h2>Pronto para dar o próximo passo?</h2><p>Entre com a sua conta e continue o seu percurso com a Helena ou o Miguel.</p><a class="btn" href="/entrar">Entrar na plataforma →</a></section>'''
-    scripts = "".join(f'<script src="/static/gsap/{f}.min.js?v=3.15" defer></script>' for f in ("gsap", "ScrollTrigger", "MotionPathPlugin", "DrawSVGPlugin"))
-    return page("Do hardware à rede", body, cta=True, body_class="landing", scripts=scripts + '<script src="/static/historia.js?v=1" defer></script>')
+    vendor = ["gsap/gsap.min.js", "gsap/ScrollTrigger.min.js", "vendor/lenis.min.js", "vendor/swiper-bundle.min.js"]
+    scripts = "".join(f'<script src="/static/{f}?v=1" defer></script>' for f in vendor)
+    head = '<link rel="stylesheet" href="/static/vendor/swiper-bundle.min.css?v=1"><link rel="stylesheet" href="/static/vendor/lenis.css?v=1">'
+    return page("Início", head + body, cta=True, body_class="landing", scripts=scripts + '<script src="/static/historia.js?v=3" defer></script>')
 
 
 @route("GET", "/")
@@ -1961,7 +1931,7 @@ def cert_page(r, code):
     hours = row["hours_class"] or row["hours_video"]
     verify = f"http://{r.headers.get('Host', 'localhost')}/verificar?codigo={code}"
     return f"""<!doctype html><html lang="pt-PT"><head><meta charset="utf-8"><title>Certificado {h(code)}</title>
-<meta name="viewport" content="width=device-width, initial-scale=1"><link rel="stylesheet" href="/static/atc.css?v=11"></head>
+<meta name="viewport" content="width=device-width, initial-scale=1"><link rel="stylesheet" href="/static/atc.css?v=12"></head>
 <body class="certbody"><div class="noprint certbar"><a href="/">← Voltar</a> <button onclick="print()" class="btn small">Imprimir / guardar PDF</button></div>
 <div class="cert"><div class="certin"><img src="/static/logo-600.png" alt="ATC"><p class="k">Certificado de conclusão</p>
 <p>Certifica-se que</p><h1>{h(row['name'])}</h1><p>concluiu com aproveitamento o curso</p><h2>{h(row['title'])}</h2>
