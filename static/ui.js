@@ -130,3 +130,14 @@
     if (dica) { dica.classList.remove('abanar'); void dica.offsetWidth; dica.classList.add('abanar'); }
   }));
 })();
+
+document.addEventListener('click', (e) => {
+  const b = e.target.closest('[data-pw-toggle]');
+  if (!b) return;
+  const i = b.parentElement.querySelector('input');
+  const show = i.type === 'password';
+  i.type = show ? 'text' : 'password';
+  b.textContent = show ? 'Ocultar' : 'Mostrar';
+  b.setAttribute('aria-pressed', String(show));
+  b.setAttribute('aria-label', show ? 'Ocultar palavra-passe' : 'Mostrar palavra-passe');
+});

@@ -40,7 +40,11 @@ class WsgiTests(unittest.TestCase):
 
     def test_login_page_and_session(self):
         self.assertTrue(pedido("/entrar")["status"].startswith("200"))
-        self.assertTrue(pedido("/")["status"].startswith("303"))      # sem sessão: vai para /entrar
+        r = pedido("/")                                                # sem sessão: página inicial pública
+        self.assertTrue(r["status"].startswith("200"), r["status"])
+        self.assertIn("Do hardware".encode(), r["body"])
+        self.assertIn(b'href="/entrar"', r["body"])
+        self.assertTrue(pedido("/conta")["status"].startswith("303"))  # páginas privadas continuam a pedir sessão
         r = self.entrar()
         cookie = r["h"]["set-cookie"].split(";")[0]
         self.assertNotIn("Secure", r["h"]["set-cookie"])

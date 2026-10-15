@@ -620,7 +620,7 @@ def bar(pct):
     return f'<div class="bar" role="progressbar" aria-valuenow="{pct}" aria-valuemin="0" aria-valuemax="100"><span style="width:{pct}%"></span></div>'
 
 
-def page(title, body, user=None, csrf="", wide=False, flash="", profile=None, presenter=None, here="/", foco=False):
+def page(title, body, user=None, csrf="", wide=False, flash="", profile=None, presenter=None, here="/", foco=False, cta=False, scripts="", body_class=""):
     if user:
         user = dict(user)
         user["name"] = (profile or {}).get("display_name") or user["name"]
@@ -643,14 +643,14 @@ def page(title, body, user=None, csrf="", wide=False, flash="", profile=None, pr
                 f'<span><small>O seu guia</small><b>{PRESENTERS[presenter]["name"]}</b></span></a>')
     flash_html = f'<div class="flash" role="status">{flash}</div>' if flash else ""
     header = (brand + f'<a class="account-link" href="/conta">{h(user["name"].split()[0])} <span class="avatar avatar-{h(profile_color)}">{h(user["name"][:1].upper())}</span></a>' if user and foco else
-              f'<div class="workspace-label">Área de aprendizagem <span>/</span> <b>{h(title)}</b></div>{chip}<a class="account-link" href="/conta">{h(user["name"].split()[0])} <span class="avatar avatar-{h(profile_color)}">{h(user["name"][:1].upper())}</span></a>' if user else brand)
+              f'<div class="workspace-label">Área de aprendizagem <span>/</span> <b>{h(title)}</b></div>{chip}<a class="account-link" href="/conta">{h(user["name"].split()[0])} <span class="avatar avatar-{h(profile_color)}">{h(user["name"][:1].upper())}</span></a>' if user else brand + ('<a class="top-cta" href="/entrar">Entrar <span aria-hidden="true">→</span></a>' if cta else ''))
     return f"""<!doctype html><html lang="pt-PT"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{h(title)} · ATC Formação</title><link rel="icon" href="/static/logo-200.png">
-<link rel="stylesheet" href="/static/atc.css?v=9"><meta name="csrf" content="{h(csrf)}"><script src="/static/ui.js?v=5" defer></script></head>
-<body class="{('app foco' if foco else 'app') if user else 'public'}"{f' data-u="{user["id"]}"' if user else ''}><a class="skip-link" href="#conteudo">Saltar para o conteúdo</a>{sidebar}<div class="workspace"><header class="top"><div class="wrap">{header}</div></header>
+<link rel="stylesheet" href="/static/atc.css?v=11"><meta name="csrf" content="{h(csrf)}"><script src="/static/ui.js?v=6" defer></script></head>
+<body class="{('app foco' if foco else 'app') if user else 'public'}{' ' + body_class if body_class else ''}"{f' data-u="{user["id"]}"' if user else ''}><a class="skip-link" href="#conteudo">Saltar para o conteúdo</a>{sidebar}<div class="workspace"><header class="top"><div class="wrap">{header}</div></header>
 <main id="conteudo" class="wrap{' wide' if wide else ''}">{flash_html}{body}</main>
-<footer><div class="wrap"><span>ATC · Angbu Training Centre</span><span>Luanda, Angola · Aprendizagem com propósito</span></div></footer></div></body></html>"""
+<footer><div class="wrap"><span>ATC · Angbu Training Centre</span><span>Cabinda, Angola · Aprendizagem com propósito</span></div></footer></div>{scripts}</body></html>"""
 
 
 def csrf_field(csrf):
@@ -890,10 +890,13 @@ def login_get(r, error=""):
                 'Formador: formador@atc.ao / formador123<br>Administrador: admin@atc.ao / admin123</div>')
     err = f'<p class="error">{h(error)}</p>' if error else ""
     nxt = h(r.query.get("seguinte", "/"))
-    return page("Entrar", f"""<div class="login-layout"><section class="login-story"><span class="eyebrow">ANGBU TRAINING CENTRE</span><h1>O seu futuro<br>começa com<br><em>conhecimento.</em></h1><p>Desenvolva competências digitais, aprenda ao seu ritmo e prepare o próximo passo da sua carreira.</p><div class="login-benefits"><span>01 / Aulas em vídeo</span><span>02 / Aprendizagem prática</span><span>03 / Certificado de conclusão</span></div></section><section class="login card"><img src="/static/logo-600.png" alt="ATC – Angbu Training Centre">
+    return page("Entrar", f"""<div class="login-layout"><section class="login-story"><span class="eyebrow">ANGBU TRAINING CENTRE</span><h1>O seu futuro<br>começa com<br><em>conhecimento.</em></h1><p>Desenvolva competências digitais, aprenda ao seu ritmo e prepare o próximo passo da sua carreira.</p>
+<div class="login-guides"><span class="guide-faces"><img src="/static/presenters/helena.png" alt=""><img src="/static/presenters/miguel.png" alt=""></span><span><b>Helena e Miguel</b>Os seus guias virtuais acompanham cada aula.</span></div>
+<div class="login-benefits"><div><i aria-hidden="true">▶</i><b>Aulas em vídeo</b><small>Passo a passo, em português</small></div><div><i aria-hidden="true">✎</i><b>Aprendizagem prática</b><small>Exercícios e questionários</small></div><div><i aria-hidden="true">✓</i><b>Certificado</b><small>Reconhecimento da conclusão</small></div></div></section>
+<section class="login card"><img src="/static/logo-600.png" alt="ATC – Angbu Training Centre">
 <span class="eyebrow">A SUA ÁREA DE FORMAÇÃO</span><h1>Bem-vindo de volta.</h1><p class="muted">Entre para continuar o seu percurso.</p>{err}<form method="post" action="/entrar"><input type="hidden" name="seguinte" value="{nxt}">
-<label>Email<input type="email" name="email" required autofocus autocomplete="username"></label>
-<label>Palavra-passe<input type="password" name="pw" required autocomplete="current-password"></label>
+<label>Email<input type="email" name="email" required autofocus autocomplete="username" placeholder="nome@exemplo.com"></label>
+<label>Palavra-passe<span class="pw-field"><input type="password" name="pw" required autocomplete="current-password" placeholder="A sua palavra-passe"><button type="button" class="pw-toggle" data-pw-toggle aria-label="Mostrar palavra-passe" aria-pressed="false">Mostrar</button></span></label>
 <button class="btn">Entrar na plataforma →</button></form>{demo}</section></div>""")
 
 
@@ -1037,8 +1040,78 @@ def course_card(r, c, enrolled):
             f'<span class="tag">Inscrição na ATC</span> <span class="muted">{hours}</span></div></article>')
 
 
-@route("GET", "/", "user")
+PC_PARTS = [  # (id, nome, descrição, desenho na posição montada, deslocação até à posição explodida, posição da etiqueta)
+    ("placa", "Placa-mãe", "Liga todos os componentes entre si.",
+     '<rect x="246" y="72" width="148" height="262" rx="6" class="pc-board"/><path d="M262 92h40M262 104h28M350 300h30M350 312h22" class="pc-trace"/>', (-226, -32), (95, 324)),
+    ("cpu", "Processador (CPU)", "Executa as instruções dos programas.",
+     '<rect x="296" y="108" width="44" height="44" rx="5" class="pc-chip"/><rect x="306" y="118" width="24" height="24" rx="3" class="pc-chip-core"/>', (-236, 236), (82, 412)),
+    ("ram", "Memória RAM", "Guarda o que está a ser usado agora.",
+     '<rect x="352" y="94" width="11" height="78" rx="2" class="pc-ram"/><rect x="368" y="94" width="11" height="78" rx="2" class="pc-ram"/>', (-208, 252), (168, 444)),
+    ("gpu", "Placa gráfica (GPU)", "Desenha a imagem que vê no monitor.",
+     '<rect x="252" y="226" width="136" height="34" rx="5" class="pc-gpu"/><circle cx="290" cy="243" r="11" class="pc-fan"/><circle cx="340" cy="243" r="11" class="pc-fan"/>', (226, -168), (546, 112)),
+    ("ssd", "Disco SSD", "Guarda ficheiros e programas.",
+     '<rect x="298" y="344" width="62" height="16" rx="3" class="pc-ssd"/>', (186, -112), (515, 272)),
+    ("psu", "Fonte de alimentação", "Converte a corrente da tomada.",
+     '<rect x="246" y="384" width="148" height="70" rx="6" class="pc-psu"/><circle cx="290" cy="419" r="22" class="pc-fan"/><path d="M350 404v30M362 404v30M374 404v30" class="pc-trace"/>', (230, -6), (545, 472)),
+]
+
+NET_NODES = [  # (id, nome, x, y, ícone)
+    ("pc", "Computador", 70, 250, '<rect x="-26" y="-22" width="52" height="34" rx="4"/><path d="M-10 18h20M0 12v6"/>'),
+    ("switch", "Switch", 215, 250, '<rect x="-30" y="-12" width="60" height="24" rx="5"/><path d="M-18 0h4M-8 0h4M2 0h4M12 0h4"/>'),
+    ("router", "Router", 355, 165, '<circle r="22"/><path d="M-10 -6l10-8 10 8M-10 6l10 8 10-8"/>'),
+    ("internet", "Internet", 505, 105, '<path d="M-30 10a14 14 0 0 1 4-27 18 18 0 0 1 34-4 14 14 0 0 1 22 18 10 10 0 0 1-4 13z"/>'),
+    ("servidor", "Servidor", 640, 215, '<rect x="-18" y="-28" width="36" height="56" rx="4"/><path d="M-10 -14h20M-10 -2h20M-10 10h20"/>'),
+]
+
+OSI = [(7, "Aplicação", "HTTP, email"), (6, "Apresentação", "Cifra, formato"), (5, "Sessão", "Diálogo"),
+       (4, "Transporte", "TCP / UDP"), (3, "Rede", "Endereço IP"), (2, "Ligação de dados", "Endereço MAC"), (1, "Física", "Cabo, Wi-Fi")]
+
+
+def landing(r):
+    parts_svg = "".join(
+        f'<g class="pc-part" id="parte-{pid}" data-dx="{dx}" data-dy="{dy}">{art}'
+        f'<text class="pc-label" x="{lx - dx}" y="{ly - dy}" text-anchor="middle">{h(name)}</text></g>'
+        for pid, name, _, art, (dx, dy), (lx, ly) in PC_PARTS)
+    parts_list = "".join(f'<li data-parte="{pid}"><b>{h(name)}</b><span>{h(desc)}</span></li>' for pid, name, desc, *_ in PC_PARTS)
+    nodes_svg = "".join(f'<g class="net-node" id="no-{nid}" transform="translate({x} {y})">{icon}<text y="48" text-anchor="middle">{h(name)}</text></g>'
+                        for nid, name, x, y, icon in NET_NODES)
+    osi = "".join(f'<li data-camada="{n}"><i>{n}</i><b>{h(name)}</b><span>{h(ex)}</span></li>' for n, name, ex in OSI)
+    courses = r.con.execute("SELECT slug, title, subtitle, status FROM courses WHERE active=1 ORDER BY sort, title").fetchall()
+    cards = "".join(f'<article class="lp-course{" live" if c["status"] == "publicado" else ""}"><span class="tag">{STATUS.get(c["status"], "")}</span>'
+                    f'<h3>{h(c["title"])}</h3><p>{h(c["subtitle"])}</p></article>' for c in courses)
+    path = "M70 250 L215 250 C285 250 295 165 355 165 C425 165 440 105 505 105 C575 105 600 215 640 215"
+    body = f'''<section class="lp-hero"><span class="eyebrow">ANGBU TRAINING CENTRE · CABINDA</span>
+<h1>Do hardware<br>à <em>rede.</em></h1>
+<p>Aprenda como um computador funciona por dentro e como a informação viaja até ao outro lado do mundo. Formação prática em português, ao seu ritmo.</p>
+<div class="lp-actions"><a class="btn" href="/entrar">Entrar na plataforma →</a><a class="btn ghost" href="#por-dentro">Descobrir o percurso ↓</a></div>
+<span class="lp-scroll" aria-hidden="true">Deslize</span></section>
+
+<section class="lp-story" id="por-dentro" aria-labelledby="t-hw"><div class="lp-story-copy">
+<span class="eyebrow">COMPTIA A+ · PARTE 1</span><h2 id="t-hw">O computador por dentro.</h2>
+<p>Abra a caixa e conheça cada componente: o que faz, como se liga e como se substitui.</p>
+<ol class="lp-parts">{parts_list}</ol></div>
+<div class="lp-visual"><svg viewBox="0 0 640 520" role="img" aria-label="Computador desmontado: placa-mãe, processador, memória RAM, placa gráfica, disco SSD e fonte de alimentação.">
+<rect x="230" y="50" width="180" height="420" rx="18" class="pc-case"/>{parts_svg}
+<rect x="230" y="50" width="180" height="420" rx="18" class="pc-panel" id="pc-tampa"/></svg></div></section>
+
+<section class="lp-story lp-net" aria-labelledby="t-net"><div class="lp-story-copy">
+<span class="eyebrow">COMPTIA NETWORK+ · PARTE 2</span><h2 id="t-net">A viagem de um pacote.</h2>
+<p class="net-caption" aria-live="polite">Do seu computador até um servidor, os dados passam por várias redes. Cada equipamento trabalha numa camada do modelo OSI.</p>
+<ol class="lp-osi" aria-label="Modelo OSI">{osi}</ol></div>
+<div class="lp-visual"><svg viewBox="0 0 710 330" role="img" aria-label="Um pacote de dados viaja do computador ao switch, ao router, à Internet e ao servidor.">
+<path d="{path}" class="net-track"/><path d="{path}" class="net-path" id="net-path"/>{nodes_svg}
+<circle r="9" class="net-packet" id="net-packet" cx="640" cy="215"/></svg></div></section>
+
+<section class="lp-courses"><span class="eyebrow">PERCURSOS ATC</span><h2>Comece pelo essencial. Vá mais longe.</h2><div class="lp-course-grid">{cards}</div></section>
+<section class="lp-final"><h2>Pronto para dar o próximo passo?</h2><p>Entre com a sua conta e continue o seu percurso com a Helena ou o Miguel.</p><a class="btn" href="/entrar">Entrar na plataforma →</a></section>'''
+    scripts = "".join(f'<script src="/static/gsap/{f}.min.js?v=3.15" defer></script>' for f in ("gsap", "ScrollTrigger", "MotionPathPlugin", "DrawSVGPlugin"))
+    return page("Do hardware à rede", body, cta=True, body_class="landing", scripts=scripts + '<script src="/static/historia.js?v=1" defer></script>')
+
+
+@route("GET", "/")
 def home(r):
+    if not r.user:
+        return landing(r)
     if r.user["role"] == "formando" and not selected_presenter(r) and not r.query.get("saltar"):
         raise Redirect("/comecar")  # primeiro acesso: escolher o guia e seguir o percurso de entrada
     courses = r.con.execute("SELECT * FROM courses WHERE active=1 ORDER BY sort, title").fetchall()
@@ -1888,7 +1961,7 @@ def cert_page(r, code):
     hours = row["hours_class"] or row["hours_video"]
     verify = f"http://{r.headers.get('Host', 'localhost')}/verificar?codigo={code}"
     return f"""<!doctype html><html lang="pt-PT"><head><meta charset="utf-8"><title>Certificado {h(code)}</title>
-<meta name="viewport" content="width=device-width, initial-scale=1"><link rel="stylesheet" href="/static/atc.css?v=9"></head>
+<meta name="viewport" content="width=device-width, initial-scale=1"><link rel="stylesheet" href="/static/atc.css?v=11"></head>
 <body class="certbody"><div class="noprint certbar"><a href="/">← Voltar</a> <button onclick="print()" class="btn small">Imprimir / guardar PDF</button></div>
 <div class="cert"><div class="certin"><img src="/static/logo-600.png" alt="ATC"><p class="k">Certificado de conclusão</p>
 <p>Certifica-se que</p><h1>{h(row['name'])}</h1><p>concluiu com aproveitamento o curso</p><h2>{h(row['title'])}</h2>

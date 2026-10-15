@@ -4,7 +4,7 @@ Updated: 12 October 2026. Read this first, then `README.md`. The older `handoff.
 
 ## Goal
 
-Build working **samples** of the courses and the LMS for ATC (Angbu Training Centre, Luanda, Angola). The owner sends them to the client with a quotation. Full development starts once the client agrees the time frame and the invoice.
+Build working **samples** of the courses and the LMS for ATC (Angbu Training Centre, Cabinda, Angola). The owner sends them to the client with a quotation. Full development starts once the client agrees the time frame and the invoice.
 
 ## Where everything is
 
