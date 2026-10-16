@@ -39,11 +39,14 @@ class WsgiTests(unittest.TestCase):
         return r
 
     def test_login_page_and_session(self):
-        self.assertTrue(pedido("/entrar")["status"].startswith("200"))
+        r = pedido("/entrar")
+        self.assertTrue(r["status"].startswith("200"))
+        self.assertNotIn(b"admin123", r["body"])                       # contas de demonstração fora da página pública
+        self.assertNotIn(b"formando123", r["body"])
         r = pedido("/")                                                # sem sessão: página inicial pública
         self.assertTrue(r["status"].startswith("200"), r["status"])
-        self.assertIn("O seu futuro".encode(), r["body"])
-        self.assertIn(b"seq-aplus", r["body"])
+        self.assertIn("abrem portas".encode(), r["body"])
+        self.assertIn(b'id="feature"', r["body"])
         self.assertIn(b'href="/entrar"', r["body"])
         self.assertTrue(pedido("/conta")["status"].startswith("303"))  # páginas privadas continuam a pedir sessão
         r = self.entrar()

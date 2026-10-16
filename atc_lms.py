@@ -647,7 +647,7 @@ def page(title, body, user=None, csrf="", wide=False, flash="", profile=None, pr
     return f"""<!doctype html><html lang="pt-PT"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{h(title)} · ATC Formação</title><link rel="icon" href="/static/logo-200.png">
-<link rel="stylesheet" href="/static/atc.css?v=12"><meta name="csrf" content="{h(csrf)}"><script src="/static/ui.js?v=6" defer></script></head>
+<link rel="stylesheet" href="/static/atc.css?v=13"><meta name="csrf" content="{h(csrf)}"><script src="/static/ui.js?v=6" defer></script></head>
 <body class="{('app foco' if foco else 'app') if user else 'public'}{' ' + body_class if body_class else ''}"{f' data-u="{user["id"]}"' if user else ''}><a class="skip-link" href="#conteudo">Saltar para o conteúdo</a>{sidebar}<div class="workspace"><header class="top"><div class="wrap">{header}</div></header>
 <main id="conteudo" class="wrap{' wide' if wide else ''}">{flash_html}{body}</main>
 <footer><div class="wrap"><span>ATC · Angbu Training Centre</span><span>Cabinda, Angola · Aprendizagem com propósito</span></div></footer></div>{scripts}</body></html>"""
@@ -884,20 +884,28 @@ class Handler(BaseHTTPRequestHandler):
 
 @route("GET", "/entrar")
 def login_get(r, error=""):
-    demo = ""
-    if setting(r.con, "demo") == "1":
-        demo = ('<div class="demo"><b>Contas de demonstração</b><br>Formando: formando@atc.ao / formando123<br>'
-                'Formador: formador@atc.ao / formador123<br>Administrador: admin@atc.ao / admin123</div>')
-    err = f'<p class="error">{h(error)}</p>' if error else ""
+    err = f'<p class="entry-error" role="alert">{h(error)}</p>' if error else ""
     nxt = h(r.query.get("seguinte", "/"))
-    return page("Entrar", f"""<div class="login-layout"><section class="login-story"><span class="eyebrow">ANGBU TRAINING CENTRE</span><h1>O seu futuro<br>começa com<br><em>conhecimento.</em></h1><p>Desenvolva competências digitais, aprenda ao seu ritmo e prepare o próximo passo da sua carreira.</p>
-<div class="login-guides"><span class="guide-faces"><img src="/static/presenters/helena.png" alt=""><img src="/static/presenters/miguel.png" alt=""></span><span><b>Helena e Miguel</b>Os seus guias virtuais acompanham cada aula.</span></div>
-<div class="login-benefits"><div><i aria-hidden="true">▶</i><b>Aulas em vídeo</b><small>Passo a passo, em português</small></div><div><i aria-hidden="true">✎</i><b>Aprendizagem prática</b><small>Exercícios e questionários</small></div><div><i aria-hidden="true">✓</i><b>Certificado</b><small>Reconhecimento da conclusão</small></div></div></section>
-<section class="login card"><img src="/static/logo-600.png" alt="ATC – Angbu Training Centre">
-<span class="eyebrow">A SUA ÁREA DE FORMAÇÃO</span><h1>Bem-vindo de volta.</h1><p class="muted">Entre para continuar o seu percurso.</p>{err}<form method="post" action="/entrar"><input type="hidden" name="seguinte" value="{nxt}">
-<label>Email<input type="email" name="email" required autofocus autocomplete="username" placeholder="nome@exemplo.com"></label>
-<label>Palavra-passe<span class="pw-field"><input type="password" name="pw" required autocomplete="current-password" placeholder="A sua palavra-passe"><button type="button" class="pw-toggle" data-pw-toggle aria-label="Mostrar palavra-passe" aria-pressed="false">Mostrar</button></span></label>
-<button class="btn">Entrar na plataforma →</button></form>{demo}</section></div>""")
+    return public_page("Entrar", f"""{public_nav(("/", "Início"))}
+<main class="entry">
+  <section class="entry-show" aria-label="Uma aula da ATC">
+    <span class="label">Angbu Training Centre — Cabinda, Angola</span>
+    <h2 class="serif">O seu futuro começa com <em>conhecimento.</em></h2>
+    <figure class="lesson"><div class="lesson-frame"><img src="/static/inicio/aula.jpg" alt=""><video src="/static/inicio/aula.mp4" poster="/static/inicio/aula.jpg" autoplay muted loop playsinline aria-hidden="true"></video></div>
+      <figcaption><span><span class="lesson-live label">Aula 1.1 · em vídeo</span><b>O ambiente de trabalho</b></span><span class="lesson-guide"><img src="/static/presenters/helena.png" alt=""><img src="/static/presenters/miguel.png" alt=""><span class="label">Com a Helena ou o Miguel</span></span></figcaption></figure>
+  </section>
+  <section class="entry-form"><div>
+    <span class="label">A sua área de formação</span>
+    <h1 class="serif">Bem-vindo <em>de volta.</em></h1>
+    <p class="lead">Entre com a sua conta para continuar o seu percurso.</p>
+    {err}<form method="post" action="/entrar"><input type="hidden" name="seguinte" value="{nxt}">
+      <label class="field"><span class="label">Email</span><input type="email" name="email" required autofocus autocomplete="username" placeholder="nome@exemplo.com"></label>
+      <label class="field"><span class="label">Palavra-passe</span><span class="pw"><input type="password" name="pw" required autocomplete="current-password" placeholder="A sua palavra-passe"><button type="button" data-pw-toggle aria-label="Mostrar palavra-passe" aria-pressed="false">Mostrar</button></span></label>
+      <button class="btn btn-solid">Entrar na plataforma <span class="arr">→</span></button>
+    </form>
+    <p class="entry-help">Ainda não tem conta? A sua conta é criada pela ATC quando se inscreve num curso.</p>
+  </div></section>
+</main>""")
 
 
 @route("POST", "/entrar")
@@ -1040,42 +1048,102 @@ def course_card(r, c, enrolled):
             f'<span class="tag">Inscrição na ATC</span> <span class="muted">{hours}</span></div></article>')
 
 
-LANDING_SEQUENCES = [  # (pasta em static/frames, passos sobrepostos, título final, curso, deslocação para a direita no ecrã largo)
-    ("aplus", ["Processador", "Memória RAM", "Placa-mãe", "Armazenamento"], "CompTIA A+", "Monte, configure e repare computadores.", 0.18),
-    ("netplus", ["Cabos e topologias", "Endereçamento IP", "Segurança de rede"], "CompTIA Network+", "Ligue, proteja e resolva problemas de redes.", 0),
-]
-LANDING_COURSES = ["comptia-a-plus", "comptia-network-plus", "informatica", "excel", "word"]
+def public_nav(cta=("/entrar", "Entrar")):
+    return ('<header class="nav" id="nav"><nav class="nav-links label" aria-label="Secções"><a href="/#abordagem">Abordagem</a><a href="/#guias">Guias</a>'
+            '<a href="/#percursos">Percursos</a></nav><a class="nav-logo" href="/"><img src="/static/logo-200.png" alt=""><span>ATC Formação</span></a>'
+            f'<div class="nav-cta"><a class="btn btn-line" href="{cta[0]}">{cta[1]} <span class="arr">→</span></a></div></header>')
+
+
+def public_page(title, body):
+    """Páginas públicas (início e entrada): visual editorial próprio, sem a barra lateral do LMS."""
+    return f"""<!doctype html><html lang="pt-PT"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{h(title)} · ATC Formação</title><meta name="description" content="Formação em informática, hardware e redes, em português, na ATC — Angbu Training Centre, Cabinda.">
+<link rel="icon" href="/static/logo-200.png"><link rel="preload" href="/static/fonts/InstrumentSerif.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/static/inicio.css?v=2"><script src="/static/inicio.js?v=1" defer></script><script src="/static/ui.js?v=6" defer></script></head>
+<body>{body}</body></html>"""
+
+
+LANDING_PATHS = [("informatica", "/static/inicio/thumb-info.jpg"), ("comptia-a-plus", "/static/inicio/pc.jpg"),
+                 ("comptia-network-plus", "/static/inicio/rede.jpg"), ("word", "/static/inicio/thumb-office.jpg")]
 
 
 def landing(r):
-    seqs = ""
-    for i, (folder, steps, title, line, shift) in enumerate(LANDING_SEQUENCES, 1):
-        count = len(list((STATIC / "frames" / folder).glob("*.webp")))
-        items = "".join(f'<li class="seq-step"><span>{n:02d}</span>{h(s)}</li>' for n, s in enumerate(steps, 1))
-        seqs += (f'<section class="seq" id="seq-{folder}" data-frames="/static/frames/{folder}/" data-count="{count}" data-shift="{shift}" aria-label="{h(title)}">'
-                 f'<canvas class="seq-canvas" aria-hidden="true"></canvas><div class="seq-scrim" aria-hidden="true"></div>'
-                 f'<div class="seq-copy"><span class="eyebrow">PARTE {i}</span><ol class="seq-steps">{items}</ol>'
-                 f'<div class="seq-final"><h2>{h(title)}</h2><p>{h(line)}</p></div></div></section>')
-    rows = {c["slug"]: c for c in r.con.execute("SELECT slug, title, subtitle, status FROM courses WHERE active=1")}
-    mono = {"comptia-a-plus": "A+", "comptia-network-plus": "N+", "informatica": "TI", "excel": "X", "word": "W"}
-    slides = "".join(
-        f'<div class="swiper-slide"><article class="lp-course{" live" if c["status"] == "publicado" else ""}"><span class="lp-mono" aria-hidden="true">{mono[s]}</span>'
-        f'<span class="tag">{STATUS.get(c["status"], "")}</span><h3>{h(c["title"])}</h3><p>{h(c["subtitle"])}</p></article></div>'
-        for s in LANDING_COURSES if (c := rows.get(s)))
-    lines = ["Aulas em vídeo, em português,", "com a Helena ou o Miguel ao seu lado.", "Exercícios práticos, questionários", "e um certificado no fim."]
-    body = f'''<section class="lp-hero"><span class="eyebrow">ANGBU TRAINING CENTRE · CABINDA</span>
-<h1 class="lp-lines"><span>O seu futuro</span><span>começa com</span><span><em>conhecimento.</em></span></h1>
-<div class="lp-actions"><a class="btn" href="/entrar">Entrar na plataforma →</a><a class="btn ghost" href="#seq-aplus">Descobrir ↓</a></div>
-<span class="lp-scroll" aria-hidden="true">Deslize</span></section>
-<section class="lp-manifesto"><p class="lp-reveal">{"".join(f"<span>{h(l)}</span>" for l in lines)}</p></section>
-{seqs}
-<section class="lp-courses"><span class="eyebrow">PERCURSOS ATC</span><h2>Comece pelo essencial. Vá mais longe.</h2>
-<div class="swiper lp-swiper"><div class="swiper-wrapper">{slides}</div><div class="lp-swiper-nav"><button class="swiper-button-prev" aria-label="Curso anterior"></button><div class="swiper-pagination"></div><button class="swiper-button-next" aria-label="Curso seguinte"></button></div></div></section>
-<section class="lp-final"><h2>Pronto para dar o próximo passo?</h2><p>Entre com a sua conta e continue o seu percurso com a Helena ou o Miguel.</p><a class="btn" href="/entrar">Entrar na plataforma →</a></section>'''
-    vendor = ["gsap/gsap.min.js", "gsap/ScrollTrigger.min.js", "vendor/lenis.min.js", "vendor/swiper-bundle.min.js"]
-    scripts = "".join(f'<script src="/static/{f}?v=1" defer></script>' for f in vendor)
-    head = '<link rel="stylesheet" href="/static/vendor/swiper-bundle.min.css?v=1"><link rel="stylesheet" href="/static/vendor/lenis.css?v=1">'
-    return page("Início", head + body, cta=True, body_class="landing", scripts=scripts + '<script src="/static/historia.js?v=4" defer></script>')
+    count = len(list((STATIC / "frames" / "aplus").glob("*.webp")))
+    courses = {c["slug"]: c for c in r.con.execute("SELECT slug, title, status FROM courses WHERE active=1")}
+    rows = [(courses[s], img) for s, img in LANDING_PATHS if s in courses]
+    names = {"word": "Microsoft Office"}
+    paths = "\n".join(
+        f'  <a class="path" href="/entrar" data-img="{img}"><span class="n">{i:02d}</span><h3>{h(names.get(c["slug"], c["title"].split(" (")[0]))}</h3>'
+        f'<span class="st{" live" if c["status"] == "publicado" else ""}">{STATUS.get(c["status"], "")}</span><span class="go">→</span></a>'
+        for i, (c, img) in enumerate(rows, 1))
+    return public_page("Início", f'''{public_nav()}
+
+<section class="hero">
+  <img class="poster" src="/static/inicio/rede.jpg" alt="">
+  <video src="/static/inicio/rede.mp4" poster="/static/inicio/rede.jpg" autoplay muted loop playsinline aria-hidden="true"></video>
+  <div class="hero-inner">
+    <span class="label rv">Angbu Training Centre — Cabinda, Angola</span>
+    <h1 class="serif rv d1">Competências<br>digitais que<br><em>abrem portas.</em></h1>
+    <div class="hero-side rv d2">
+      <p>Formação em informática, hardware e redes, em português, com um guia que o acompanha do primeiro clique à certificação.</p>
+      <div class="actions"><a class="btn btn-solid" href="/entrar">Começar agora <span class="arr">→</span></a><a class="btn btn-line" href="#percursos">Ver percursos</a></div>
+    </div>
+  </div>
+  <div class="hero-foot"><div class="ticker label"><span><b>01</b>Informática</span><span><b>02</b>CompTIA A+</span><span><b>03</b>CompTIA Network+</span><span><b>04</b>Microsoft Office</span></div></div>
+</section>
+
+<section class="statement" id="abordagem">
+  <span class="label rv">A nossa abordagem</span>
+  <h2 class="serif rv d1">Tecnologia não se decora. <em>Aprende-se a fazer.</em></h2>
+  <div class="pillars">
+    <div class="rv"><span class="label">01</span><b>Aulas em vídeo</b><p>Curtas, práticas e em português, para ver ao seu ritmo e rever quando quiser.</p></div>
+    <div class="rv d1"><span class="label">02</span><b>Prática guiada</b><p>Exercícios e questionários em cada módulo, para pôr à prova o que aprendeu.</p></div>
+    <div class="rv d2"><span class="label">03</span><b>Certificado</b><p>Reconhecimento no fim de cada percurso, pronto para o seu currículo.</p></div>
+  </div>
+</section>
+
+<section class="feature" id="feature" data-frames="/static/frames/aplus/" data-count="{count}">
+  <div class="feature-stick">
+    <div class="feature-media"><canvas aria-hidden="true"></canvas><img src="/static/inicio/pc.jpg" alt="Computador de secretária montado."><div class="feature-count" aria-hidden="true"><span id="fcount">01</span><small>/ 04</small></div></div>
+    <div class="feature-copy">
+      <span class="label">Percurso em destaque</span>
+      <h2 class="serif">CompTIA A+</h2>
+      <p>Monte, configure e repare computadores. Do processador à rede sem fios, aprende o que um técnico faz todos os dias.</p>
+      <ul class="modules">
+        <li><i></i>Componentes e montagem<span>01</span></li>
+        <li><i></i>Dispositivos móveis<span>02</span></li>
+        <li><i></i>Redes e conectividade<span>03</span></li>
+        <li><i></i>Segurança e resolução de problemas<span>04</span></li>
+      </ul>
+      <div><a class="btn btn-line" href="/entrar">Saber mais <span class="arr">→</span></a></div>
+    </div>
+  </div>
+</section>
+
+<section class="guides" id="guias">
+  <div class="guides-head">
+    <div><span class="label rv">Os seus guias</span><h2 class="serif rv d1">Alguém do seu lado, <em>em cada aula.</em></h2></div>
+    <p class="rv d2">Escolha a Helena ou o Miguel. O seu guia apresenta cada aula, explica cada passo e responde às suas dúvidas em voz.</p>
+  </div>
+  <div class="guide-grid">
+    <figure class="guide rv"><img src="/static/presenters/helena.png" alt="Helena, guia virtual da ATC."><figcaption><b>Helena</b><span class="label">Guia virtual</span></figcaption></figure>
+    <figure class="guide rv d1"><img src="/static/presenters/miguel.png" alt="Miguel, guia virtual da ATC."><figcaption><b>Miguel</b><span class="label">Guia virtual</span></figcaption></figure>
+  </div>
+  <small>Personagens virtuais criadas para a ATC.</small>
+</section>
+
+<section class="paths" id="percursos">
+  <div class="paths-head"><div><span class="label">Percursos</span><h2 class="serif">Comece pelo essencial.</h2></div><span class="label">{len(rows):02d} percursos</span></div>
+{paths}
+  <div class="path-thumb" id="thumb" aria-hidden="true"><img alt=""></div>
+</section>
+
+<section class="final">
+  <span class="label rv">Cabinda, Angola</span>
+  <h2 class="serif rv d1">Pronto para <em>começar?</em></h2>
+  <div class="actions rv d2"><a class="btn btn-solid" href="/entrar">Entrar na plataforma <span class="arr">→</span></a></div>
+  <div class="foot label"><span>© ATC · Angbu Training Centre</span><span>Aprendizagem com propósito</span></div>
+</section>''')
 
 
 @route("GET", "/")
@@ -1931,7 +1999,7 @@ def cert_page(r, code):
     hours = row["hours_class"] or row["hours_video"]
     verify = f"http://{r.headers.get('Host', 'localhost')}/verificar?codigo={code}"
     return f"""<!doctype html><html lang="pt-PT"><head><meta charset="utf-8"><title>Certificado {h(code)}</title>
-<meta name="viewport" content="width=device-width, initial-scale=1"><link rel="stylesheet" href="/static/atc.css?v=12"></head>
+<meta name="viewport" content="width=device-width, initial-scale=1"><link rel="stylesheet" href="/static/atc.css?v=13"></head>
 <body class="certbody"><div class="noprint certbar"><a href="/">← Voltar</a> <button onclick="print()" class="btn small">Imprimir / guardar PDF</button></div>
 <div class="cert"><div class="certin"><img src="/static/logo-600.png" alt="ATC"><p class="k">Certificado de conclusão</p>
 <p>Certifica-se que</p><h1>{h(row['name'])}</h1><p>concluiu com aproveitamento o curso</p><h2>{h(row['title'])}</h2>
