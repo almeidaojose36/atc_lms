@@ -4,3 +4,6 @@ __pycache__/
 *.pyc
 .DS_Store
 producao/apresentacoes/_build/
+
+# walkthroughs: versões finais grandes (a versão web fica em static/apresentacao)
+producao/visuais/walkthroughs/saida/

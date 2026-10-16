@@ -93,3 +93,9 @@ The user wants a subdomain on the client's domain so the client can try the LMS.
 - **Formas de obter acesso:** Multicaixa Express, referência Multicaixa, transferência com comprovativo (PDF/JPG/PNG, revisto em Gestão → Pagamentos), pagamento na loja (código ATC-XXXXXX confirmado em Gestão), ou **código de acesso** (Gestão → Códigos de acesso; lotes em CSV, por exemplo para a internet do Grupo Angbu).
 - **Fornecedor de pagamentos:** `ATC_PAG_FORNECEDOR=demo` (predefinição) simula Multicaixa Express e referências, com botões de simulação identificados. Para um fornecedor real, substituir `pag_criar_pedido()` e ligar as confirmações a `POST /pagamentos/notificacao` (HMAC com `ATC_PAG_SEGREDO`).
 - **Por definir com a ATC:** preços (de demonstração: 7 500 / 19 500 / 60 000 Kz), dados bancários (`PAG_DADOS_BANCO`) e o fornecedor (EMIS GPO através do banco, ProxyPay ou AppyPay).
+
+## Walkthroughs e apresentação ao cliente (16 out. 2026)
+
+- **Página `/apresentacao`** (pública, `noindex`): três vídeos, o que está pronto, como experimentar (as credenciais seguem em separado), decisões para a ATC (fornecedor de pagamentos, preços, IBAN, pacote Angbu, próximos cursos) e fases seguintes.
+- **Vídeos** com a locução da Helena: formando (~2 min), formador (~1 min) e administração (~1 min), em `static/apresentacao/`. Produção reprodutível em `producao/visuais/walkthroughs/` (ver o LEIA-ME).
+- **Correções feitas durante a gravação:** os formadores e administradores abrem aulas sem ter de escolher guia; as perguntas dos formandos abrem diretamente na secção de perguntas; o caminho da pasta do servidor deixou de aparecer em Gestão → Cursos; a verificação de certificados tem o visual público novo; o link de verificação no certificado usa HTTPS quando o site está atrás do nginx.

@@ -274,5 +274,21 @@ class PagamentosTests(unittest.TestCase):
         self.assertTrue(r["status"].startswith("404"))
 
 
+class ApresentacaoTests(unittest.TestCase):
+    def test_pagina_publica_sem_credenciais_e_fora_dos_motores(self):
+        r = pedido("/apresentacao")
+        self.assertTrue(r["status"].startswith("200"))
+        self.assertIn(b'name="robots" content="noindex', r["body"])
+        self.assertIn(b"walkthrough-formando.mp4", r["body"])
+        for segredo in (b"admin123", b"formador123", b"formando123"):
+            self.assertNotIn(segredo, r["body"])
+
+    def test_formador_abre_aula_sem_escolher_guia(self):
+        c = pedido("/entrar", "POST", b"email=formador%40atc.ao&pw=formador123")["h"]["set-cookie"].split(";")[0]
+        r = pedido("/cursos/informatica/aula/aula-1-1", headers={"Cookie": c})
+        self.assertTrue(r["status"].startswith("200"), r["status"])
+        self.assertIn(b'id="perguntas" open', r["body"])
+
+
 if __name__ == "__main__":
     unittest.main()

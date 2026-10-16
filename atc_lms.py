@@ -969,6 +969,8 @@ def selected_presenter(r, cid=None):
     if legacy:  # escolhas antigas, feitas por curso, passam a valer para tudo
         r.con.execute("INSERT OR IGNORE INTO learner_presenter VALUES(?,?,?)", (uid, legacy["presenter"], now()))
         return legacy["presenter"]
+    if r.user["role"] in ("admin", "formador"):
+        return "helena"   # formadores e administradores não precisam de escolher um guia para abrir aulas e responder
     return None
 
 
@@ -1070,12 +1072,12 @@ def public_nav(cta=("/entrar", "Entrar")):
             f'<div class="nav-cta"><a class="btn btn-line" href="{cta[0]}">{cta[1]} <span class="arr">→</span></a></div></header>')
 
 
-def public_page(title, body):
+def public_page(title, body, privada=False):
     """Páginas públicas (início e entrada): visual editorial próprio, sem a barra lateral do LMS."""
     return f"""<!doctype html><html lang="pt-PT"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{h(title)} · ATC Formação</title><meta name="description" content="Formação em informática, hardware e redes, em português, na ATC — Angbu Training Centre, Cabinda.">
+<title>{h(title)} · ATC Formação</title>{'<meta name="robots" content="noindex, nofollow">' if privada else ''}<meta name="description" content="Formação em informática, hardware e redes, em português, na ATC — Angbu Training Centre, Cabinda.">
 <link rel="icon" href="/static/logo-200.png"><link rel="preload" href="/static/fonts/InstrumentSerif.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="/static/inicio.css?v=3"><script src="/static/inicio.js?v=1" defer></script><script src="/static/ui.js?v=6" defer></script></head>
+<link rel="stylesheet" href="/static/inicio.css?v=6"><script src="/static/inicio.js?v=1" defer></script><script src="/static/ui.js?v=6" defer></script></head>
 <body>{body}</body></html>"""
 
 
@@ -1646,6 +1648,76 @@ def admin_codes_csv(r):
            headers={"Content-Disposition": 'attachment; filename="codigos-atc.csv"'})
 
 
+# ---------------------------------------------------------------------------
+# Apresentação ao cliente (página pública, fora dos motores de busca)
+# ---------------------------------------------------------------------------
+
+APRESENTACAO_VIDEOS = [("formando", "Formandos", "Da inscrição ao certificado: criar conta, pagar, escolher o guia, aprender e certificar."),
+                       ("formador", "Formadores", "Responder a dúvidas, acompanhar a turma, inscrever formandos e confirmar pagamentos."),
+                       ("admin", "Administração", "Contas, pagamentos com comprovativo, códigos de acesso, cursos e certificados.")]
+
+
+@route("GET", "/apresentacao")
+def presentation(r):
+    pasta = STATIC / "apresentacao"
+    videos = "".join(
+        f'<figure class="pv rv"><div class="pv-frame"><video controls preload="none" playsinline poster="/static/apresentacao/{k}.jpg">'
+        f'<source src="/static/apresentacao/walkthrough-{k}.mp4" type="video/mp4"></video></div>'
+        f'<figcaption><span class="label">{i:02d} · {round((pasta / f"walkthrough-{k}.mp4").stat().st_size / 1e6) if (pasta / f"walkthrough-{k}.mp4").is_file() else 0} MB</span>'
+        f'<b>{t}</b><span>{d}</span></figcaption></figure>' for i, (k, t, d) in enumerate(APRESENTACAO_VIDEOS, 1))
+    def lista(*itens):
+        return "<ul>" + "".join(f"<li>{x}</li>" for x in itens) + "</ul>"
+    pronto = "".join(f'<div class="pr-col rv"><span class="label">{t}</span>{l}</div>' for t, l in [
+        ("Formandos", lista("Registo com telemóvel, email e província", "Planos com pagamento local ou código de acesso",
+                            "Guia virtual à escolha: Helena ou Miguel", "Aulas em vídeo com demonstração e legendas",
+                            "Dúvidas por escrito ou em voz", "Manuais ilustrados e descarregáveis", "Questionários e certificado verificável")),
+        ("Formadores", lista("Lista de perguntas por responder", "Resposta na própria aula", "Relatório da turma com exportação para Excel",
+                             "Inscrição de turmas inteiras de uma vez", "Confirmação de pagamentos na loja e por transferência")),
+        ("Administração", lista("Contas e perfis (formando, formador, administrador)", "Registo de todos os pagamentos, com comprovativos",
+                                "Códigos de acesso em lote, em CSV", "Publicação de cursos", "Verificação pública de certificados")),
+        ("Plataforma", lista("Funciona em computador e telemóvel", "Português europeu, pensado para Angola", "Funciona também sem internet, em rede local",
+                             "Sem licenças de terceiros: servidor próprio da ATC", "Página inicial e entrada com identidade própria")),
+    ])
+    decisoes = [
+        ("Fornecedor de pagamentos", "Escolher como receber Multicaixa Express e referências Multicaixa. A plataforma está preparada para qualquer uma das opções:",
+         '<div class="pr-table"><div><b>EMIS GPO, através do banco da ATC</b><span>Via oficial. Multicaixa Express e QR. Contrato com o banco.</span></div>'
+         '<div><b>ProxyPay</b><span>Referências Multicaixa (ATM e home banking). Contrato com a ProxyPay e um banco angolano.</span></div>'
+         '<div><b>AppyPay</b><span>Agregador com Multicaixa Express e links de pagamento. Condições a confirmar.</span></div></div>'),
+        ("Preços dos planos", "Os valores atuais são de demonstração: Mensal 7 500 Kz, Trimestral 19 500 Kz, Anual 60 000 Kz.", ""),
+        ("Dados bancários", "IBAN e titular para as transferências com comprovativo.", ""),
+        ("Pacote com a internet Angbu", "Duração do acesso incluído (por exemplo, 3 meses) e quantos códigos gerar por mês para entregar com a internet.", ""),
+        ("Próximos cursos", "Ordem e calendário dos cursos completos: Informática, CompTIA A+, CompTIA Network+ e Microsoft Office.", ""),
+    ]
+    dec = "".join(f'<li class="rv"><span class="n">{i:02d}</span><div><h3 class="serif">{t}</h3><p>{p}</p>{x}</div></li>'
+                  for i, (t, p, x) in enumerate(decisoes, 1))
+    fases = [("Validação", "A ATC experimenta a demonstração com as contas de teste e indica ajustes."),
+             ("Pagamentos", "Contrato com o fornecedor escolhido e ligação à plataforma, primeiro em ambiente de testes."),
+             ("Conteúdos", "Produção dos cursos completos, com a Helena e o Miguel, manuais e questionários."),
+             ("Lançamento", "Abertura a formandos de todo o país e início do pacote com a internet Angbu.")]
+    fs = "".join(f'<li class="rv"><span class="label">Fase {i}</span><b class="serif">{t}</b><p>{d}</p></li>' for i, (t, d) in enumerate(fases, 1))
+    return public_page("Apresentação da plataforma", f"""{public_nav()}
+<header class="pr-hero"><div class="pr-hero-copy"><span class="label rv">Apresentação · ATC — Angbu Training Centre · outubro de 2026</span>
+<h1 class="serif rv d1">A sua academia digital, <em>pronta a crescer.</em></h1>
+<p class="rv d2">Uma plataforma de formação própria da ATC, em português, para formandos de todo o país: aulas com guias virtuais, pagamentos locais,
+acompanhamento pelos formadores e controlo total pela administração. Esta página reúne a demonstração, o que já está pronto e as decisões para avançar.</p>
+<div class="actions rv d3"><a class="btn btn-solid" href="#videos">Ver os vídeos <span class="arr">↓</span></a><a class="btn btn-line" href="/">Abrir a plataforma <span class="arr">→</span></a></div></div>
+<a class="pr-shots rv d2" href="#videos" aria-label="Ver os vídeos de demonstração"><img class="s3" src="/static/apresentacao/admin.jpg" alt="">
+<img class="s2" src="/static/apresentacao/formador.jpg" alt=""><img class="s1" src="/static/apresentacao/formando.jpg" alt=""><span class="pr-play">▶ 3 vídeos · 4 min</span></a></header>
+<section class="pr-sec" id="videos"><span class="label">01 · Demonstração em vídeo</span><h2 class="serif">Três percursos, <em>uma plataforma.</em></h2>
+<div class="pv-grid">{videos}</div></section>
+<section class="pr-sec"><span class="label">02 · O que já está pronto</span><h2 class="serif">Pronto a <em>experimentar.</em></h2><div class="pr-cols">{pronto}</div></section>
+<section class="pr-sec pr-try"><span class="label">03 · Experimentar</span><h2 class="serif">Entre com as contas <em>de demonstração.</em></h2>
+<p>As contas de formando, formador e administrador são enviadas em separado. Os pagamentos online estão em modo de demonstração:
+os botões «Simular» substituem a aprovação no telemóvel e o pagamento no ATM, e nenhum valor é cobrado.</p>
+<div class="actions"><a class="btn btn-solid" href="/entrar">Entrar na plataforma <span class="arr">→</span></a><a class="btn btn-line" href="/registar">Criar uma conta de teste</a></div></section>
+<section class="pr-sec"><span class="label">04 · Decisões para a ATC</span><h2 class="serif">O que precisamos <em>de si.</em></h2><ol class="pr-dec">{dec}</ol></section>
+<section class="pr-sec"><span class="label">05 · Próximos passos</span><h2 class="serif">Do piloto <em>ao país.</em></h2><ol class="pr-fases">{fs}</ol>
+<p class="pr-note">O calendário de cada fase é acordado com a ATC.</p></section>
+<section class="final"><span class="label rv">Cabinda, Angola</span><h2 class="serif rv d1">Pronto para <em>avançar?</em></h2>
+<p class="rv d2 pr-final">Responda ao email em que recebeu esta apresentação com as suas decisões e comentários.</p>
+<div class="foot label"><span>© ATC · Angbu Training Centre</span><span>Aprendizagem com propósito</span></div></section>""", privada=True)
+
+
 @route("GET", "/")
 def home(r):
     if not r.user:
@@ -2159,7 +2231,7 @@ def lesson_page(r, slug, lslug):
 <details><summary>Ler o texto da aula</summary><div class="transcript">{transcript or '<p class="muted">Sem transcrição.</p>'}</div></details>
 <p class="actions">{f'<a class="btn ghost small" href="/cursos/{slug}/modulo/{m["num"]}/manual">Ler o manual do módulo</a>' if m['manual_json'] else ''}</p>{prev_link}</section>
 {assistant}</div>
-<details class="card" id="perguntas"><summary><b>Perguntas ao formador</b> <span class="muted">· {len(comments)} {"pergunta" if len(comments) == 1 else "perguntas"}</span></summary><p class="muted">Deixe aqui a sua dúvida. O formador responde nesta página.</p>
+<details class="card" id="perguntas"{" open" if r.is_staff() else ""}><summary><b>Perguntas ao formador</b> <span class="muted">· {len(comments)} {"pergunta" if len(comments) == 1 else "perguntas"}</span></summary><p class="muted">Deixe aqui a sua dúvida. O formador responde nesta página.</p>
 <ul class="comments">{thread(None) or '<li class="muted">Ainda não há perguntas sobre esta aula.</li>'}</ul>
 <form method="post" action="/cursos/{slug}/aula/{lslug}/comentar">{csrf_field(r.csrf)}
 <textarea name="body" rows="3" required placeholder="Escreva a sua pergunta…"></textarea><button class="btn small">Publicar pergunta</button></form></details>
@@ -2502,7 +2574,8 @@ def cert_page(r, code):
               "outubro", "novembro", "dezembro"]
     date = f"{d.day} de {months[d.month - 1]} de {d.year}"
     hours = row["hours_class"] or row["hours_video"]
-    verify = f"http://{r.headers.get('Host', 'localhost')}/verificar?codigo={code}"
+    esquema = "https" if r.headers.get("X-Forwarded-Proto") == "https" else "http"   # atrás do nginx com HTTPS
+    verify = f"{esquema}://{r.headers.get('Host', 'localhost')}/verificar?codigo={code}"
     return f"""<!doctype html><html lang="pt-PT"><head><meta charset="utf-8"><title>Certificado {h(code)}</title>
 <meta name="viewport" content="width=device-width, initial-scale=1"><link rel="stylesheet" href="/static/atc.css?v=15"></head>
 <body class="certbody"><div class="noprint certbar"><a href="/">← Voltar</a> <button onclick="print()" class="btn small">Imprimir / guardar PDF</button></div>
@@ -2522,9 +2595,15 @@ def verify_page(r):
                                JOIN courses co ON co.id=ce.course_id WHERE ce.code=?""", (code,)).fetchone()
         res = (f'<p class="ok-box">✓ Certificado válido: <b>{h(row["name"])}</b> concluiu <b>{h(row["title"])}</b> em '
                f'{fmt_date(row["issued"])[:10]}.</p>' if row else '<p class="error">Não existe nenhum certificado com este código.</p>')
-    return page("Verificar certificado", f"""<section class="card login"><h1>Verificar certificado</h1>{res}
-<form><label>Código do certificado<input name="codigo" value="{h(code)}" placeholder="ATC-XXXXXXXX" required></label>
-<button class="btn">Verificar</button></form></section>""")
+    res = res.replace('class="ok-box"', 'class="verify-ok"').replace('class="error"', 'class="entry-error"')
+    return public_page("Verificar certificado", f"""{public_nav()}
+<main class="entry"><section class="entry-show" aria-label="Certificados ATC">
+  <span class="label">Certificados ATC</span><h2 class="serif">Cada certificado tem um <em>código único.</em></h2>
+  <p class="lead-show">Introduza o código impresso no certificado para confirmar quem o recebeu, o curso e a data de emissão.</p></section>
+<section class="entry-form"><div><span class="label">Verificação pública</span><h1 class="serif">Verificar <em>certificado.</em></h1>
+  <p class="lead">Não precisa de conta para verificar.</p>{res}
+  <form><label class="field"><span class="label">Código do certificado</span><input name="codigo" value="{h(code)}" placeholder="ATC-XXXXXXXX" required autocomplete="off"></label>
+  <button class="btn btn-solid">Verificar <span class="arr">→</span></button></form></div></section></main>""")
 
 
 # ---------------------------------------------------------------------------
@@ -2565,7 +2644,7 @@ def admin_home(r):
 <div><b>{n_certs}</b>certificados emitidos</div><div><a href="/admin/perguntas"><b>{n_open}</b>perguntas por responder</a></div></div>
 <section class="card"><h2>Cursos</h2><div class="tablewrap"><table><thead><tr><th>Curso</th><th>Formandos</th><th>Certificados</th><th></th></tr></thead>
 <tbody>{''.join(rows)}</tbody></table></div></section>
-<p class="muted">Assistente de estudo (modelo local): {ai}.</p>""")
+{f'<p class="muted">Assistente de estudo local: {"ligado" if ollama_available() else "desligado"}.</p>' if r.user["role"] == "admin" else ""}""")
 
 
 @route("POST", "/admin/demo-off", "admin")
@@ -2787,7 +2866,7 @@ def questions_page(r):
                             JOIN courses co ON co.id=l.course_id WHERE cm.parent_id IS NULL AND u.role='formando'
                             ORDER BY answered, cm.created DESC LIMIT 200""").fetchall()
     items = "".join(f'<li class="{"done" if q["answered"] else "open"}"><div class="meta"><b>{h(q["name"])}</b> em '
-                    f'<a href="/cursos/{q["cs"]}/aula/{q["ls"]}">{h(q["lt"])}</a> · {fmt_date(q["created"])} · '
+                    f'<a href="/cursos/{q["cs"]}/aula/{q["ls"]}#perguntas">{h(q["lt"])}</a> · {fmt_date(q["created"])} · '
                     f'{"respondida" if q["answered"] else "<b>por responder</b>"}</div><div>{h(q["body"])}</div></li>'
                     for q in rows) or '<li class="muted">Ainda não há perguntas.</li>'
     return r.render("Perguntas", f"""<h1>Perguntas dos formandos</h1>{admin_tabs('/admin/perguntas', r.user['role'] == 'admin')}
@@ -2807,7 +2886,7 @@ def courses_admin(r, report=None):
     return r.render("Cursos", f"""<h1>Cursos</h1>{admin_tabs('/admin/cursos', True)}{rep}
 <section class="card"><div class="tablewrap"><table><thead><tr><th>Curso</th><th>Código</th><th>Estado</th><th>Aulas</th><th>Pasta</th></tr></thead>
 <tbody>{''.join(rows)}</tbody></table></div></section>
-<section class="card"><h2>Atualizar cursos</h2><p>Os cursos vivem na pasta <code>{h(COURSES_DIR)}</code>, uma subpasta por curso com um
+<section class="card"><h2>Atualizar cursos</h2><p>Os cursos vivem na pasta <code>cursos/</code> do servidor, uma subpasta por curso com um
 ficheiro <code>curso.json</code>. Depois de acrescentar aulas, vídeos ou questionários, carregue em <b>Importar</b>.
 O progresso dos formandos mantém-se.</p><form method="post" action="/admin/cursos">{csrf_field(r.csrf)}
 <button class="btn">Importar / atualizar todos os cursos</button></form></section>""")

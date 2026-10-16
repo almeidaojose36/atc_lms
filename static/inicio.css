@@ -162,3 +162,43 @@ img, video { display:block; max-width:100%; }
 .entry-points { list-style:none; margin:0; padding:0; max-width:480px; border-top:1px solid var(--line); }
 .entry-points li { padding:22px 0; border-bottom:1px solid var(--line); }
 .entry-points b { display:block; font:400 26px/1.15 "Instrument Serif",serif; margin-bottom:6px; } .entry-points span { color:var(--mute); }
+.verify-ok { margin:0 0 24px; padding:14px 16px; border-radius:6px; border:1px solid #6fbf8e66; background:#6fbf8e14; color:#cfe9d8; line-height:1.5; }
+.lead-show { color:var(--mute); max-width:420px; margin:0; }
+
+/* Apresentação ao cliente */
+.pr-hero { max-width:1320px; margin:0 auto; padding:170px var(--pad) 90px; display:grid; grid-template-columns:1fr 1fr; gap:56px; align-items:center; }
+.pr-shots { position:relative; display:block; aspect-ratio:16/12; }
+.pr-shots img { position:absolute; width:78%; border-radius:6px; border:1px solid #ece6da26; box-shadow:0 40px 80px -30px #000; transition:transform .8s var(--ease); }
+.pr-shots .s3 { right:0; top:0; opacity:.55; } .pr-shots .s2 { right:9%; top:16%; opacity:.8; } .pr-shots .s1 { right:18%; top:32%; }
+.pr-shots:hover .s1 { transform:translateY(-6px); } .pr-shots:hover .s3 { transform:translate(6px,-6px); }
+.pr-play { position:absolute; left:4%; bottom:4%; padding:10px 16px; border-radius:999px; background:#ece6da; color:#07111b; font:500 12px Geist; letter-spacing:.06em; }
+.pr-hero h1 { margin:22px 0 26px; font-size:clamp(48px,5.2vw,92px); line-height:.95; max-width:13ch; }
+.pr-hero p { color:#c9c3b7; font-size:17px; max-width:640px; margin:0 0 34px; }
+.pr-hero .actions, .pr-try .actions { display:flex; gap:10px; flex-wrap:wrap; }
+.pr-sec { max-width:1240px; margin:0 auto; padding:90px var(--pad); border-top:1px solid var(--line); }
+.pr-sec > h2 { margin:16px 0 48px; font-size:clamp(40px,4.6vw,72px); line-height:.98; }
+.pv-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:22px; }
+.pv { margin:0; } .pv-frame { aspect-ratio:16/9; border-radius:6px; overflow:hidden; border:1px solid #ece6da22; background:#0b1825; box-shadow:0 30px 60px -30px #000; }
+.pv-frame video { width:100%; height:100%; object-fit:cover; display:block; }
+.pv figcaption { margin-top:16px; } .pv figcaption b { display:block; font:400 30px/1.1 "Instrument Serif",serif; margin:8px 0 6px; } .pv figcaption > span:last-child { color:var(--mute); font-size:14px; }
+.pr-cols { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); border-top:1px solid var(--line); }
+.pr-col { padding:26px 24px 0 0; } .pr-col + .pr-col { padding-left:24px; border-left:1px solid var(--line); }
+.pr-col ul { list-style:none; margin:16px 0 0; padding:0; } .pr-col li { padding:9px 0; border-bottom:1px solid var(--line); color:#d4cec2; font-size:14px; }
+.pr-try p { color:#c9c3b7; max-width:680px; margin:0 0 30px; }
+.pr-dec { list-style:none; margin:0; padding:0; border-top:1px solid var(--line); }
+.pr-dec > li { display:grid; grid-template-columns:80px 1fr; gap:24px; padding:30px 0; border-bottom:1px solid var(--line); }
+.pr-dec .n { color:var(--mute); font-size:12px; letter-spacing:.14em; padding-top:10px; }
+.pr-dec h3 { margin:0 0 8px; font-size:34px; } .pr-dec p { margin:0; color:#c9c3b7; max-width:720px; }
+.pr-table { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; margin-top:20px; }
+.pr-table > div { padding:18px; border:1px solid var(--line); border-radius:6px; background:#ece6da06; }
+.pr-table b { display:block; margin-bottom:6px; color:var(--paper); } .pr-table span { color:var(--mute); font-size:13px; }
+.pr-fases { list-style:none; margin:0; padding:0; display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:14px; }
+.pr-fases li { padding:24px; border:1px solid var(--line); border-radius:6px; }
+.pr-fases b { display:block; font-size:32px; margin:12px 0 8px; font-weight:400; } .pr-fases p { margin:0; color:var(--mute); font-size:14px; }
+.pr-note { color:var(--mute); margin:22px 0 0; font-size:13px; }
+.pr-final { color:#c9c3b7; position:relative; margin:0 auto; max-width:520px; }
+@media (max-width:900px) {
+  .pr-hero { padding-top:130px; grid-template-columns:1fr; gap:30px; } .pv-grid, .pr-table { grid-template-columns:1fr; }
+  .pr-cols, .pr-fases { grid-template-columns:1fr; } .pr-col, .pr-col + .pr-col { padding:22px 0; border-left:0; }
+  .pr-dec > li { grid-template-columns:1fr; gap:8px; }
+}
