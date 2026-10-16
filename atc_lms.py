@@ -1040,19 +1040,19 @@ def course_card(r, c, enrolled):
             f'<span class="tag">Inscrição na ATC</span> <span class="muted">{hours}</span></div></article>')
 
 
-LANDING_SEQUENCES = [  # (pasta em static/frames, passos sobrepostos, título final, curso)
-    ("aplus", ["Processador", "Memória RAM", "Placa-mãe", "Armazenamento"], "CompTIA A+", "Monte, configure e repare computadores."),
-    ("netplus", ["Cabos e topologias", "Endereçamento IP", "Segurança de rede"], "CompTIA Network+", "Ligue, proteja e resolva problemas de redes."),
+LANDING_SEQUENCES = [  # (pasta em static/frames, passos sobrepostos, título final, curso, deslocação para a direita no ecrã largo)
+    ("aplus", ["Processador", "Memória RAM", "Placa-mãe", "Armazenamento"], "CompTIA A+", "Monte, configure e repare computadores.", 0.18),
+    ("netplus", ["Cabos e topologias", "Endereçamento IP", "Segurança de rede"], "CompTIA Network+", "Ligue, proteja e resolva problemas de redes.", 0),
 ]
 LANDING_COURSES = ["comptia-a-plus", "comptia-network-plus", "informatica", "excel", "word"]
 
 
 def landing(r):
     seqs = ""
-    for i, (folder, steps, title, line) in enumerate(LANDING_SEQUENCES, 1):
+    for i, (folder, steps, title, line, shift) in enumerate(LANDING_SEQUENCES, 1):
         count = len(list((STATIC / "frames" / folder).glob("*.webp")))
         items = "".join(f'<li class="seq-step"><span>{n:02d}</span>{h(s)}</li>' for n, s in enumerate(steps, 1))
-        seqs += (f'<section class="seq" id="seq-{folder}" data-frames="/static/frames/{folder}/" data-count="{count}" aria-label="{h(title)}">'
+        seqs += (f'<section class="seq" id="seq-{folder}" data-frames="/static/frames/{folder}/" data-count="{count}" data-shift="{shift}" aria-label="{h(title)}">'
                  f'<canvas class="seq-canvas" aria-hidden="true"></canvas><div class="seq-scrim" aria-hidden="true"></div>'
                  f'<div class="seq-copy"><span class="eyebrow">PARTE {i}</span><ol class="seq-steps">{items}</ol>'
                  f'<div class="seq-final"><h2>{h(title)}</h2><p>{h(line)}</p></div></div></section>')
@@ -1075,7 +1075,7 @@ def landing(r):
     vendor = ["gsap/gsap.min.js", "gsap/ScrollTrigger.min.js", "vendor/lenis.min.js", "vendor/swiper-bundle.min.js"]
     scripts = "".join(f'<script src="/static/{f}?v=1" defer></script>' for f in vendor)
     head = '<link rel="stylesheet" href="/static/vendor/swiper-bundle.min.css?v=1"><link rel="stylesheet" href="/static/vendor/lenis.css?v=1">'
-    return page("Início", head + body, cta=True, body_class="landing", scripts=scripts + '<script src="/static/historia.js?v=3" defer></script>')
+    return page("Início", head + body, cta=True, body_class="landing", scripts=scripts + '<script src="/static/historia.js?v=4" defer></script>')
 
 
 @route("GET", "/")

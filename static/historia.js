@@ -36,8 +36,10 @@
       const s = portrait ? (canvas.width / img.naturalWidth) * 1.12
         : Math.max(canvas.width / img.naturalWidth, canvas.height / img.naturalHeight);
       const w = img.naturalWidth * s, h = img.naturalHeight * s;
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.drawImage(img, (canvas.width - w) / 2, portrait ? canvas.height * 0.3 - h / 2 : (canvas.height - h) / 2, w, h);
+      const shift = portrait ? 0 : canvas.width * (+seq.dataset.shift || 0); // afasta o tema do texto à esquerda
+      ctx.fillStyle = '#0a1e32';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(img, (canvas.width - w) / 2 + shift, portrait ? canvas.height * 0.3 - h / 2 : (canvas.height - h) / 2, w, h);
     }
     fit();
     window.addEventListener('resize', fit);
