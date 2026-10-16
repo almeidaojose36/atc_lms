@@ -1077,7 +1077,7 @@ def public_page(title, body, privada=False):
     return f"""<!doctype html><html lang="pt-PT"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{h(title)} · ATC Formação</title>{'<meta name="robots" content="noindex, nofollow">' if privada else ''}<meta name="description" content="Formação em informática, hardware e redes, em português, na ATC — Angbu Training Centre, Cabinda.">
 <link rel="icon" href="/static/logo-200.png"><link rel="preload" href="/static/fonts/InstrumentSerif.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="/static/inicio.css?v=6"><script src="/static/inicio.js?v=1" defer></script><script src="/static/ui.js?v=6" defer></script></head>
+<link rel="stylesheet" href="/static/inicio.css?v=7"><script src="/static/inicio.js?v=2" defer></script><script src="/static/ui.js?v=6" defer></script></head>
 <body>{body}</body></html>"""
 
 
@@ -1652,19 +1652,26 @@ def admin_codes_csv(r):
 # Apresentação ao cliente (página pública, fora dos motores de busca)
 # ---------------------------------------------------------------------------
 
-APRESENTACAO_VIDEOS = [("formando", "Formandos", "Da inscrição ao certificado: criar conta, pagar, escolher o guia, aprender e certificar."),
-                       ("formador", "Formadores", "Responder a dúvidas, acompanhar a turma, inscrever formandos e confirmar pagamentos."),
-                       ("admin", "Administração", "Contas, pagamentos com comprovativo, códigos de acesso, cursos e certificados.")]
+APRESENTACAO_VIDEOS = [  # (ficheiro, título, descrição, duração)
+                       ("formando", "Formandos", "Da inscrição ao certificado: criar conta, pagar, escolher o guia, aprender e certificar.", "2:00"),
+                       ("formador", "Formadores", "Responder a dúvidas, acompanhar a turma, inscrever formandos e confirmar pagamentos.", "1:01"),
+                       ("admin", "Administração", "Contas, pagamentos com comprovativo, códigos de acesso, cursos e certificados.", "0:59")]
 
 
 @route("GET", "/apresentacao")
 def presentation(r):
     pasta = STATIC / "apresentacao"
-    videos = "".join(
-        f'<figure class="pv rv"><div class="pv-frame"><video controls preload="none" playsinline poster="/static/apresentacao/{k}.jpg">'
-        f'<source src="/static/apresentacao/walkthrough-{k}.mp4" type="video/mp4"></video></div>'
-        f'<figcaption><span class="label">{i:02d} · {round((pasta / f"walkthrough-{k}.mp4").stat().st_size / 1e6) if (pasta / f"walkthrough-{k}.mp4").is_file() else 0} MB</span>'
-        f'<b>{t}</b><span>{d}</span></figcaption></figure>' for i, (k, t, d) in enumerate(APRESENTACAO_VIDEOS, 1))
+    primeiro = APRESENTACAO_VIDEOS[0]
+    cartoes = "".join(
+        f'<button type="button" class="pv-card{" on" if i == 1 else ""}" data-video="/static/apresentacao/walkthrough-{k}.mp4" data-poster="/static/apresentacao/{k}.jpg" '
+        f'data-titulo="{t}" aria-pressed="{"true" if i == 1 else "false"}"><img src="/static/apresentacao/{k}.jpg" alt="">'
+        f'<span class="label">{i:02d} · {dur}</span><b>{t}</b><span>{d}</span></button>' for i, (k, t, d, dur) in enumerate(APRESENTACAO_VIDEOS, 1))
+    videos = (f'<div class="pv-player rv"><video id="pv-video" controls preload="metadata" playsinline poster="/static/apresentacao/{primeiro[0]}.jpg">'
+              f'<source src="/static/apresentacao/walkthrough-{primeiro[0]}.mp4" type="video/mp4"></video>'
+              f'<button type="button" class="pv-full" id="pv-full">Ver em ecrã inteiro <span aria-hidden="true">⤢</span></button></div>'
+              f'<div class="pv-cards" role="group" aria-label="Escolher o vídeo">{cartoes}</div>'
+              f'<div class="pv-box" id="pv-box" hidden role="dialog" aria-modal="true" aria-label="Vídeo em ecrã inteiro">'
+              f'<button type="button" class="pv-close" id="pv-close" aria-label="Fechar">✕</button><video id="pv-box-video" controls playsinline></video></div>')
     def lista(*itens):
         return "<ul>" + "".join(f"<li>{x}</li>" for x in itens) + "</ul>"
     pronto = "".join(f'<div class="pr-col rv"><span class="label">{t}</span>{l}</div>' for t, l in [
@@ -1704,7 +1711,7 @@ acompanhamento pelos formadores e controlo total pela administração. Esta pág
 <a class="pr-shots rv d2" href="#videos" aria-label="Ver os vídeos de demonstração"><img class="s3" src="/static/apresentacao/admin.jpg" alt="">
 <img class="s2" src="/static/apresentacao/formador.jpg" alt=""><img class="s1" src="/static/apresentacao/formando.jpg" alt=""><span class="pr-play">▶ 3 vídeos · 4 min</span></a></header>
 <section class="pr-sec" id="videos"><span class="label">01 · Demonstração em vídeo</span><h2 class="serif">Três percursos, <em>uma plataforma.</em></h2>
-<div class="pv-grid">{videos}</div></section>
+{videos}</section>
 <section class="pr-sec"><span class="label">02 · O que já está pronto</span><h2 class="serif">Pronto a <em>experimentar.</em></h2><div class="pr-cols">{pronto}</div></section>
 <section class="pr-sec pr-try"><span class="label">03 · Experimentar</span><h2 class="serif">Entre com as contas <em>de demonstração.</em></h2>
 <p>As contas de formando, formador e administrador são enviadas em separado. Os pagamentos online estão em modo de demonstração:

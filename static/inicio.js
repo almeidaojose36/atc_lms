@@ -50,3 +50,43 @@
   addEventListener('scroll', () => { if (!ticking) { ticking = true; requestAnimationFrame(() => { ticking = false; update(); }); } }, { passive: true });
   addEventListener('resize', fit); fit(); update();
 })();
+
+// Apresentação: um leitor grande, troca de vídeo pelos cartões e ecrã inteiro (com recurso a uma janela que ocupa o ecrã
+// quando o navegador não permite o ecrã inteiro, por exemplo dentro de outra página).
+(() => {
+  const video = document.getElementById('pv-video');
+  if (!video) return;
+  const box = document.getElementById('pv-box'), boxVideo = document.getElementById('pv-box-video');
+  const cards = [...document.querySelectorAll('.pv-card')];
+  cards.forEach((c) => c.addEventListener('click', () => {
+    cards.forEach((x) => { x.classList.toggle('on', x === c); x.setAttribute('aria-pressed', String(x === c)); });
+    video.poster = c.dataset.poster; video.src = c.dataset.video; video.load();
+    video.play().catch(() => {});
+    video.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }));
+  let antes = null;
+  function abrir() {
+    antes = document.activeElement;
+    const t = video.currentTime, tocava = !video.paused;
+    video.pause();
+    boxVideo.src = video.currentSrc || video.querySelector('source').src; boxVideo.poster = video.poster;
+    box.hidden = false; document.body.style.overflow = 'hidden';
+    boxVideo.addEventListener('loadedmetadata', () => { boxVideo.currentTime = t; boxVideo.play().catch(() => {}); }, { once: true });
+    if (!tocava && t === 0) boxVideo.play().catch(() => {});
+    const pedir = box.requestFullscreen || box.webkitRequestFullscreen;
+    if (pedir) { try { const p = pedir.call(box); if (p && p.catch) p.catch(() => {}); } catch (e) { /* fica a janela a ocupar o ecrã */ } }
+    document.getElementById('pv-close').focus();
+  }
+  function fechar() {
+    const t = boxVideo.currentTime;
+    boxVideo.pause(); box.hidden = true; document.body.style.overflow = '';
+    if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
+    if (t) video.currentTime = t;
+    if (antes) antes.focus();
+  }
+  document.getElementById('pv-full').addEventListener('click', abrir);
+  video.addEventListener('click', () => { if (video.paused && video.currentTime < 0.5) abrir(); });   // o primeiro clique abre em grande
+  document.getElementById('pv-close').addEventListener('click', fechar);
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !box.hidden) fechar(); });
+  document.addEventListener('fullscreenchange', () => { if (!document.fullscreenElement && !box.hidden) fechar(); });
+})();
