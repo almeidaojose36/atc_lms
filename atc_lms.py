@@ -13,6 +13,8 @@ import csv
 import hashlib
 import hmac
 import html
+import email
+import email.policy
 import io
 import json
 import math
@@ -31,7 +33,7 @@ import unicodedata
 import urllib.error
 import urllib.parse
 import urllib.request
-from datetime import datetime
+from datetime import datetime, timedelta
 from http import cookies
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -151,6 +153,7 @@ def init_db():
     with db() as con:
         con.execute("PRAGMA journal_mode=WAL")
         con.executescript(SCHEMA)
+        pag_init(con)
 
 
 def setting(con, key, default=None):
@@ -631,6 +634,8 @@ def page(title, body, user=None, csrf="", wide=False, flash="", profile=None, pr
         links = [("/", "◫", "Os meus cursos"), ("/#catalogo", "▦", "Catálogo")]
         if user["role"] in ("admin", "formador"):
             links.append(("/admin", "▤", "Gestão"))
+        if user["role"] == "formando":
+            links.append(("/planos", "◈", "Planos e pagamentos"))
         links.append(("/conta", "◎", "A minha conta"))
         sidebar = ('<aside class="sidebar">' + brand + '<p class="nav-label">ESPAÇO DE FORMAÇÃO</p><nav aria-label="Navegação principal">' +
                    "".join(f'<a href="{u}"><span aria-hidden="true">{icon}</span>{t}</a>' for u, icon, t in links) +
@@ -647,7 +652,7 @@ def page(title, body, user=None, csrf="", wide=False, flash="", profile=None, pr
     return f"""<!doctype html><html lang="pt-PT"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{h(title)} · ATC Formação</title><link rel="icon" href="/static/logo-200.png">
-<link rel="stylesheet" href="/static/atc.css?v=13"><meta name="csrf" content="{h(csrf)}"><script src="/static/ui.js?v=6" defer></script></head>
+<link rel="stylesheet" href="/static/atc.css?v=15"><meta name="csrf" content="{h(csrf)}"><script src="/static/ui.js?v=6" defer></script></head>
 <body class="{('app foco' if foco else 'app') if user else 'public'}{' ' + body_class if body_class else ''}"{f' data-u="{user["id"]}"' if user else ''}><a class="skip-link" href="#conteudo">Saltar para o conteúdo</a>{sidebar}<div class="workspace"><header class="top"><div class="wrap">{header}</div></header>
 <main id="conteudo" class="wrap{' wide' if wide else ''}">{flash_html}{body}</main>
 <footer><div class="wrap"><span>ATC · Angbu Training Centre</span><span>Cabinda, Angola · Aprendizagem com propósito</span></div></footer></div>{scripts}</body></html>"""
@@ -719,6 +724,15 @@ class Handler(BaseHTTPRequestHandler):
             return {"_audio": raw, "_audio_type": self.headers.get("Content-Type")}
         if (self.headers.get("Content-Type") or "").startswith("application/json"):
             return json.loads(raw or b"{}")
+        if (self.headers.get("Content-Type") or "").startswith("multipart/form-data"):  # envio de ficheiros (comprovativos)
+            msg = email.message_from_bytes(b"Content-Type: " + self.headers["Content-Type"].encode() + b"\r\n\r\n" + raw,
+                                           policy=email.policy.HTTP)
+            out = {}
+            for part in msg.iter_parts():
+                name, payload = part.get_param("name", header="content-disposition"), part.get_payload(decode=True) or b""
+                out[name] = ({"filename": part.get_filename(), "type": part.get_content_type(), "data": payload}
+                             if part.get_filename() is not None else payload.decode("utf-8", "replace"))
+            return out
         return {k: v[0] for k, v in urllib.parse.parse_qs(raw.decode(), keep_blank_values=True).items()}
 
     def session(self, con):
@@ -816,7 +830,7 @@ class Handler(BaseHTTPRequestHandler):
                 if method == "POST":
                     self.data = self.form()
                     sent = self.data.get("csrf") or self.headers.get("X-CSRF")
-                    if fn.__name__ != "login_post" and (not user or not hmac.compare_digest(str(sent or ""), csrf)):
+                    if fn.__name__ not in ("login_post", "register_post", "pay_webhook") and (not user or not hmac.compare_digest(str(sent or ""), csrf)):
                         raise HttpError(403, "Sessão expirada. Volte à página anterior e tente de novo.")
                 self.user, self.csrf, self.con = user, csrf, con
                 if user and method == "GET":
@@ -866,7 +880,7 @@ class Handler(BaseHTTPRequestHandler):
         if not c:
             raise HttpError(404)
         if need_access and not self.can_access(c):
-            raise HttpError(403, "Ainda não está inscrito neste curso. Fale com a ATC para se inscrever.")
+            raise HttpError(403, "Não tem acesso ativo a este curso. Escolha um plano ou ative um código em «Planos e pagamentos».")
         return c
 
     def can_access(self, c):
@@ -875,7 +889,8 @@ class Handler(BaseHTTPRequestHandler):
         if c["status"] == "amostra":
             return True  # cursos de amostra: módulo de demonstração aberto a qualquer conta
         return c["status"] == "publicado" and self.con.execute(
-            "SELECT 1 FROM enrolments WHERE user_id=? AND course_id=?", (self.user["id"], c["id"])).fetchone() is not None
+            "SELECT 1 FROM enrolments WHERE user_id=? AND course_id=?", (self.user["id"], c["id"])).fetchone() is not None \
+            and not acesso_expirado(self.con, self.user["id"])
 
 
 # ---------------------------------------------------------------------------
@@ -899,11 +914,11 @@ def login_get(r, error=""):
     <h1 class="serif">Bem-vindo <em>de volta.</em></h1>
     <p class="lead">Entre com a sua conta para continuar o seu percurso.</p>
     {err}<form method="post" action="/entrar"><input type="hidden" name="seguinte" value="{nxt}">
-      <label class="field"><span class="label">Email</span><input type="email" name="email" required autofocus autocomplete="username" placeholder="nome@exemplo.com"></label>
+      <label class="field"><span class="label">Email ou telemóvel</span><input name="email" required autofocus autocomplete="username" placeholder="nome@exemplo.com ou 9XX XXX XXX"></label>
       <label class="field"><span class="label">Palavra-passe</span><span class="pw"><input type="password" name="pw" required autocomplete="current-password" placeholder="A sua palavra-passe"><button type="button" data-pw-toggle aria-label="Mostrar palavra-passe" aria-pressed="false">Mostrar</button></span></label>
       <button class="btn btn-solid">Entrar na plataforma <span class="arr">→</span></button>
     </form>
-    <p class="entry-help">Ainda não tem conta? A sua conta é criada pela ATC quando se inscreve num curso.</p>
+    <p class="entry-help">Ainda não tem conta? <a href="/registar">Criar conta</a></p>
   </div></section>
 </main>""")
 
@@ -911,11 +926,12 @@ def login_get(r, error=""):
 @route("POST", "/entrar")
 def login_post(r):
     email, pw = r.data.get("email", "").strip().lower(), r.data.get("pw", "")
-    u = r.con.execute("SELECT * FROM users WHERE email=? AND active=1", (email,)).fetchone()
+    phone = norm_phone(email) if "@" not in email else None   # também se pode entrar com o telemóvel
+    u = r.con.execute("SELECT * FROM users WHERE (email=? OR phone=?) AND active=1", (email, phone)).fetchone()
     if not u or not check_pw(pw, u["pw_hash"]):
         time.sleep(0.5)
         r.query = {"seguinte": r.data.get("seguinte", "/")}
-        r.send(200, login_get(r, "Email ou palavra-passe incorretos."))
+        r.send(200, login_get(r, "Email, telemóvel ou palavra-passe incorretos."))
         return None
     tok = secrets.token_urlsafe(32)
     r.con.execute("DELETE FROM sessions WHERE created < ?", (time.time() - SESSION_DAYS * 86400,))
@@ -1059,7 +1075,7 @@ def public_page(title, body):
     return f"""<!doctype html><html lang="pt-PT"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{h(title)} · ATC Formação</title><meta name="description" content="Formação em informática, hardware e redes, em português, na ATC — Angbu Training Centre, Cabinda.">
 <link rel="icon" href="/static/logo-200.png"><link rel="preload" href="/static/fonts/InstrumentSerif.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="/static/inicio.css?v=2"><script src="/static/inicio.js?v=1" defer></script><script src="/static/ui.js?v=6" defer></script></head>
+<link rel="stylesheet" href="/static/inicio.css?v=3"><script src="/static/inicio.js?v=1" defer></script><script src="/static/ui.js?v=6" defer></script></head>
 <body>{body}</body></html>"""
 
 
@@ -1086,7 +1102,7 @@ def landing(r):
     <h1 class="serif rv d1">Competências<br>digitais que<br><em>abrem portas.</em></h1>
     <div class="hero-side rv d2">
       <p>Formação em informática, hardware e redes, em português, com um guia que o acompanha do primeiro clique à certificação.</p>
-      <div class="actions"><a class="btn btn-solid" href="/entrar">Começar agora <span class="arr">→</span></a><a class="btn btn-line" href="#percursos">Ver percursos</a></div>
+      <div class="actions"><a class="btn btn-solid" href="/registar">Começar agora <span class="arr">→</span></a><a class="btn btn-line" href="#percursos">Ver percursos</a></div>
     </div>
   </div>
   <div class="hero-foot"><div class="ticker label"><span><b>01</b>Informática</span><span><b>02</b>CompTIA A+</span><span><b>03</b>CompTIA Network+</span><span><b>04</b>Microsoft Office</span></div></div>
@@ -1146,6 +1162,490 @@ def landing(r):
 </section>''')
 
 
+# ---------------------------------------------------------------------------
+# Registo, planos, pagamentos e códigos de acesso
+# ---------------------------------------------------------------------------
+# O acesso é separado do pagamento: um formando tem acesso a todos os cursos publicados até uma data
+# (tabela subscriptions). Esse acesso pode vir de um pagamento (Multicaixa Express, referência Multicaixa,
+# transferência com comprovativo ou pagamento na loja) ou de um código de acesso (por exemplo, oferecido
+# com a internet do Grupo Angbu). Os pagamentos online passam por um fornecedor; enquanto não houver contrato,
+# PAG_FORNECEDOR="demo" simula o fornecedor e o ecrã mostra botões de simulação claramente identificados.
+# Para ligar um fornecedor real (EMIS GPO através do banco, ProxyPay, AppyPay...), substituir
+# pag_criar_pedido() e enviar as confirmações para POST /pagamentos/notificacao (assinadas com ATC_PAG_SEGREDO).
+
+PAG_FORNECEDOR = os.environ.get("ATC_PAG_FORNECEDOR", "demo")
+PAG_SEGREDO = os.environ.get("ATC_PAG_SEGREDO", "")
+PAG_DADOS_BANCO = {"banco": "Banco de exemplo", "titular": "ATC – Angbu Training Centre",
+                   "iban": "AO06 0000 0000 0000 0000 0000 0"}   # substituir pelos dados reais da ATC
+PROVINCIAS = ["Bengo", "Benguela", "Bié", "Cabinda", "Cuando", "Cuanza Norte", "Cuanza Sul", "Cubango", "Cunene", "Huambo",
+              "Huíla", "Icolo e Bengo", "Luanda", "Lunda Norte", "Lunda Sul", "Malanje", "Moxico", "Moxico Leste", "Namibe",
+              "Uíge", "Zaire"]
+PLANOS_INICIAIS = [  # (slug, nome, meses, preço em Kz, descrição) — valores de demonstração
+    ("mensal", "Mensal", 1, 7500, "Acesso a todos os cursos durante 1 mês."),
+    ("trimestral", "Trimestral", 3, 19500, "3 meses de acesso, com poupança face ao plano mensal."),
+    ("anual", "Anual", 12, 60000, "Um ano inteiro de formação, ao melhor preço."),
+]
+METODOS = {"mcx": "Multicaixa Express", "referencia": "Referência Multicaixa",
+           "transferencia": "Transferência bancária", "loja": "Pagamento na loja"}
+PAG_ESTADOS = {"pendente": "A aguardar", "em_analise": "Em análise", "pago": "Pago", "recusado": "Recusado", "expirado": "Expirado"}
+COMPROVATIVOS = DATA_DIR / "comprovativos"
+
+PAG_SCHEMA = """
+CREATE TABLE IF NOT EXISTS plans (
+  id INTEGER PRIMARY KEY, slug TEXT UNIQUE NOT NULL, name TEXT NOT NULL, months INTEGER NOT NULL,
+  price_kz INTEGER NOT NULL, description TEXT NOT NULL DEFAULT '', active INTEGER NOT NULL DEFAULT 1, sort INTEGER NOT NULL DEFAULT 0);
+CREATE TABLE IF NOT EXISTS subscriptions (
+  id INTEGER PRIMARY KEY, user_id INTEGER NOT NULL REFERENCES users(id), plan_id INTEGER REFERENCES plans(id),
+  starts TEXT NOT NULL, ends TEXT NOT NULL, source TEXT NOT NULL, ref TEXT, created TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS payments (
+  id INTEGER PRIMARY KEY, user_id INTEGER NOT NULL REFERENCES users(id), plan_id INTEGER NOT NULL REFERENCES plans(id),
+  amount_kz INTEGER NOT NULL, method TEXT NOT NULL, status TEXT NOT NULL DEFAULT 'pendente', provider TEXT NOT NULL,
+  entity TEXT, reference TEXT, phone TEXT, note TEXT, proof TEXT, expires TEXT, created TEXT NOT NULL, updated TEXT NOT NULL,
+  reviewed_by INTEGER);
+CREATE TABLE IF NOT EXISTS access_codes (
+  code TEXT PRIMARY KEY, plan_id INTEGER NOT NULL REFERENCES plans(id), label TEXT NOT NULL DEFAULT '',
+  created_by INTEGER, created TEXT NOT NULL, used_by INTEGER REFERENCES users(id), used_at TEXT);
+"""
+
+
+def pag_init(con):
+    con.executescript(PAG_SCHEMA)
+    cols = {row["name"] for row in con.execute("PRAGMA table_info(users)")}
+    if "phone" not in cols:
+        con.execute("ALTER TABLE users ADD COLUMN phone TEXT")
+    if "province" not in cols:
+        con.execute("ALTER TABLE users ADD COLUMN province TEXT")
+    con.execute("CREATE UNIQUE INDEX IF NOT EXISTS users_phone ON users(phone) WHERE phone IS NOT NULL")
+    for i, (slug, name, months, price, desc) in enumerate(PLANOS_INICIAIS):
+        con.execute("INSERT OR IGNORE INTO plans(slug, name, months, price_kz, description, sort) VALUES(?,?,?,?,?,?)",
+                    (slug, name, months, price, desc, i))
+
+
+def kz(v):
+    return f"{v:,.0f}".replace(",", " ") + " Kz"
+
+
+def data_pt(s):
+    return datetime.strptime(s[:10], "%Y-%m-%d").strftime("%d/%m/%Y") if s else ""
+
+
+def norm_phone(s):
+    """Telemóvel angolano em formato +2449XXXXXXXX, ou None."""
+    d = re.sub(r"\D", "", s or "")
+    if d.startswith("00"):
+        d = d[2:]
+    if d.startswith("244") and len(d) == 12:
+        d = d[3:]
+    return "+244" + d if len(d) == 9 and d.startswith("9") else None
+
+
+def acesso_ate(con, user_id):
+    """Fim do acesso pago/por código mais longo que ainda está ativo (texto ISO), ou None."""
+    row = con.execute("SELECT MAX(ends) e FROM subscriptions WHERE user_id=? AND ends >= ?", (user_id, now())).fetchone()
+    return row["e"] if row and row["e"] else None
+
+
+def acesso_expirado(con, user_id):
+    """True se o formando já teve acesso pago/por código e todos expiraram (as inscrições feitas pela ATC não expiram)."""
+    has = con.execute("SELECT 1 FROM subscriptions WHERE user_id=?", (user_id,)).fetchone()
+    return bool(has) and not acesso_ate(con, user_id)
+
+
+def ativar_plano(con, user_id, plan, source, ref):
+    """Soma os meses do plano ao acesso atual e inscreve o formando em todos os cursos publicados."""
+    start = max(datetime.now(), datetime.strptime(acesso_ate(con, user_id) or now(), "%Y-%m-%d %H:%M:%S"))
+    end = start.replace(microsecond=0) + timedelta(days=30 * plan["months"])
+    con.execute("INSERT INTO subscriptions(user_id, plan_id, starts, ends, source, ref, created) VALUES(?,?,?,?,?,?,?)",
+                (user_id, plan["id"], start.strftime("%Y-%m-%d %H:%M:%S"), end.strftime("%Y-%m-%d %H:%M:%S"), source, ref, now()))
+    for c in con.execute("SELECT id FROM courses WHERE active=1 AND status='publicado'").fetchall():
+        con.execute("INSERT OR IGNORE INTO enrolments VALUES(?,?,?)", (user_id, c["id"], now()))
+    return end
+
+
+def pag_confirmar(con, pid, ok, reviewer=None):
+    """Marca um pagamento como pago (ativa o plano) ou recusado. Idempotente: um pagamento pago não é ativado duas vezes."""
+    p = con.execute("SELECT * FROM payments WHERE id=?", (pid,)).fetchone()
+    if not p or p["status"] in ("pago", "recusado", "expirado"):
+        return p
+    con.execute("UPDATE payments SET status=?, updated=?, reviewed_by=? WHERE id=?", ("pago" if ok else "recusado", now(), reviewer, pid))
+    if ok:
+        plan = con.execute("SELECT * FROM plans WHERE id=?", (p["plan_id"],)).fetchone()
+        ativar_plano(con, p["user_id"], plan, "pagamento", f"P{pid}")
+    return con.execute("SELECT * FROM payments WHERE id=?", (pid,)).fetchone()
+
+
+def pag_criar_pedido(method, amount, phone):
+    """Pedido ao fornecedor de pagamentos. Na demonstração gera dados no formato real, sem dinheiro envolvido."""
+    if method == "referencia":
+        return {"entity": "00000", "reference": f"{secrets.randbelow(10**9):09d}",
+                "expires": datetime.fromtimestamp(time.time() + 86400).strftime("%Y-%m-%d %H:%M:%S")}
+    if method == "mcx":
+        return {"phone": phone, "expires": datetime.fromtimestamp(time.time() + 90).strftime("%Y-%m-%d %H:%M:%S")}
+    if method == "loja":
+        return {"reference": "ATC-" + "".join(secrets.choice("ABCDEFGHJKLMNPQRSTUVWXYZ23456789") for _ in range(6))}
+    return {}
+
+
+def gerar_codigo():
+    alfa = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
+    return "-".join("".join(secrets.choice(alfa) for _ in range(4)) for _ in range(3))
+
+
+def demo_aviso():
+    return ('<p class="pay-demo">Ambiente de demonstração: nenhum pagamento é real. Os valores e os dados bancários são exemplos.</p>'
+            if PAG_FORNECEDOR == "demo" else "")
+
+
+# --- Registo ------------------------------------------------------------------
+
+@route("GET", "/registar")
+def register_get(r, error="", values=None):
+    if r.user:
+        raise Redirect("/planos")
+    v = values or {}
+    err = f'<p class="entry-error" role="alert">{h(error)}</p>' if error else ""
+    provs = "".join(f'<option{" selected" if v.get("province") == p else ""}>{h(p)}</option>' for p in PROVINCIAS)
+    return public_page("Criar conta", f"""{public_nav(("/entrar", "Entrar"))}
+<main class="entry">
+  <section class="entry-show" aria-label="O que inclui">
+    <span class="label">Para todo o país</span>
+    <h2 class="serif">Aprenda de qualquer <em>província.</em></h2>
+    <ul class="entry-points">
+      <li><b>Crie a conta</b><span>Com o seu telemóvel e email, em menos de um minuto.</span></li>
+      <li><b>Escolha um plano</b><span>Pague por Multicaixa Express, referência, transferência ou na loja.</span></li>
+      <li><b>Tem um código?</b><span>Clientes da internet do Grupo Angbu recebem um código de acesso.</span></li>
+    </ul>
+  </section>
+  <section class="entry-form"><div>
+    <span class="label">Nova conta</span>
+    <h1 class="serif">Comece <em>hoje.</em></h1>
+    <p class="lead">Já tem conta? <a class="link" href="/entrar">Entrar</a></p>
+    {err}<form method="post" action="/registar">
+      <label class="field"><span class="label">Nome completo</span><input name="name" required maxlength="80" autocomplete="name" value="{h(v.get('name', ''))}"></label>
+      <label class="field"><span class="label">Telemóvel</span><input name="phone" required inputmode="tel" autocomplete="tel" placeholder="9XX XXX XXX" value="{h(v.get('phone', ''))}"></label>
+      <label class="field"><span class="label">Email</span><input type="email" name="email" required autocomplete="email" placeholder="nome@exemplo.com" value="{h(v.get('email', ''))}"></label>
+      <label class="field"><span class="label">Província</span><select name="province" required><option value="">Escolha a sua província</option>{provs}</select></label>
+      <label class="field"><span class="label">Palavra-passe</span><span class="pw"><input type="password" name="pw" required minlength="8" autocomplete="new-password" placeholder="Pelo menos 8 caracteres"><button type="button" data-pw-toggle aria-label="Mostrar palavra-passe" aria-pressed="false">Mostrar</button></span></label>
+      <button class="btn btn-solid">Criar conta <span class="arr">→</span></button>
+    </form>
+    <p class="entry-help">Ao criar conta aceita que a ATC use estes dados para gerir a sua formação.</p>
+  </div></section>
+</main>""")
+
+
+@route("POST", "/registar")
+def register_post(r):
+    d = {k: (r.data.get(k) or "").strip() for k in ("name", "phone", "email", "province")}
+    d["email"] = d["email"].lower()
+    phone, pw = norm_phone(d["phone"]), r.data.get("pw") or ""
+    error = ("Indique o seu nome." if len(d["name"]) < 2 else
+             "Indique um telemóvel angolano válido (9 dígitos, começa por 9)." if not phone else
+             "Indique um email válido." if not re.fullmatch(r"[^@\s]+@[^@\s]+\.[^@\s]+", d["email"]) else
+             "Escolha a sua província." if d["province"] not in PROVINCIAS else
+             "A palavra-passe precisa de pelo menos 8 caracteres." if len(pw) < 8 else
+             "Já existe uma conta com este email. Entre com a sua conta." if r.con.execute("SELECT 1 FROM users WHERE email=?", (d["email"],)).fetchone() else
+             "Já existe uma conta com este telemóvel. Entre com a sua conta." if r.con.execute("SELECT 1 FROM users WHERE phone=?", (phone,)).fetchone() else "")
+    if error:
+        r.send(200, register_get(r, error, d))
+        return None
+    cur = r.con.execute("INSERT INTO users(email, name, role, pw_hash, created, phone, province) VALUES(?,?,?,?,?,?,?)",
+                        (d["email"], d["name"], "formando", hash_pw(pw), now(), phone, d["province"]))
+    r.con.commit()
+    start_session(r, cur.lastrowid, "/planos")
+
+
+def start_session(r, user_id, nxt):
+    tok = secrets.token_urlsafe(32)
+    r.con.execute("DELETE FROM sessions WHERE created < ?", (time.time() - SESSION_DAYS * 86400,))
+    r.con.execute("INSERT INTO sessions VALUES(?,?,?,?)", (tok, user_id, secrets.token_urlsafe(24), time.time()))
+    r.con.commit()
+    seguro = "; Secure" if r.headers.get("X-Forwarded-Proto") == "https" else ""  # atrás do nginx com HTTPS
+    r.send(303, "", headers={"Location": nxt, "Set-Cookie":
+           f"{COOKIE}={tok}; Path=/; HttpOnly; SameSite=Lax; Max-Age={SESSION_DAYS * 86400}{seguro}"})
+
+
+# --- Planos e códigos -----------------------------------------------------------
+
+def estado_acesso(r):
+    ate = acesso_ate(r.con, r.user["id"])
+    if ate:
+        return f'<section class="pay-status"><b>Acesso ativo</b><span>Todos os cursos disponíveis até {data_pt(ate)}.</span><a class="btn small ghost" href="/">Ir para os cursos →</a></section>'
+    if acesso_expirado(r.con, r.user["id"]):
+        return '<section class="pay-status warn"><b>O seu acesso terminou</b><span>Escolha um plano ou introduza um código para continuar.</span></section>'
+    return ""
+
+
+@route("GET", "/planos", "user")
+def plans_page(r, msg=""):
+    plans = r.con.execute("SELECT * FROM plans WHERE active=1 ORDER BY sort").fetchall()
+    pend = r.con.execute("SELECT p.*, pl.name plan FROM payments p JOIN plans pl ON pl.id=p.plan_id WHERE user_id=? AND status IN ('pendente','em_analise') ORDER BY id DESC",
+                         (r.user["id"],)).fetchall()
+    cards = "".join(
+        f'<article class="plan{" best" if p["slug"] == "trimestral" else ""}">{"<span class=tag>Mais escolhido</span>" if p["slug"] == "trimestral" else ""}'
+        f'<h3>{h(p["name"])}</h3><p class="plan-price">{kz(p["price_kz"])}</p><p class="muted">{h(p["description"])}</p>'
+        f'<a class="btn" href="/pagar/{h(p["slug"])}">Escolher {h(p["name"].lower())} →</a></article>' for p in plans)
+    pend_html = "".join(f'<li><a href="/pagamentos/{p["id"]}">{h(p["plan"])} · {METODOS[p["method"]]} · {kz(p["amount_kz"])}</a>'
+                        f'<span class="tag">{PAG_ESTADOS[p["status"]]}</span></li>' for p in pend)
+    flash = f'<div class="flash" role="status">{msg}</div>' if msg else ""
+    return r.render("Planos", f"""{flash}<div class="page-heading"><div><span class="eyebrow">ACESSO À FORMAÇÃO</span><h1>Escolha o seu plano<span class="greeting-dot">.</span></h1>
+<p class="muted">Cada plano dá acesso a todos os cursos disponíveis, com aulas, manuais, questionários e certificado.</p></div></div>
+{estado_acesso(r)}{demo_aviso()}<div class="plans">{cards}</div>
+{"<section class='card'><h2>Pagamentos em curso</h2><ul class='pay-list'>" + pend_html + "</ul></section>" if pend_html else ""}
+<section class="card code-box"><div><span class="eyebrow">TEM UM CÓDIGO DE ACESSO?</span><h2>Ative o seu código</h2>
+<p class="muted">Recebeu um código com a sua internet do Grupo Angbu ou da ATC? Introduza-o aqui.</p></div>
+<form method="post" action="/codigo">{csrf_field(r.csrf)}<input name="code" required placeholder="XXXX-XXXX-XXXX" autocomplete="off" aria-label="Código de acesso"><button class="btn">Ativar código</button></form></section>""")
+
+
+@route("POST", "/codigo", "user")
+def redeem_code(r):
+    code = re.sub(r"[^A-Z0-9]", "", (r.data.get("code") or "").upper())
+    code = "-".join(code[i:i + 4] for i in range(0, len(code), 4))
+    row = r.con.execute("SELECT c.*, p.months, p.name FROM access_codes c JOIN plans p ON p.id=c.plan_id WHERE code=?", (code,)).fetchone()
+    if not row:
+        time.sleep(0.5)
+        r.send(200, plans_page(r, "Código não encontrado. Confirme as letras e os números."))
+        return None
+    if row["used_by"]:
+        r.send(200, plans_page(r, "Este código já foi utilizado."))
+        return None
+    r.con.execute("UPDATE access_codes SET used_by=?, used_at=? WHERE code=? AND used_by IS NULL", (r.user["id"], now(), code))
+    plan = r.con.execute("SELECT * FROM plans WHERE id=?", (row["plan_id"],)).fetchone()
+    end = ativar_plano(r.con, r.user["id"], plan, "codigo", code)
+    r.con.commit()
+    r.send(200, plans_page(r, f"Código ativado. Tem acesso a todos os cursos até {end.strftime('%d/%m/%Y')}."))
+
+
+# --- Pagar ----------------------------------------------------------------------
+
+def plano(r, slug):
+    p = r.con.execute("SELECT * FROM plans WHERE slug=? AND active=1", (slug,)).fetchone()
+    if not p:
+        raise HttpError(404)
+    return p
+
+
+@route("GET", "/pagar/([a-z0-9-]+)", "user")
+def pay_choose(r, slug):
+    p = plano(r, slug)
+    phone = r.user["phone"] if "phone" in r.user.keys() else ""
+    opts = [("mcx", "Multicaixa Express", "Confirma no telemóvel, na app Multicaixa Express. Imediato."),
+            ("referencia", "Referência Multicaixa", "Paga num ATM ou no home banking com entidade e referência. Válida 24 horas."),
+            ("transferencia", "Transferência bancária", "Transfere para a conta da ATC e envia o comprovativo. Confirmado pela ATC."),
+            ("loja", "Pagamento na loja", "Recebe um código e paga na loja do Grupo Angbu. Confirmado no momento.")]
+    radios = "".join(f'<label class="pay-opt"><input type="radio" name="method" value="{k}" required{" checked" if k == "mcx" else ""}>'
+                     f'<span><b>{t}</b><small>{d}</small></span></label>' for k, t, d in opts)
+    return r.render("Pagamento", f"""<div class="page-heading"><div><span class="eyebrow">PLANO {h(p['name'].upper())} · {kz(p['price_kz'])}</span>
+<h1>Como prefere pagar<span class="greeting-dot">?</span></h1><p class="muted">{h(p['description'])}</p></div></div>{demo_aviso()}
+<form method="post" action="/pagar/{h(slug)}" class="card pay-form">{csrf_field(r.csrf)}<fieldset><legend class="sr-only">Método de pagamento</legend>{radios}</fieldset>
+<label class="mcx-phone">Telemóvel associado ao Multicaixa Express<input name="phone" inputmode="tel" placeholder="9XX XXX XXX" value="{h((phone or '').replace('+244', ''))}"></label>
+<div class="pay-actions"><a href="/planos">← Voltar aos planos</a><button class="btn">Continuar → {kz(p['price_kz'])}</button></div></form>""")
+
+
+@route("POST", "/pagar/([a-z0-9-]+)", "user")
+def pay_create(r, slug):
+    p = plano(r, slug)
+    method = r.data.get("method")
+    if method not in METODOS:
+        raise HttpError(400, "Escolha um método de pagamento.")
+    phone = norm_phone(r.data.get("phone")) if method == "mcx" else None
+    if method == "mcx" and not phone:
+        raise HttpError(400, "Indique o telemóvel associado ao Multicaixa Express (9 dígitos).")
+    info = pag_criar_pedido(method, p["price_kz"], phone)
+    cur = r.con.execute("""INSERT INTO payments(user_id, plan_id, amount_kz, method, provider, entity, reference, phone, expires, created, updated)
+                           VALUES(?,?,?,?,?,?,?,?,?,?,?)""", (r.user["id"], p["id"], p["price_kz"], method, PAG_FORNECEDOR,
+                           info.get("entity"), info.get("reference"), info.get("phone"), info.get("expires"), now(), now()))
+    r.con.commit()
+    raise Redirect(f"/pagamentos/{cur.lastrowid}")
+
+
+def pagamento_do_formando(r, pid):
+    p = r.con.execute("SELECT p.*, pl.name plan, pl.months FROM payments p JOIN plans pl ON pl.id=p.plan_id WHERE p.id=?", (pid,)).fetchone()
+    if not p or (p["user_id"] != r.user["id"] and not r.is_staff()):
+        raise HttpError(404)
+    if p["status"] == "pendente" and p["expires"] and p["expires"] < now():
+        r.con.execute("UPDATE payments SET status='expirado', updated=? WHERE id=?", (now(), pid))
+        r.con.commit()
+        return pagamento_do_formando(r, pid)
+    return p
+
+
+@route("GET", "/pagamentos/([0-9]+)", "user")
+def pay_page(r, pid):
+    p = pagamento_do_formando(r, int(pid))
+    m, st = p["method"], p["status"]
+    head = (f'<div class="page-heading"><div><span class="eyebrow">{METODOS[m].upper()} · PLANO {h(p["plan"].upper())}</span>'
+            f'<h1>{"Pagamento confirmado" if st == "pago" else "Pagamento " + PAG_ESTADOS[st].lower()}<span class="greeting-dot">.</span></h1></div>'
+            f'<span class="tag pay-{st}">{PAG_ESTADOS[st]}</span></div>')
+    if st == "pago":
+        ate = acesso_ate(r.con, p["user_id"])
+        return r.render("Pagamento", head + f'<section class="pay-status"><b>{kz(p["amount_kz"])} recebidos.</b><span>Tem acesso a todos os cursos até {data_pt(ate)}.</span>'
+                        f'<a class="btn small" href="/">Começar a aprender →</a></section>')
+    if st in ("recusado", "expirado"):
+        why = "O pagamento não foi aprovado." if st == "recusado" else "O prazo deste pedido terminou."
+        return r.render("Pagamento", head + f'<section class="pay-status warn"><b>{why}</b><span>Pode tentar de novo com o mesmo ou outro método.</span>'
+                        f'<a class="btn small" href="/planos">Escolher de novo →</a></section>')
+    sim = ""
+    if PAG_FORNECEDOR == "demo" and m in ("mcx", "referencia"):
+        acao = "Simular aprovação no telemóvel" if m == "mcx" else "Simular pagamento no ATM"
+        sim = (f'<form method="post" action="/pagamentos/{p["id"]}/simular" class="pay-sim">{csrf_field(r.csrf)}<span>Demonstração: não há fornecedor ligado.</span>'
+               f'<button class="btn small" name="ok" value="1">{acao}</button>'
+               + (f'<button class="btn small ghost" name="ok" value="0">Simular recusa</button>' if m == "mcx" else "") + '</form>')
+    if m == "mcx":
+        body = (f'<section class="card pay-box"><p class="pay-big">Confirme no seu telemóvel</p><p>Enviámos um pedido de <b>{kz(p["amount_kz"])}</b> para a app Multicaixa Express do número '
+                f'<b>{h(p["phone"])}</b>. Abra a app e aprove o pagamento.</p><p class="muted">O pedido expira às {h(p["expires"][11:16])}. Esta página atualiza sozinha.</p>{sim}</section>'
+                f'<meta http-equiv="refresh" content="8">')
+    elif m == "referencia":
+        body = (f'<section class="card pay-box"><div class="ref-grid"><div><span>Entidade</span><b>{h(p["entity"])}</b></div><div><span>Referência</span><b>{h(p["reference"][:3])} {h(p["reference"][3:6])} {h(p["reference"][6:])}</b></div>'
+                f'<div><span>Montante</span><b>{kz(p["amount_kz"])}</b></div></div><p>Pague num ATM Multicaixa ou no home banking, em <b>Pagamentos → Pagamento por referência</b>. '
+                f'O acesso é ativado automaticamente após o pagamento.</p><p class="muted">Válida até {data_pt(p["expires"])} às {h(p["expires"][11:16])}.</p>{sim}</section>')
+    elif m == "transferencia":
+        b = PAG_DADOS_BANCO
+        enviado = p["proof"] or p["note"]
+        body = (f'<section class="card pay-box"><div class="ref-grid"><div><span>Banco</span><b>{h(b["banco"])}</b></div><div><span>Titular</span><b>{h(b["titular"])}</b></div>'
+                f'<div class="wide"><span>IBAN</span><b>{h(b["iban"])}</b></div><div><span>Montante</span><b>{kz(p["amount_kz"])}</b></div><div><span>Descritivo</span><b>ATC P{p["id"]}</b></div></div>'
+                + ('<p><b>Comprovativo recebido.</b> A ATC confirma o pagamento e ativa o seu acesso, normalmente no mesmo dia útil.</p>' if enviado else
+                   f'<p>Depois de transferir, envie o comprovativo (PDF ou fotografia).</p><form method="post" action="/pagamentos/{p["id"]}/comprovativo" enctype="multipart/form-data" class="proof-form">'
+                   f'{csrf_field(r.csrf)}<input type="file" name="proof" accept=".pdf,.jpg,.jpeg,.png" required aria-label="Comprovativo de pagamento"><input name="note" placeholder="N.º da operação (opcional)" aria-label="Número da operação">'
+                   f'<button class="btn">Enviar comprovativo</button></form>') + '</section>')
+    else:
+        body = (f'<section class="card pay-box"><p class="pay-big">{h(p["reference"])}</p><p>Apresente este código numa loja do Grupo Angbu e pague <b>{kz(p["amount_kz"])}</b> na caixa. '
+                f'O acesso é ativado quando a loja confirmar o pagamento.</p><p class="muted">Guarde este código ou tire uma fotografia ao ecrã.</p></section>')
+    return r.render("Pagamento", head + demo_aviso() + body + '<p><a href="/planos">← Voltar aos planos</a></p>')
+
+
+@route("POST", "/pagamentos/([0-9]+)/simular", "user")
+def pay_simulate(r, pid):
+    if PAG_FORNECEDOR != "demo":
+        raise HttpError(404)
+    p = pagamento_do_formando(r, int(pid))
+    if p["method"] in ("mcx", "referencia") and p["status"] == "pendente":
+        pag_confirmar(r.con, p["id"], r.data.get("ok") == "1")
+        r.con.commit()
+    raise Redirect(f"/pagamentos/{pid}")
+
+
+@route("POST", "/pagamentos/([0-9]+)/comprovativo", "user")
+def pay_proof(r, pid):
+    p = pagamento_do_formando(r, int(pid))
+    f = r.data.get("proof")
+    if p["method"] != "transferencia" or p["status"] != "pendente":
+        raise Redirect(f"/pagamentos/{pid}")
+    if not isinstance(f, dict) or not f["data"]:
+        raise HttpError(400, "Escolha o ficheiro do comprovativo.")
+    ext = {"application/pdf": ".pdf", "image/jpeg": ".jpg", "image/png": ".png"}.get(f["type"]) or Path(f["filename"]).suffix.lower()
+    if ext not in (".pdf", ".jpg", ".jpeg", ".png") or (ext == ".pdf" and not f["data"].startswith(b"%PDF")) or \
+            (ext != ".pdf" and not (f["data"].startswith(b"\xff\xd8") or f["data"].startswith(b"\x89PNG"))):
+        raise HttpError(400, "O comprovativo tem de ser um PDF, JPG ou PNG.")
+    COMPROVATIVOS.mkdir(parents=True, exist_ok=True)
+    name = f"P{p['id']}-{secrets.token_hex(6)}{'.jpg' if ext == '.jpeg' else ext}"
+    (COMPROVATIVOS / name).write_bytes(f["data"])
+    r.con.execute("UPDATE payments SET proof=?, note=?, status='em_analise', updated=? WHERE id=?",
+                  (name, (r.data.get("note") or "")[:80], now(), p["id"]))
+    r.con.commit()
+    raise Redirect(f"/pagamentos/{pid}")
+
+
+@route("POST", "/pagamentos/notificacao")
+def pay_webhook(r):
+    """Confirmação do fornecedor de pagamentos (servidor a servidor). Corpo JSON {"payment_id": n, "status": "pago"|"recusado"},
+    com cabeçalho X-ATC-Assinatura = HMAC-SHA256 de "payment_id:status" com ATC_PAG_SEGREDO. Sem segredo configurado, fica desligado.
+    Ao ligar um fornecedor real, adaptar aqui o formato da notificação dele."""
+    if not PAG_SEGREDO:
+        raise HttpError(404)
+    d = r.data if isinstance(r.data, dict) else {}
+    msg = f'{d.get("payment_id")}:{d.get("status")}'.encode()
+    sig = hmac.new(PAG_SEGREDO.encode(), msg, hashlib.sha256).hexdigest()
+    if not hmac.compare_digest(r.headers.get("X-ATC-Assinatura", ""), sig) or d.get("status") not in ("pago", "recusado"):
+        raise HttpError(403, "Assinatura inválida.")
+    pag_confirmar(r.con, int(d["payment_id"]), d["status"] == "pago")
+    r.con.commit()
+    r.send(200, '{"ok": true}', ctype="application/json")
+
+
+# --- Gestão: pagamentos e códigos ------------------------------------------------
+
+@route("GET", "/admin/pagamentos", "staff")
+def admin_payments(r):
+    rows = r.con.execute("""SELECT p.*, u.name uname, u.phone uphone, u.province, pl.name plan FROM payments p JOIN users u ON u.id=p.user_id
+                            JOIN plans pl ON pl.id=p.plan_id ORDER BY (p.status IN ('em_analise','pendente')) DESC, p.id DESC LIMIT 200""").fetchall()
+    def actions(p):
+        if p["status"] not in ("pendente", "em_analise") or p["method"] not in ("transferencia", "loja"):
+            return ""
+        return (f'<form method="post" action="/admin/pagamentos/{p["id"]}" class="inline">{csrf_field(r.csrf)}'
+                f'<button class="btn small" name="ok" value="1">Confirmar</button> <button class="btn small ghost" name="ok" value="0">Recusar</button></form>')
+    trs = "".join(f'<tr><td>P{p["id"]}<br><small class="muted">{h(p["created"][:16])}</small></td><td>{h(p["uname"])}<br><small class="muted">{h(p["uphone"] or "")} · {h(p["province"] or "")}</small></td>'
+                  f'<td>{h(p["plan"])}<br><small class="muted">{kz(p["amount_kz"])}</small></td><td>{METODOS[p["method"]]}<br><small class="muted">{h(p["reference"] or p["note"] or "")}</small></td>'
+                  f'<td><span class="tag pay-{p["status"]}">{PAG_ESTADOS[p["status"]]}</span>'
+                  + (f'<br><a href="/admin/pagamentos/{p["id"]}/comprovativo">Ver comprovativo</a>' if p["proof"] else "") + f'</td><td>{actions(p)}</td></tr>' for p in rows)
+    n_rev = sum(1 for p in rows if p["status"] == "em_analise")
+    return r.render("Pagamentos", f"""<h1>Pagamentos</h1>{admin_tabs('/admin/pagamentos', r.user['role'] == 'admin')}{demo_aviso()}
+<p class="muted">Transferências com comprovativo e pagamentos na loja são confirmados aqui. Multicaixa Express e referências são confirmados pelo fornecedor. {n_rev} por analisar.</p>
+<div class="tablewrap"><table><thead><tr><th>Pedido</th><th>Formando</th><th>Plano</th><th>Método</th><th>Estado</th><th></th></tr></thead><tbody>{trs or '<tr><td colspan=6 class=muted>Ainda não há pagamentos.</td></tr>'}</tbody></table></div>""")
+
+
+@route("POST", "/admin/pagamentos/([0-9]+)", "staff")
+def admin_payment_review(r, pid):
+    p = r.con.execute("SELECT * FROM payments WHERE id=?", (int(pid),)).fetchone()
+    if p and p["method"] in ("transferencia", "loja"):
+        pag_confirmar(r.con, p["id"], r.data.get("ok") == "1", r.user["id"])
+        r.con.commit()
+    raise Redirect("/admin/pagamentos")
+
+
+@route("GET", "/admin/pagamentos/([0-9]+)/comprovativo", "staff")
+def admin_payment_proof(r, pid):
+    p = r.con.execute("SELECT proof FROM payments WHERE id=?", (int(pid),)).fetchone()
+    if not p or not p["proof"]:
+        raise HttpError(404)
+    return r.serve_file(COMPROVATIVOS / p["proof"])
+
+
+@route("GET", "/admin/codigos", "admin")
+def admin_codes(r, msg=""):
+    plans = r.con.execute("SELECT * FROM plans WHERE active=1 ORDER BY sort").fetchall()
+    lotes = r.con.execute("""SELECT c.label, p.name plan, COUNT(*) n, SUM(c.used_by IS NOT NULL) used, MIN(c.created) created
+                             FROM access_codes c JOIN plans p ON p.id=c.plan_id GROUP BY c.label, p.name ORDER BY created DESC""").fetchall()
+    opts = "".join(f'<option value="{p["id"]}">{h(p["name"])} ({p["months"]} {"mês" if p["months"] == 1 else "meses"})</option>' for p in plans)
+    trs = "".join(f'<tr><td>{h(l["label"])}</td><td>{h(l["plan"])}</td><td>{l["n"]}</td><td>{l["used"]}</td><td>{h(l["created"][:10])}</td>'
+                  f'<td><a href="/admin/codigos.csv?lote={urllib.parse.quote(l["label"])}">Descarregar CSV</a></td></tr>' for l in lotes)
+    flash = f'<div class="flash" role="status">{msg}</div>' if msg else ""
+    return r.render("Códigos de acesso", f"""{flash}<h1>Códigos de acesso</h1>{admin_tabs('/admin/codigos', True)}
+<p class="muted">Cada código dá acesso a todos os cursos durante o período do plano. Use-os para vender a formação com a internet do Grupo Angbu, em parcerias ou na loja.</p>
+<form method="post" action="/admin/codigos" class="card code-gen">{csrf_field(r.csrf)}<label>Lote<input name="label" required maxlength="60" placeholder="Ex.: Internet Angbu — outubro"></label>
+<label>Plano<select name="plan_id">{opts}</select></label><label>Quantidade<input type="number" name="n" min="1" max="500" value="20" required></label><button class="btn">Gerar códigos</button></form>
+<div class="tablewrap"><table><thead><tr><th>Lote</th><th>Plano</th><th>Códigos</th><th>Usados</th><th>Criado</th><th></th></tr></thead><tbody>{trs or '<tr><td colspan=6 class=muted>Ainda não há códigos.</td></tr>'}</tbody></table></div>""")
+
+
+@route("POST", "/admin/codigos", "admin")
+def admin_codes_create(r):
+    label = (r.data.get("label") or "").strip()[:60]
+    plan = r.con.execute("SELECT * FROM plans WHERE id=?", (int(r.data.get("plan_id") or 0),)).fetchone()
+    n = max(1, min(500, int(r.data.get("n") or 0)))
+    if not label or not plan:
+        raise HttpError(400, "Indique o nome do lote e o plano.")
+    for _ in range(n):
+        while True:
+            code = gerar_codigo()
+            if not r.con.execute("SELECT 1 FROM access_codes WHERE code=?", (code,)).fetchone():
+                break
+        r.con.execute("INSERT INTO access_codes(code, plan_id, label, created_by, created) VALUES(?,?,?,?,?)", (code, plan["id"], label, r.user["id"], now()))
+    r.con.commit()
+    r.send(200, admin_codes(r, f"{n} códigos criados no lote «{h(label)}». Descarregue o CSV para os distribuir."))
+
+
+@route("GET", "/admin/codigos.csv", "admin")
+def admin_codes_csv(r):
+    rows = r.con.execute("""SELECT c.code, p.name plan, c.label, c.created, u.email FROM access_codes c JOIN plans p ON p.id=c.plan_id
+                            LEFT JOIN users u ON u.id=c.used_by WHERE c.label=? ORDER BY c.created, c.code""", (r.query.get("lote", ""),)).fetchall()
+    out = io.StringIO()
+    w = csv.writer(out)
+    w.writerow(["codigo", "plano", "lote", "criado", "usado_por"])
+    for row in rows:
+        w.writerow([row["code"], row["plan"], row["label"], row["created"], row["email"] or ""])
+    r.send(200, "﻿" + out.getvalue(), ctype="text/csv; charset=utf-8",
+           headers={"Content-Disposition": 'attachment; filename="codigos-atc.csv"'})
+
+
 @route("GET", "/")
 def home(r):
     if not r.user:
@@ -1159,7 +1659,8 @@ def home(r):
     profile = learner_profile(r)
     first = profile["display_name"].split()[0] if profile["display_name"] else ""
     mine_html = ("".join(course_card(r, c, True) for c in mine) if mine else
-                 '<p class="muted">Ainda não está inscrito em nenhum curso. Fale com a ATC para se inscrever.</p>')
+                 ('<p class="muted">Ainda não tem cursos ativos. <a href="/planos">Escolha um plano ou ative um código →</a></p>'
+                  if r.user["role"] == "formando" else '<p class="muted">Ainda não está inscrito em nenhum curso.</p>'))
     progress = [course_progress(r.con, r.user["id"], c["id"]) for c in mine]
     completed = sum(p["complete"] for p in progress)
     lessons_done = sum(p["lessons_done"] for p in progress)
@@ -1183,6 +1684,10 @@ def home(r):
 <div class="featured-art" aria-hidden="true"><div class="orbit orbit-one"></div><div class="orbit orbit-two"></div><div class="art-window"><div class="window-dots">● ● ●</div><span class="art-symbol">⌘</span><div class="art-line"></div><div class="art-line short"></div><span class="art-label">O conhecimento abre portas.</span></div><span class="art-badge">ATC / ACADEMIA DIGITAL</span></div></section>'''
     else:
         feature = '<section class="welcome-empty card"><span class="eyebrow">O SEU PERCURSO COMEÇA AQUI</span><h2>Novas competências. Novas possibilidades.</h2><p>Explore a oferta de formação e fale com a ATC para se inscrever.</p><a class="btn" href="#catalogo">Explorar catálogo ↗</a></section>'
+    ate = acesso_ate(r.con, r.user["id"])
+    access_badge = (f'<a class="learning-badge" href="/planos">● Acesso até {data_pt(ate)}</a>' if ate else
+                    '<a class="learning-badge warn" href="/planos">● Acesso terminado · renovar</a>' if acesso_expirado(r.con, r.user["id"]) else
+                    '<span class="learning-badge">● Ao seu ritmo. Com a ATC.</span>')
     nxt_step = onboarding_next(r) if r.user["role"] == "formando" else None
     if nxt_step:
         done_n = len(onboarding_done(r))
@@ -1191,7 +1696,7 @@ def home(r):
     else:
         profile_hint = ""
     profile_hint = profile_hint or (f'<section class="profile-prompt"><div><b>Bem-vindo à sua academia.</b><span>Personalize o perfil e conte-nos o que gostaria de aprender.</span></div><a class="btn ghost small" href="/conta">Personalizar perfil →</a></section>' if not r.con.execute("SELECT 1 FROM learner_profiles WHERE user_id=?", (r.user["id"],)).fetchone() else (f'<section class="profile-prompt"><div><span class="eyebrow">O SEU OBJETIVO</span><b>{h(profile["goal"])}</b></div><a href="/conta">Editar</a></section>' if profile['goal'] else ''))
-    return r.render("Os meus cursos", f'''{profile_hint}<div class="page-heading"><div><span class="eyebrow">A SUA ACADEMIA DIGITAL</span><h1>Olá, {h(first)}<span class="greeting-dot">.</span></h1><p class="muted">É um bom dia para dar o próximo passo.</p></div><span class="learning-badge">● Ao seu ritmo. Com a ATC.</span></div>
+    return r.render("Os meus cursos", f'''{profile_hint}<div class="page-heading"><div><span class="eyebrow">A SUA ACADEMIA DIGITAL</span><h1>Olá, {h(first)}<span class="greeting-dot">.</span></h1><p class="muted">É um bom dia para dar o próximo passo.</p></div>{access_badge}</div>
 <div class="learning-stats"><div><span class="stat-icon">◫</span><div><b>{len(mine):02d}</b><span>Cursos inscritos</span></div></div><div><span class="stat-icon">✓</span><div><b>{lessons_done:02d}</b><span>Aulas concluídas</span></div></div><div><span class="stat-icon">◎</span><div><b>{cert_count:02d}</b><span>Certificados obtidos</span></div></div></div>
 {feature}<div class="section-heading"><div><span class="eyebrow">PASSO A PASSO</span><h2>Os meus cursos <span class="count">{len(mine)}</span></h2></div><span class="muted">{completed} concluídos</span></div><div class="courses my-courses">{mine_html}</div>
 <section id="catalogo"><div class="section-heading"><div><span class="eyebrow">CONTINUE A DESCOBRIR</span><h2>Explore o catálogo</h2></div><label class="catalog-search"><span class="sr-only">Pesquisar cursos no catálogo</span><input id="course-search" type="search" placeholder="Pesquisar cursos…" aria-controls="catalog-courses"></label></div>
@@ -1999,7 +2504,7 @@ def cert_page(r, code):
     hours = row["hours_class"] or row["hours_video"]
     verify = f"http://{r.headers.get('Host', 'localhost')}/verificar?codigo={code}"
     return f"""<!doctype html><html lang="pt-PT"><head><meta charset="utf-8"><title>Certificado {h(code)}</title>
-<meta name="viewport" content="width=device-width, initial-scale=1"><link rel="stylesheet" href="/static/atc.css?v=13"></head>
+<meta name="viewport" content="width=device-width, initial-scale=1"><link rel="stylesheet" href="/static/atc.css?v=15"></head>
 <body class="certbody"><div class="noprint certbar"><a href="/">← Voltar</a> <button onclick="print()" class="btn small">Imprimir / guardar PDF</button></div>
 <div class="cert"><div class="certin"><img src="/static/logo-600.png" alt="ATC"><p class="k">Certificado de conclusão</p>
 <p>Certifica-se que</p><h1>{h(row['name'])}</h1><p>concluiu com aproveitamento o curso</p><h2>{h(row['title'])}</h2>
@@ -2027,9 +2532,9 @@ def verify_page(r):
 # ---------------------------------------------------------------------------
 
 def admin_tabs(active, admin):
-    tabs = [("/admin", "Resumo"), ("/admin/utilizadores", "Utilizadores"), ("/admin/perguntas", "Perguntas dos formandos")]
+    tabs = [("/admin", "Resumo"), ("/admin/utilizadores", "Utilizadores"), ("/admin/perguntas", "Perguntas dos formandos"), ("/admin/pagamentos", "Pagamentos")]
     if admin:
-        tabs.append(("/admin/cursos", "Cursos"))
+        tabs += [("/admin/codigos", "Códigos de acesso"), ("/admin/cursos", "Cursos")]
     return '<nav class="tabs">' + "".join(f'<a href="{u}"{" class=on" if u == active else ""}>{t}</a>' for u, t in tabs) + "</nav>"
 
 
@@ -2051,7 +2556,7 @@ def admin_home(r):
                     f'<td><a href="/admin/relatorio/{c["slug"]}">Relatório</a></td></tr>')
     demo = ""
     if r.user["role"] == "admin" and setting(con, "demo") == "1":
-        demo = (f'<section class="card warnbox"><b>Modo de demonstração ativo.</b> As contas de teste aparecem na página de entrada. '
+        demo = (f'<section class="card warnbox"><b>Modo de demonstração ativo.</b> As contas de teste (formando, formador e admin) continuam ativas com as palavras-passe iniciais. '
                 f'Antes de abrir aos formandos, altere as palavras-passe e desative este aviso.'
                 f'<form method="post" action="/admin/demo-off">{csrf_field(r.csrf)}<button class="btn small">Desativar aviso</button></form></section>')
     ai = ("ligado (" + h(OLLAMA_MODEL) + ")") if ollama_available() else f"desligado (Ollama não encontrado em {h(OLLAMA_URL)} com o modelo {h(OLLAMA_MODEL)})"

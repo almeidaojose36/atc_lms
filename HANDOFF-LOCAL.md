@@ -85,3 +85,11 @@ The user wants a subdomain on the client's domain so the client can try the LMS.
 - Commit with clear messages and push to `claude/modest-franklin-264d3y`. Don't open a pull request unless the user asks.
 - Keep learner text in PT-PT. Don't invent course content: the voice guide and the decks only use what is in the lessons and manuals.
 - Build tools used in the cloud session (not needed to run the LMS): ffmpeg, Playwright with Chromium, OpenCV, and Node with `pptxgenjs` and `sharp` for the decks.
+
+## Registo, planos e pagamentos (16 out. 2026)
+
+- **Registo público** em `/registar`: nome, telemóvel angolano (+244 9XX…), email, província (21) e palavra-passe. Entra-se com o email **ou** o telemóvel.
+- **Acesso separado do pagamento:** tabela `subscriptions` (acesso a todos os cursos publicados até uma data). As inscrições feitas pela ATC continuam sem expirar.
+- **Formas de obter acesso:** Multicaixa Express, referência Multicaixa, transferência com comprovativo (PDF/JPG/PNG, revisto em Gestão → Pagamentos), pagamento na loja (código ATC-XXXXXX confirmado em Gestão), ou **código de acesso** (Gestão → Códigos de acesso; lotes em CSV, por exemplo para a internet do Grupo Angbu).
+- **Fornecedor de pagamentos:** `ATC_PAG_FORNECEDOR=demo` (predefinição) simula Multicaixa Express e referências, com botões de simulação identificados. Para um fornecedor real, substituir `pag_criar_pedido()` e ligar as confirmações a `POST /pagamentos/notificacao` (HMAC com `ATC_PAG_SEGREDO`).
+- **Por definir com a ATC:** preços (de demonstração: 7 500 / 19 500 / 60 000 Kz), dados bancários (`PAG_DADOS_BANCO`) e o fornecedor (EMIS GPO através do banco, ProxyPay ou AppyPay).

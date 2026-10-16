@@ -4,6 +4,7 @@ import os
 import sys
 import tempfile
 import unittest
+import urllib.parse
 from pathlib import Path
 from wsgiref.util import setup_testing_defaults
 
@@ -14,12 +15,12 @@ sys.path.insert(0, str(RAIZ))
 import passenger_wsgi  # noqa: E402
 
 
-def pedido(path, method="GET", body=b"", headers=None, https=False):
+def pedido(path, method="GET", body=b"", headers=None, https=False, ctype="application/x-www-form-urlencoded"):
     env = {"REQUEST_METHOD": method, "PATH_INFO": path.split("?")[0],
            "QUERY_STRING": path.partition("?")[2], "wsgi.input": io.BytesIO(body),
            "CONTENT_LENGTH": str(len(body)), "wsgi.url_scheme": "https" if https else "http"}
     if body:
-        env["CONTENT_TYPE"] = "application/x-www-form-urlencoded"
+        env["CONTENT_TYPE"] = ctype
     for k, v in (headers or {}).items():
         env["HTTP_" + k.upper().replace("-", "_")] = v
     setup_testing_defaults(env)
@@ -164,6 +165,113 @@ class BeginnerPathTests(unittest.TestCase):
         self.assertIn('data-seguinte href="/cursos/informatica/aula/aula-1-2" aria-disabled="true"', aula)
         self.assertIn("Primeiros passos no Windows", aula)
         self.assertIn("amostra-windows-atc.mp4", aula)
+
+
+class PagamentosTests(unittest.TestCase):
+    """Registo, planos, pagamentos de demonstração, comprovativos, códigos de acesso e expiração."""
+
+    def registar(self, phone, email):
+        body = urllib.parse.urlencode({"name": "Teste Cabinda", "phone": phone, "email": email, "province": "Cabinda", "pw": "segredo123"}).encode()
+        r = pedido("/registar", "POST", body)
+        self.assertTrue(r["status"].startswith("303"), r["body"][:300])
+        self.assertEqual(r["h"]["location"], "/planos")
+        return r["h"]["set-cookie"].split(";")[0]
+
+    def csrf(self, cookie, path="/planos"):
+        return pedido(path, headers={"Cookie": cookie})["body"].decode().split('name="csrf" content="')[1].split('"')[0]
+
+    def post(self, path, cookie, **campos):
+        campos["csrf"] = self.csrf(cookie)
+        return pedido(path, "POST", urllib.parse.urlencode(campos).encode(), headers={"Cookie": cookie})
+
+    def acesso(self, cookie):
+        """True se o formando consegue abrir o curso publicado (200, ou redirecionado para escolher o guia), False se recebe 403."""
+        st = pedido("/cursos/informatica", headers={"Cookie": cookie})["status"]
+        self.assertTrue(st[:3] in ("200", "303", "403"), st)
+        return not st.startswith("403")
+
+    def pagar(self, cookie, method, plan="mensal", **extra):
+        r = self.post(f"/pagar/{plan}", cookie, method=method, **extra)
+        self.assertTrue(r["status"].startswith("303"), r["body"][:300])
+        return r["h"]["location"]
+
+    def test_registo_valida_e_entra_com_telemovel(self):
+        bad = pedido("/registar", "POST", b"name=Ana&phone=123&email=x%40y.ao&province=Cabinda&pw=segredo123")
+        self.assertIn("telemóvel angolano válido".encode(), bad["body"])
+        self.registar("923 000 001", "t1@exemplo.ao")
+        dup = pedido("/registar", "POST", b"name=Outro&phone=%2B244923000001&email=t1b%40exemplo.ao&province=Luanda&pw=segredo123")
+        self.assertIn("Já existe uma conta com este telemóvel".encode(), dup["body"])
+        r = pedido("/entrar", "POST", b"email=923000001&pw=segredo123")
+        self.assertTrue(r["status"].startswith("303"))
+
+    def test_multicaixa_express_demo_ativa_acesso(self):
+        c = self.registar("923000002", "t2@exemplo.ao")
+        self.assertFalse(self.acesso(c))
+        loc = self.pagar(c, "mcx", phone="923000002")
+        page = pedido(loc, headers={"Cookie": c})["body"].decode()
+        self.assertIn("Confirme no seu telemóvel", page)
+        r = self.post(loc + "/simular", c, ok="1")
+        self.assertTrue(r["status"].startswith("303"))
+        self.assertIn("Pagamento confirmado", pedido(loc, headers={"Cookie": c})["body"].decode())
+        self.assertTrue(self.acesso(c))
+        self.assertIn("Acesso ativo", pedido("/planos", headers={"Cookie": c})["body"].decode())
+
+    def test_referencia_e_pagamento_alheio(self):
+        c = self.registar("923000003", "t3@exemplo.ao")
+        loc = self.pagar(c, "referencia", plan="trimestral")
+        page = pedido(loc, headers={"Cookie": c})["body"].decode()
+        self.assertIn("Entidade", page)
+        self.assertIn("19 500 Kz", page)
+        outro = self.registar("923000004", "t4@exemplo.ao")
+        self.assertTrue(pedido(loc, headers={"Cookie": outro})["status"].startswith("404"))   # não vê pagamentos de outros
+
+    def test_transferencia_com_comprovativo_e_aprovacao(self):
+        c = self.registar("923000005", "t5@exemplo.ao")
+        loc = self.pagar(c, "transferencia")
+        csrf = self.csrf(c, loc)
+        fr = "----atc"
+        body = (f"--{fr}\r\nContent-Disposition: form-data; name=\"csrf\"\r\n\r\n{csrf}\r\n"
+                f"--{fr}\r\nContent-Disposition: form-data; name=\"note\"\r\n\r\nOP123\r\n"
+                f"--{fr}\r\nContent-Disposition: form-data; name=\"proof\"; filename=\"recibo.pdf\"\r\nContent-Type: application/pdf\r\n\r\n").encode() \
+            + b"%PDF-1.4 teste" + f"\r\n--{fr}--\r\n".encode()
+        r = pedido(loc + "/comprovativo", "POST", body, headers={"Cookie": c}, ctype=f"multipart/form-data; boundary={fr}")
+        self.assertTrue(r["status"].startswith("303"), r["body"][:300])
+        self.assertIn("Comprovativo recebido", pedido(loc, headers={"Cookie": c})["body"].decode())
+        admin = pedido("/entrar", "POST", b"email=admin%40atc.ao&pw=admin123")["h"]["set-cookie"].split(";")[0]
+        lista = pedido("/admin/pagamentos", headers={"Cookie": admin})["body"].decode()
+        self.assertIn("Ver comprovativo", lista)
+        pid = loc.rsplit("/", 1)[1]
+        self.assertTrue(pedido(f"/admin/pagamentos/{pid}/comprovativo", headers={"Cookie": admin})["body"].startswith(b"%PDF"))
+        csrf_a = lista.split('name="csrf" content="')[1].split('"')[0]
+        pedido(f"/admin/pagamentos/{pid}", "POST", f"ok=1&csrf={csrf_a}".encode(), headers={"Cookie": admin})
+        self.assertTrue(self.acesso(c))
+
+    def test_codigo_de_acesso_uso_unico_e_expiracao(self):
+        admin = pedido("/entrar", "POST", b"email=admin%40atc.ao&pw=admin123")["h"]["set-cookie"].split(";")[0]
+        page = pedido("/admin/codigos", headers={"Cookie": admin})["body"].decode()
+        csrf_a = page.split('name="csrf" content="')[1].split('"')[0]
+        pedido("/admin/codigos", "POST", f"label=Internet+Angbu&plan_id=1&n=2&csrf={csrf_a}".encode(), headers={"Cookie": admin})
+        csv_ = pedido("/admin/codigos.csv?lote=Internet%20Angbu", headers={"Cookie": admin})["body"].decode("utf-8-sig")
+        code = csv_.splitlines()[1].split(",")[0]
+        c = self.registar("923000006", "t6@exemplo.ao")
+        r = self.post("/codigo", c, code=code.replace("-", "").lower())
+        self.assertIn("Código ativado".encode(), r["body"])
+        self.assertTrue(self.acesso(c))
+        outro = self.registar("923000007", "t7@exemplo.ao")
+        self.assertIn("já foi utilizado".encode(), self.post("/codigo", outro, code=code)["body"])
+        con = passenger_wsgi.atc.db() if hasattr(passenger_wsgi, "atc") else None
+        if con is None:
+            import atc_lms
+            con = atc_lms.db()
+        uid = con.execute("SELECT id FROM users WHERE email='t6@exemplo.ao'").fetchone()[0]
+        con.execute("UPDATE subscriptions SET ends='2000-01-01 00:00:00' WHERE user_id=?", (uid,))
+        con.commit()
+        self.assertFalse(self.acesso(c))   # acesso expirado
+        self.assertIn("O seu acesso terminou", pedido("/planos", headers={"Cookie": c})["body"].decode())
+
+    def test_notificacao_sem_segredo_desligada(self):
+        r = pedido("/pagamentos/notificacao", "POST", b'{"payment_id": 1, "status": "pago"}', ctype="application/json")
+        self.assertTrue(r["status"].startswith("404"))
 
 
 if __name__ == "__main__":

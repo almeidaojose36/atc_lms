@@ -441,3 +441,39 @@ footer { color:#8392a3; }
   .featured-copy { padding:30px 26px; } .learning-stats > div { padding:16px 12px; border-radius:14px; } .learning-stats b { font-size:24px; } .page-heading h1 { font-size:32px; } .course { border-radius:16px; } .top { position:static; }
 }
 @media (prefers-reduced-motion:reduce) { * { animation:none !important; transition:none !important; } }
+
+/* ===== Planos e pagamentos ===== */
+.plans { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:20px; margin:8px 0 30px; }
+.plan { position:relative; background:#fff; border:1px solid #e6ebf1; border-radius:20px; padding:28px; box-shadow:var(--shadow-s); display:flex; flex-direction:column; transition:transform .3s var(--ease),box-shadow .3s var(--ease); }
+.plan:hover { transform:translateY(-4px); box-shadow:var(--shadow-m); }
+.plan.best { border-color:#f0c9a6; box-shadow:0 0 0 1px #f0c9a6,var(--shadow-m); } .plan .tag { position:absolute; top:18px; right:18px; background:#fff1e4; color:#b95116; }
+.plan h3 { margin:0 0 8px; font-size:15px; color:var(--navy); } .plan-price { font:600 30px/1.1 Montserrat,sans-serif; color:var(--navy); margin:4px 0 10px; letter-spacing:-.02em; }
+.plan .muted { font-size:12px; margin:0 0 22px; flex:1; } .plan .btn { text-align:center; }
+.pay-status { display:flex; align-items:center; gap:14px; flex-wrap:wrap; padding:16px 20px; border-radius:14px; margin:0 0 20px; border:1px solid #cfe6d8; background:#f1faf4; }
+.pay-status b { color:#1f6a40; } .pay-status span { color:#4b6455; font-size:13px; flex:1; }
+.pay-status.warn { border-color:#f1d9c3; background:#fff6ee; } .pay-status.warn b { color:#a44a12; } .pay-status.warn span { color:#7a5a43; }
+.pay-demo { margin:0 0 20px; padding:10px 14px; border-radius:10px; border:1px dashed #d9b48f; background:#fffaf4; color:#8a5a2b; font-size:12px; }
+.pay-form fieldset { border:0; margin:0; padding:0; display:grid; gap:10px; }
+.pay-opt { display:flex; gap:14px; align-items:flex-start; padding:16px 18px; border:1px solid #e1e7ee; border-radius:14px; cursor:pointer; transition:border-color .2s,background .2s; }
+.pay-opt:hover { border-color:#c8d3de; } .pay-opt:has(input:checked) { border-color:#da6d24; background:#fff7f0; }
+.pay-opt input { width:auto; flex:none; margin:3px 0 0; padding:0; accent-color:#da6d24; } .pay-opt > span { flex:1; } .pay-opt b { display:block; color:var(--navy); font-size:14px; } .pay-opt small { color:var(--muted); font-size:12px; }
+.mcx-phone { display:none; margin-top:16px; font-size:12px; font-weight:600; color:#33485c; } .pay-form:has(input[value=mcx]:checked) .mcx-phone { display:block; }
+.mcx-phone input { display:block; margin-top:6px; max-width:280px; }
+.pay-actions { display:flex; justify-content:space-between; align-items:center; gap:14px; margin-top:22px; }
+.pay-box { max-width:720px; } .pay-box p { font-size:14px; } .pay-big { font:600 24px/1.2 Montserrat,sans-serif; color:var(--navy); letter-spacing:.02em; }
+.ref-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; margin-bottom:18px; }
+.ref-grid > div { padding:14px 16px; border-radius:12px; background:#f5f7fa; border:1px solid #e6ebf1; } .ref-grid .wide { grid-column:span 2; }
+.ref-grid span { display:block; font-size:10px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); margin-bottom:6px; }
+.ref-grid b { font:600 17px Montserrat,sans-serif; color:var(--navy); letter-spacing:.03em; word-break:break-word; }
+.pay-sim { display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-top:18px; padding:12px 14px; border-radius:12px; border:1px dashed #d9b48f; background:#fffaf4; }
+.pay-sim span { font-size:12px; color:#8a5a2b; flex:1; min-width:180px; }
+.proof-form { display:flex; gap:10px; flex-wrap:wrap; align-items:center; } .proof-form input[name=note] { flex:1; min-width:200px; }
+.pay-list { list-style:none; margin:0; padding:0; } .pay-list li { display:flex; justify-content:space-between; gap:12px; padding:12px 0; border-bottom:1px solid #edf0f4; }
+.tag.pay-pago { background:#e3f4ea; color:#1f6a40; } .tag.pay-recusado, .tag.pay-expirado { background:#fbe9e7; color:#a3341c; }
+.tag.pay-em_analise { background:#fff1e4; color:#b95116; } .tag.pay-pendente { background:#eef2f6; color:#425a70; }
+.code-box { display:flex; justify-content:space-between; align-items:center; gap:24px; flex-wrap:wrap; }
+.code-box h2 { margin:6px 0 4px; } .code-box form { display:flex; gap:10px; } .code-box input { width:220px; letter-spacing:.12em; text-transform:uppercase; font-family:Montserrat,sans-serif; }
+.code-gen { display:flex; gap:14px; align-items:flex-end; flex-wrap:wrap; margin-bottom:22px; } .code-gen label { font-size:12px; font-weight:600; flex:1; min-width:160px; }
+.learning-badge.warn { color:#a44a12; } a.learning-badge { text-decoration:none; }
+form.inline { display:inline; }
+@media(max-width:900px) { .plans { grid-template-columns:1fr; } .ref-grid { grid-template-columns:1fr; } .ref-grid .wide { grid-column:auto; } .code-box form { width:100%; } .code-box input { flex:1; width:auto; } }

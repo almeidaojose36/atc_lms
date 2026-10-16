@@ -156,3 +156,9 @@ img, video { display:block; max-width:100%; }
   .entry { grid-template-columns:1fr; } .entry-form { order:-1; padding:110px var(--pad) 50px; }
   .entry-show { padding:56px var(--pad); border-right:0; border-top:1px solid var(--line); } .entry-show h2 { font-size:40px; margin-bottom:28px; }
 }
+.field select { width:100%; height:54px; padding:0 14px; border-radius:6px; border:1px solid #ece6da2e; background:#0b1825; color:var(--paper); font:400 15px Geist,sans-serif; }
+.field select:focus { outline:0; border-color:var(--accent); }
+.link { color:var(--paper); border-bottom:1px solid #ece6da55; }
+.entry-points { list-style:none; margin:0; padding:0; max-width:480px; border-top:1px solid var(--line); }
+.entry-points li { padding:22px 0; border-bottom:1px solid var(--line); }
+.entry-points b { display:block; font:400 26px/1.15 "Instrument Serif",serif; margin-bottom:6px; } .entry-points span { color:var(--mute); }
