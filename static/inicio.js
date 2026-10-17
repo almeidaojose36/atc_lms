@@ -11,17 +11,6 @@
     p.addEventListener('mouseleave', () => thumb.classList.remove('on'));
     p.addEventListener('mousemove', (e) => { thumb.style.left = e.clientX + 'px'; thumb.style.top = e.clientY + 'px'; });
   });
-  // Relógio e data em direto no ecrã do computador (/entrar).
-  const pcClock = document.getElementById('pc-clock'), pcDate = document.getElementById('pc-date');
-  if (pcClock) {
-    const tickClock = () => {
-      const d = new Date();
-      pcClock.textContent = d.toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' });
-      if (pcDate) pcDate.textContent = d.toLocaleDateString('pt-PT', { weekday: 'short', day: '2-digit', month: 'short' });
-    };
-    tickClock();
-    setInterval(tickClock, 15000);
-  }
   // Guias na página inicial: ouvir a apresentação da Helena ou do Miguel em direto no cartão.
   const guideCards = [...document.querySelectorAll('.guide')];
   guideCards.forEach((card) => {
@@ -79,19 +68,21 @@
     }
   };
   const tabs = [...feat.querySelectorAll('.feature-tab')];
+  let setTrack = null;   // definido mais abaixo quando há animação
   const feyebrow = document.getElementById('feyebrow'), ftitle = document.getElementById('ftitle'), fdesc = document.getElementById('fdesc');
-  const netVideo = feat.querySelector('.feature-net');
+  const still = feat.querySelector('.feature-media img');
+  const stillA = still && { src: still.getAttribute('src'), alt: still.alt };
   const items = [...feat.querySelectorAll('.modules li')], count = document.getElementById('fcount');
   tabs.forEach((tab) => tab.addEventListener('click', () => {
     const key = tab.dataset.track, data = TRACKS[key];
     if (!data) return;
     tabs.forEach((t) => { t.classList.toggle('on', t === tab); t.setAttribute('aria-selected', String(t === tab)); });
-    feat.classList.toggle('mode-net', key === 'netplus');
     if (feyebrow) feyebrow.textContent = data.eyebrow;
     if (ftitle) ftitle.textContent = data.title;
     if (fdesc) fdesc.textContent = data.desc;
     items.forEach((li, i) => { const b = li.querySelector('b'); if (b && data.modules[i]) b.textContent = data.modules[i]; });
-    if (netVideo) { if (key === 'netplus') netVideo.play().catch(() => {}); else netVideo.pause(); }
+    if (still) { const net = key === 'netplus'; still.src = net ? still.dataset.netSrc : stillA.src; still.alt = net ? still.dataset.netAlt : stillA.alt; }
+    if (setTrack) setTrack(key);
   }));
   items.forEach((li, idx) => {
     const jump = () => {
@@ -106,12 +97,28 @@
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (reduce) { feat.classList.add('no-motion'); feat.style.height = 'auto'; return; }
   const canvas = feat.querySelector('canvas'), ctx = canvas.getContext('2d');
-  const n = +feat.dataset.count, small = matchMedia('(max-width: 768px)').matches;
-  const url = (k) => `${feat.dataset.frames}${small ? 'm/' : ''}${String(k).padStart(4, '0')}.webp`;
-  const frames = [];
+  // Cada percurso tem a sua sequência: A+ (o PC desmonta-se) e Network+ (a rede acende-se do PC ao servidor).
+  // Em ambas, o fotograma n é o início (scroll no topo) e o 1 é o fim.
+  const small = matchMedia('(max-width: 768px)').matches;
+  const SEQ = {
+    aplus: { dir: feat.dataset.frames, n: +feat.dataset.count, frames: [] },
+    netplus: { dir: feat.dataset.framesNet, n: +feat.dataset.countNet, frames: [] }
+  };
+  let seq = SEQ.aplus, n = seq.n, frames = seq.frames, near = false;
+  const url = (k) => `${seq.dir}${small ? 'm/' : ''}${String(k).padStart(4, '0')}.webp`;
   const load = (k) => { if (!frames[k]) { const im = new Image(); im.src = url(k); im.onload = () => draw(); frames[k] = im; } return frames[k]; };
-  for (let k = n; k > n - 20; k--) load(k);             // o PC montado (fim da sequência) primeiro
-  new IntersectionObserver((es, o) => { if (es[0].isIntersecting) { for (let k = n; k >= 1; k--) load(k); o.disconnect(); } }, { rootMargin: '150% 0px' }).observe(feat);
+  const loadAll = () => { for (let k = n; k >= 1; k--) load(k); };
+  for (let k = n; k > n - 20; k--) load(k);             // o início da sequência primeiro
+  new IntersectionObserver((es, o) => { if (es[0].isIntersecting) { near = true; loadAll(); o.disconnect(); } }, { rootMargin: '150% 0px' }).observe(feat);
+  setTrack = (key) => {
+    const next = SEQ[key];
+    if (!next || !next.dir || !next.n || next === seq) return;
+    seq = next; n = seq.n; frames = seq.frames;
+    const k = Math.round(n - p * (n - 1));              // carrega primeiro os fotogramas à volta da posição atual
+    for (let j = 0; j < 12; j++) { load(Math.min(n, k + j)); load(Math.max(1, k - j)); }
+    if (near) loadAll();
+    draw();
+  };
   let p = 0;
   function fit() { const r = canvas.getBoundingClientRect(), d = Math.min(devicePixelRatio || 1, 2); canvas.width = r.width * d; canvas.height = r.height * d; draw(); }
   function draw() {

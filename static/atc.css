@@ -1,8 +1,7 @@
 /* ATC – Angbu Training Centre: navy #0B2137, laranja #DA6D24, laranja claro #F08A3E, creme #F4F1E6 */
-@font-face { font-family: Geist; src: url(fonts/Geist.woff2) format("woff2"); font-weight: 100 900; font-display: swap; }
-@font-face { font-family: "Instrument Serif"; src: url(fonts/InstrumentSerif.woff2) format("woff2"); font-display: swap; }
-@font-face { font-family: "Instrument Serif"; src: url(fonts/InstrumentSerif-Italic.woff2) format("woff2"); font-style: italic; font-display: swap; }
-:root { --font-sans: Geist, system-ui, -apple-system, "Segoe UI", Arial, sans-serif; --font-serif: "Instrument Serif", Georgia, serif; --font-mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+@font-face { font-family:Lexend; src:url(fonts/Lexend.woff2) format("woff2"); font-weight:100 900; font-display:swap; unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD; }
+@font-face { font-family:Lexend; src:url(fonts/Lexend-ext.woff2) format("woff2"); font-weight:100 900; font-display:swap; unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF; }
+:root { --font-sans: Lexend, system-ui, -apple-system, "Segoe UI", Arial, sans-serif; --font-serif: Lexend, system-ui, sans-serif; --font-mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   --navy: #0B2137; --orange: #DA6D24; --orange2: #F08A3E; --cream: #F4F1E6; --ink: #1d2733; --muted: #5f6b78;
   --line: #e2dccb; --card: #fff; --ok: #2e7d4f; --bad: #b3361f; }
 * { box-sizing: border-box; }
@@ -564,3 +563,13 @@ body.cinema .player video { max-height:78vh; }
 .cert-qr { width:52px; height:52px; flex-shrink:0; color:var(--navy); padding:4px; background:#fff; border:1px solid #d8cfc0; border-radius:6px; }
 @media (max-width:760px) { .cert-qr-wrap { flex-direction:column; text-align:center; } .art-window { width:180px; } }
 
+
+/* Tipografia Lexend (referência Edubox) */
+body { font-weight:300; letter-spacing:-.003em; }
+b, strong, th, label { font-weight:500; }
+h1, h2, h3 { font-weight:700; letter-spacing:-.03em; }
+h3 { font-weight:600; letter-spacing:-.015em; }
+.btn, .cinema-btn, .som-escolha button { font-weight:500; letter-spacing:0; }
+.login-story em { font-family:var(--font-sans); font-style:normal; font-weight:700; color:#fff; background:#e07a2e; -webkit-background-clip:border-box; background-clip:border-box; padding:0 .16em .02em; border-radius:.14em; -webkit-box-decoration-break:clone; box-decoration-break:clone; }
+.certin h1, .certin h2 { font-weight:700; letter-spacing:-.03em; }
+.certin h1 { font-size:2.4rem; } .certin h2 { font-size:1.6rem; }

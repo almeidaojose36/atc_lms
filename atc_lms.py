@@ -674,8 +674,8 @@ def page(title, body, user=None, csrf="", wide=False, flash="", profile=None, pr
               f'<div class="workspace-label">Área de aprendizagem <span>/</span> <b>{h(title)}</b></div>{chip}<a class="account-link" href="/conta">{h(user["name"].split()[0])} <span class="avatar avatar-{h(profile_color)}">{h(user["name"][:1].upper())}</span></a>' if user else brand + ('<a class="top-cta" href="/entrar">Entrar <span aria-hidden="true">→</span></a>' if cta else ''))
     return f"""<!doctype html><html lang="pt-PT"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{h(title)} · ATC Formação</title><link rel="icon" href="/static/logo-200.png"><link rel="preload" href="/static/fonts/Geist.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="/static/atc.css?v=17"><meta name="csrf" content="{h(csrf)}"><script src="/static/ui.js?v=6" defer></script></head>
+<title>{h(title)} · ATC Formação</title><link rel="icon" href="/static/logo-200.png"><link rel="preload" href="/static/fonts/Lexend.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/static/atc.css?v=18"><meta name="csrf" content="{h(csrf)}"><script src="/static/ui.js?v=6" defer></script></head>
 <body class="{('app foco' if foco else 'app') if user else 'public'}{' ' + body_class if body_class else ''}"{f' data-u="{user["id"]}"' if user else ''}><a class="skip-link" href="#conteudo">Saltar para o conteúdo</a>{sidebar}<div class="workspace"><header class="top"><div class="wrap">{header}</div></header>
 <main id="conteudo" class="wrap{' wide' if wide else ''}">{flash_html}{body}</main>
 <footer><div class="wrap"><span>ATC · Angbu Training Centre</span><span>Cabinda, Angola · Aprendizagem com propósito</span></div></footer></div>{scripts}</body></html>"""
@@ -932,46 +932,17 @@ def login_get(r, error=""):
     <figure class="lesson"><div class="lesson-frame"><img src="/static/inicio/aula.jpg" alt=""><video src="/static/inicio/aula.mp4" poster="/static/inicio/aula.jpg" autoplay muted loop playsinline aria-hidden="true"></video></div>
       <figcaption><span><span class="lesson-live label">Aula 1.1 · em vídeo</span><b>O ambiente de trabalho</b></span><span class="lesson-guide"><img src="/static/presenters/helena.png" alt=""><img src="/static/presenters/miguel.png" alt=""><span class="label">Com a Helena ou o Miguel</span></span></figcaption></figure>
   </section>
-  <section class="entry-form entry-pc" aria-label="Iniciar sessão no computador">
-    <div class="pc-monitor">
-      <div class="pc-bezel-top" aria-hidden="true"><span class="pc-cam"></span><span class="pc-mic"></span></div>
-      <div class="pc-screen">
-        <div class="pc-topbar" aria-hidden="true">
-          <span class="pc-os-brand">❖ ATC OS · Estação de Formação</span>
-          <span class="pc-os-status">
-            <span class="pc-kbd">PT</span>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><circle cx="12" cy="20" r="1" fill="currentColor"/></svg>
-            <svg width="15" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="18" height="10" rx="2"/><line x1="22" y1="11" x2="22" y2="13"/><rect x="4" y="9" width="12" height="6" fill="currentColor"/></svg>
-            <span id="pc-clock">09:41</span>
-          </span>
-        </div>
-        <div class="pc-login">
-          <div class="pc-user-badge" aria-hidden="true">
-            <div class="pc-avatar">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="8" r="4"/><path d="M4 20c1.8-3.8 5-6 8-6s6.2 2.2 8 6"/></svg>
-              <span class="pc-online" title="Pronto a iniciar"></span>
-            </div>
-            <span class="pc-session-pill">● Iniciar sessão no computador</span>
-          </div>
-          <span class="label">A sua área de formação</span>
-          <h1 class="serif">Bem-vindo <em>de volta.</em></h1>
-          <p class="lead">Introduza as suas credenciais para desbloquear o seu ambiente de trabalho.</p>
-          {err}<form method="post" action="/entrar"><input type="hidden" name="seguinte" value="{nxt}">
-            <label class="field"><span class="label">Utilizador (email ou telemóvel)</span><input name="email" required autofocus autocomplete="username" placeholder="nome@exemplo.com ou 9XX XXX XXX"></label>
-            <label class="field"><span class="label">Palavra-passe da conta</span><span class="pw"><input type="password" name="pw" required autocomplete="current-password" placeholder="••••••••"><button type="button" data-pw-toggle aria-label="Mostrar palavra-passe" aria-pressed="false">Mostrar</button></span></label>
-            <button class="btn btn-solid">Entrar na plataforma <span class="arr">↵</span></button>
-          </form>
-        </div>
-        <div class="pc-taskbar">
-          <p class="entry-help">Novo utilizador? <a href="/registar">Criar conta</a></p>
-          <div class="pc-power" aria-hidden="true">
-            <span id="pc-date">Cabinda</span>
-            <span class="pc-power-btn" title="Sistema ativo">⏻</span>
-          </div>
-        </div>
-      </div>
-      <div class="pc-chin" aria-hidden="true"><span>ATC · WORKSTATION</span></div>
-      <div class="pc-stand" aria-hidden="true"></div>
+  <section class="entry-form entry-card-wrap" aria-labelledby="entrar-titulo">
+    <div class="entry-card">
+      <span class="label">A sua conta ATC</span>
+      <h1 class="serif" id="entrar-titulo">Bem-vindo <em>de volta.</em></h1>
+      <p class="lead">Entre com o email ou o telemóvel com que se registou.</p>
+      {err}<form method="post" action="/entrar"><input type="hidden" name="seguinte" value="{nxt}">
+        <label class="field"><span class="label">Email ou telemóvel</span><input name="email" required autofocus autocomplete="username" placeholder="nome@exemplo.com ou 9XX XXX XXX"></label>
+        <label class="field"><span class="label">Palavra-passe</span><span class="pw"><input type="password" name="pw" required autocomplete="current-password" placeholder="••••••••"><button type="button" data-pw-toggle aria-label="Mostrar palavra-passe" aria-pressed="false">Mostrar</button></span></label>
+        <button class="btn btn-solid">Entrar <span class="arr">→</span></button>
+      </form>
+      <p class="entry-help">Ainda não tem conta? <a href="/registar">Criar conta</a></p>
     </div>
   </section>
 </main>""")
@@ -1130,8 +1101,8 @@ def public_page(title, body, privada=False):
     """Páginas públicas (início e entrada): visual editorial próprio, sem a barra lateral do LMS."""
     return f"""<!doctype html><html lang="pt-PT"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{h(title)} · ATC Formação</title>{'<meta name="robots" content="noindex, nofollow">' if privada else ''}<meta name="description" content="Formação em informática, hardware e redes, em português, na ATC — Angbu Training Centre, Cabinda.">
-<link rel="icon" href="/static/logo-200.png"><link rel="preload" href="/static/fonts/Geist.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/static/fonts/InstrumentSerif.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="/static/inicio.css?v=11"><script src="/static/inicio.js?v=5" defer></script><script src="/static/ui.js?v=6" defer></script></head>
+<link rel="icon" href="/static/logo-200.png"><link rel="preload" href="/static/fonts/Lexend.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/static/inicio.css?v=14"><script src="/static/inicio.js?v=7" defer></script><script src="/static/ui.js?v=6" defer></script></head>
 <body>{body}</body></html>"""
 
 
@@ -1141,6 +1112,7 @@ LANDING_PATHS = [("informatica", "/static/inicio/thumb-info.jpg"), ("comptia-a-p
 
 def landing(r):
     count = len(list((STATIC / "frames" / "aplus").glob("*.webp")))
+    count_net = len(list((STATIC / "frames" / "netplus").glob("*.webp")))
     courses = {c["slug"]: c for c in r.con.execute("SELECT slug, title, status FROM courses WHERE active=1")}
     rows = [(courses[s], img) for s, img in LANDING_PATHS if s in courses]
     names = {"word": "Microsoft Office"}
@@ -1174,9 +1146,9 @@ def landing(r):
   </div>
 </section>
 
-<section class="feature" id="feature" data-frames="/static/frames/aplus/" data-count="{count}">
+<section class="feature" id="feature" data-frames="/static/frames/aplus/" data-count="{count}" data-frames-net="/static/frames/netplus/" data-count-net="{count_net}">
   <div class="feature-stick">
-    <div class="feature-media"><canvas aria-hidden="true"></canvas><video class="feature-net" src="/static/inicio/rede.mp4" poster="/static/inicio/rede.jpg" muted loop playsinline preload="none" aria-hidden="true"></video><img src="/static/inicio/pc.jpg" alt="Computador de secretária montado."><div class="feature-count" aria-hidden="true"><span id="fcount">01</span><small>/ 04</small></div></div>
+    <div class="feature-media"><canvas aria-hidden="true"></canvas><img src="/static/inicio/pc.jpg" alt="Computador de secretária montado." data-net-src="/static/inicio/rede.jpg" data-net-alt="Computador ligado à rede: switch, router, Internet e servidor."><div class="feature-count" aria-hidden="true"><span id="fcount">01</span><small>/ 04</small></div></div>
     <div class="feature-copy">
       <div class="feature-tabs" role="tablist" aria-label="Percursos técnicos em destaque">
         <button type="button" class="feature-tab on" role="tab" aria-selected="true" data-track="aplus">01 · CompTIA A+ · Hardware</button>
@@ -2694,7 +2666,7 @@ def cert_page(r, code):
     verify = f"{esquema}://{r.headers.get('Host', 'localhost')}/verificar?codigo={code}"
     rosette = "".join(f'<ellipse cx="200" cy="200" rx="170" ry="62" transform="rotate({deg} 200 200)" fill="none" stroke="currentColor" stroke-width="0.7"/>' for deg in range(0, 180, 15))
     return f"""<!doctype html><html lang="pt-PT"><head><meta charset="utf-8"><title>Certificado {h(code)}</title>
-<meta name="viewport" content="width=device-width, initial-scale=1"><link rel="stylesheet" href="/static/atc.css?v=17"></head>
+<meta name="viewport" content="width=device-width, initial-scale=1"><link rel="stylesheet" href="/static/atc.css?v=18"></head>
 <body class="certbody"><div class="noprint certbar"><a href="/">← Voltar</a> <button onclick="print()" class="btn small">Imprimir / guardar PDF</button></div>
 <div class="cert"><div class="certin">
 <svg class="cert-guilloche" viewBox="0 0 400 400" aria-hidden="true">{rosette}<circle cx="200" cy="200" r="182" fill="none" stroke="currentColor" stroke-width="0.8" stroke-dasharray="3 3"/></svg>
