@@ -133,7 +133,7 @@
             {
               "steps": [
                 "Escreva o título **Relatório de Formação** e carregue em **Enter**.",
-                "Escreva as linhas de identificação: **ATC — Angbu Training Centre**, **Curso: Microsoft Word**, **Local: Luanda** e **Formadora: Helena**.",
+                "Escreva as linhas de identificação: **ATC — Angbu Training Centre**, **Curso: Microsoft Word**, **Local: Cabinda** e **Formadora: Helena**.",
                 "Escreva o título da secção **Objetivo da sessão** e, por baixo, uma frase: **Criar um documento claro e organizar informação profissional.**",
                 "Escreva o título da secção **Atividades realizadas** e continue na linha seguinte."
               ]
@@ -201,6 +201,68 @@
         "Os estilos mantêm os títulos e os parágrafos consistentes.",
         "Uma lista com marcas apresenta itens curtos.",
         "Reveja sempre o documento antes de o fechar ou partilhar."
+      ],
+      "quiz": [
+        {
+          "q": "Em que separador do friso se encontram os comandos para mudar o tipo de letra, aplicar listas e escolher estilos?",
+          "options": [
+            "Inserir",
+            "Base",
+            "Rever",
+            "Esquema"
+          ],
+          "answer": 1
+        },
+        {
+          "q": "Qual é a vantagem de usar o grupo Estilos nos títulos em vez de aumentar o tamanho da letra manualmente?",
+          "options": [
+            "O ficheiro ocupa menos espaço no computador",
+            "Todos os títulos ficam consistentes e o documento fica mais fácil de estruturar",
+            "O texto passa a ser corrigido automaticamente",
+            "Impede que outras pessoas editem o documento"
+          ],
+          "answer": 1
+        },
+        {
+          "q": "Que separador deve abrir para adicionar uma tabela, uma imagem ou números de página?",
+          "options": [
+            "Base",
+            "Ver",
+            "Inserir",
+            "Ficheiro"
+          ],
+          "answer": 2
+        },
+        {
+          "q": "O que indica um sublinhado ondulado vermelho debaixo de uma palavra no Word?",
+          "options": [
+            "Que a palavra está formatada com um estilo de título",
+            "Um possível erro ortográfico ou uma palavra não reconhecida pelo dicionário",
+            "Que o documento ainda não foi guardado",
+            "Que o texto tem uma hiperligação ativa"
+          ],
+          "answer": 1
+        },
+        {
+          "q": "Quando deve usar uma lista com marcas num relatório profissional?",
+          "options": [
+            "Para escrever o título principal do documento",
+            "Para apresentar itens curtos e claros sem uma ordem obrigatória",
+            "Apenas no cabeçalho e no rodapé da página",
+            "Para substituir todos os parágrafos do texto"
+          ],
+          "answer": 1
+        },
+        {
+          "q": "Antes de fechar o separador do navegador no Word para a Web, o que deve confirmar?",
+          "options": [
+            "Que o zoom está a 100%",
+            "Que o estado do ficheiro indica que ficou guardado",
+            "Que o separador Inserir está selecionado",
+            "Que o documento tem pelo menos duas páginas"
+          ],
+          "answer": 1
+        }
       ]
     }
   ],

@@ -276,6 +276,17 @@ def to_vtt(text):
     return "WEBVTT\n\n" + "\n\n".join(f"{ts(a)} --> {ts(b)}\n{t}" for a, b, t in parse_subtitles(text)) + "\n"
 
 
+def ts_seconds(ts):
+    parts = [float(x) for x in ts.replace(",", ".").split(":")]
+    return parts[0] * 3600 + parts[1] * 60 + parts[2] if len(parts) == 3 else parts[0] * 60 + parts[1] if len(parts) == 2 else parts[0]
+
+
+def fmt_ts(sec):
+    s = max(0, int(round(sec)))
+    return f"{s // 60}:{s % 60:02d}"
+
+
+
 def mp4_duration(path):
     """Duração de um MP4 lida da caixa mvhd (sem ffprobe)."""
     try:
@@ -623,6 +634,18 @@ def bar(pct):
     return f'<div class="bar" role="progressbar" aria-valuenow="{pct}" aria-valuemin="0" aria-valuemax="100"><span style="width:{pct}%"></span></div>'
 
 
+def ring_svg(pct, size=68, dark=False):
+    pct = max(0, min(100, int(round(pct or 0))))
+    r = 26
+    circ = 2 * 3.14159265 * r
+    off = circ * (1 - pct / 100.0)
+    cls = "ring ring-dark" if dark else "ring"
+    return (f'<div class="{cls}" style="width:{size}px;height:{size}px" aria-hidden="true">'
+            f'<svg viewBox="0 0 64 64"><circle class="ring-bg" cx="32" cy="32" r="{r}"/>'
+            f'<circle class="ring-fg" cx="32" cy="32" r="{r}" stroke-dasharray="{circ:.1f}" stroke-dashoffset="{off:.1f}"/></svg>'
+            f'<b>{pct}%</b></div>')
+
+
 def page(title, body, user=None, csrf="", wide=False, flash="", profile=None, presenter=None, here="/", foco=False, cta=False, scripts="", body_class=""):
     if user:
         user = dict(user)
@@ -651,8 +674,8 @@ def page(title, body, user=None, csrf="", wide=False, flash="", profile=None, pr
               f'<div class="workspace-label">Área de aprendizagem <span>/</span> <b>{h(title)}</b></div>{chip}<a class="account-link" href="/conta">{h(user["name"].split()[0])} <span class="avatar avatar-{h(profile_color)}">{h(user["name"][:1].upper())}</span></a>' if user else brand + ('<a class="top-cta" href="/entrar">Entrar <span aria-hidden="true">→</span></a>' if cta else ''))
     return f"""<!doctype html><html lang="pt-PT"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{h(title)} · ATC Formação</title><link rel="icon" href="/static/logo-200.png">
-<link rel="stylesheet" href="/static/atc.css?v=15"><meta name="csrf" content="{h(csrf)}"><script src="/static/ui.js?v=6" defer></script></head>
+<title>{h(title)} · ATC Formação</title><link rel="icon" href="/static/logo-200.png"><link rel="preload" href="/static/fonts/Geist.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/static/atc.css?v=17"><meta name="csrf" content="{h(csrf)}"><script src="/static/ui.js?v=6" defer></script></head>
 <body class="{('app foco' if foco else 'app') if user else 'public'}{' ' + body_class if body_class else ''}"{f' data-u="{user["id"]}"' if user else ''}><a class="skip-link" href="#conteudo">Saltar para o conteúdo</a>{sidebar}<div class="workspace"><header class="top"><div class="wrap">{header}</div></header>
 <main id="conteudo" class="wrap{' wide' if wide else ''}">{flash_html}{body}</main>
 <footer><div class="wrap"><span>ATC · Angbu Training Centre</span><span>Cabinda, Angola · Aprendizagem com propósito</span></div></footer></div>{scripts}</body></html>"""
@@ -909,17 +932,48 @@ def login_get(r, error=""):
     <figure class="lesson"><div class="lesson-frame"><img src="/static/inicio/aula.jpg" alt=""><video src="/static/inicio/aula.mp4" poster="/static/inicio/aula.jpg" autoplay muted loop playsinline aria-hidden="true"></video></div>
       <figcaption><span><span class="lesson-live label">Aula 1.1 · em vídeo</span><b>O ambiente de trabalho</b></span><span class="lesson-guide"><img src="/static/presenters/helena.png" alt=""><img src="/static/presenters/miguel.png" alt=""><span class="label">Com a Helena ou o Miguel</span></span></figcaption></figure>
   </section>
-  <section class="entry-form"><div>
-    <span class="label">A sua área de formação</span>
-    <h1 class="serif">Bem-vindo <em>de volta.</em></h1>
-    <p class="lead">Entre com a sua conta para continuar o seu percurso.</p>
-    {err}<form method="post" action="/entrar"><input type="hidden" name="seguinte" value="{nxt}">
-      <label class="field"><span class="label">Email ou telemóvel</span><input name="email" required autofocus autocomplete="username" placeholder="nome@exemplo.com ou 9XX XXX XXX"></label>
-      <label class="field"><span class="label">Palavra-passe</span><span class="pw"><input type="password" name="pw" required autocomplete="current-password" placeholder="A sua palavra-passe"><button type="button" data-pw-toggle aria-label="Mostrar palavra-passe" aria-pressed="false">Mostrar</button></span></label>
-      <button class="btn btn-solid">Entrar na plataforma <span class="arr">→</span></button>
-    </form>
-    <p class="entry-help">Ainda não tem conta? <a href="/registar">Criar conta</a></p>
-  </div></section>
+  <section class="entry-form entry-pc" aria-label="Iniciar sessão no computador">
+    <div class="pc-monitor">
+      <div class="pc-bezel-top" aria-hidden="true"><span class="pc-cam"></span><span class="pc-mic"></span></div>
+      <div class="pc-screen">
+        <div class="pc-topbar" aria-hidden="true">
+          <span class="pc-os-brand">❖ ATC OS · Estação de Formação</span>
+          <span class="pc-os-status">
+            <span class="pc-kbd">PT</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><circle cx="12" cy="20" r="1" fill="currentColor"/></svg>
+            <svg width="15" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="18" height="10" rx="2"/><line x1="22" y1="11" x2="22" y2="13"/><rect x="4" y="9" width="12" height="6" fill="currentColor"/></svg>
+            <span id="pc-clock">09:41</span>
+          </span>
+        </div>
+        <div class="pc-login">
+          <div class="pc-user-badge" aria-hidden="true">
+            <div class="pc-avatar">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="8" r="4"/><path d="M4 20c1.8-3.8 5-6 8-6s6.2 2.2 8 6"/></svg>
+              <span class="pc-online" title="Pronto a iniciar"></span>
+            </div>
+            <span class="pc-session-pill">● Iniciar sessão no computador</span>
+          </div>
+          <span class="label">A sua área de formação</span>
+          <h1 class="serif">Bem-vindo <em>de volta.</em></h1>
+          <p class="lead">Introduza as suas credenciais para desbloquear o seu ambiente de trabalho.</p>
+          {err}<form method="post" action="/entrar"><input type="hidden" name="seguinte" value="{nxt}">
+            <label class="field"><span class="label">Utilizador (email ou telemóvel)</span><input name="email" required autofocus autocomplete="username" placeholder="nome@exemplo.com ou 9XX XXX XXX"></label>
+            <label class="field"><span class="label">Palavra-passe da conta</span><span class="pw"><input type="password" name="pw" required autocomplete="current-password" placeholder="••••••••"><button type="button" data-pw-toggle aria-label="Mostrar palavra-passe" aria-pressed="false">Mostrar</button></span></label>
+            <button class="btn btn-solid">Entrar na plataforma <span class="arr">↵</span></button>
+          </form>
+        </div>
+        <div class="pc-taskbar">
+          <p class="entry-help">Novo utilizador? <a href="/registar">Criar conta</a></p>
+          <div class="pc-power" aria-hidden="true">
+            <span id="pc-date">Cabinda</span>
+            <span class="pc-power-btn" title="Sistema ativo">⏻</span>
+          </div>
+        </div>
+      </div>
+      <div class="pc-chin" aria-hidden="true"><span>ATC · WORKSTATION</span></div>
+      <div class="pc-stand" aria-hidden="true"></div>
+    </div>
+  </section>
 </main>""")
 
 
@@ -1076,8 +1130,8 @@ def public_page(title, body, privada=False):
     """Páginas públicas (início e entrada): visual editorial próprio, sem a barra lateral do LMS."""
     return f"""<!doctype html><html lang="pt-PT"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{h(title)} · ATC Formação</title>{'<meta name="robots" content="noindex, nofollow">' if privada else ''}<meta name="description" content="Formação em informática, hardware e redes, em português, na ATC — Angbu Training Centre, Cabinda.">
-<link rel="icon" href="/static/logo-200.png"><link rel="preload" href="/static/fonts/InstrumentSerif.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="/static/inicio.css?v=7"><script src="/static/inicio.js?v=2" defer></script><script src="/static/ui.js?v=6" defer></script></head>
+<link rel="icon" href="/static/logo-200.png"><link rel="preload" href="/static/fonts/Geist.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/static/fonts/InstrumentSerif.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/static/inicio.css?v=11"><script src="/static/inicio.js?v=5" defer></script><script src="/static/ui.js?v=6" defer></script></head>
 <body>{body}</body></html>"""
 
 
@@ -1122,16 +1176,20 @@ def landing(r):
 
 <section class="feature" id="feature" data-frames="/static/frames/aplus/" data-count="{count}">
   <div class="feature-stick">
-    <div class="feature-media"><canvas aria-hidden="true"></canvas><img src="/static/inicio/pc.jpg" alt="Computador de secretária montado."><div class="feature-count" aria-hidden="true"><span id="fcount">01</span><small>/ 04</small></div></div>
+    <div class="feature-media"><canvas aria-hidden="true"></canvas><video class="feature-net" src="/static/inicio/rede.mp4" poster="/static/inicio/rede.jpg" muted loop playsinline preload="none" aria-hidden="true"></video><img src="/static/inicio/pc.jpg" alt="Computador de secretária montado."><div class="feature-count" aria-hidden="true"><span id="fcount">01</span><small>/ 04</small></div></div>
     <div class="feature-copy">
-      <span class="label">Percurso em destaque</span>
-      <h2 class="serif">CompTIA A+</h2>
-      <p>Monte, configure e repare computadores. Do processador à rede sem fios, aprende o que um técnico faz todos os dias.</p>
-      <ul class="modules">
-        <li><i></i>Componentes e montagem<span>01</span></li>
-        <li><i></i>Dispositivos móveis<span>02</span></li>
-        <li><i></i>Redes e conectividade<span>03</span></li>
-        <li><i></i>Segurança e resolução de problemas<span>04</span></li>
+      <div class="feature-tabs" role="tablist" aria-label="Percursos técnicos em destaque">
+        <button type="button" class="feature-tab on" role="tab" aria-selected="true" data-track="aplus">01 · CompTIA A+ · Hardware</button>
+        <button type="button" class="feature-tab" role="tab" aria-selected="false" data-track="netplus">02 · CompTIA Network+ · Redes</button>
+      </div>
+      <span class="label" id="feyebrow">Percurso em destaque · Hardware</span>
+      <h2 class="serif" id="ftitle">CompTIA A+</h2>
+      <p id="fdesc">Monte, configure e repare computadores. Do processador à rede sem fios, aprende o que um técnico faz todos os dias.</p>
+      <ul class="modules" id="fmodules">
+        <li data-step="0" tabindex="0" role="button"><i></i><b>Componentes e montagem</b><span>01</span></li>
+        <li data-step="1" tabindex="0" role="button"><i></i><b>Dispositivos móveis</b><span>02</span></li>
+        <li data-step="2" tabindex="0" role="button"><i></i><b>Redes e conectividade</b><span>03</span></li>
+        <li data-step="3" tabindex="0" role="button"><i></i><b>Segurança e resolução de problemas</b><span>04</span></li>
       </ul>
       <div><a class="btn btn-line" href="/entrar">Saber mais <span class="arr">→</span></a></div>
     </div>
@@ -1144,10 +1202,30 @@ def landing(r):
     <p class="rv d2">Escolha a Helena ou o Miguel. O seu guia apresenta cada aula, explica cada passo e responde às suas dúvidas em voz.</p>
   </div>
   <div class="guide-grid">
-    <figure class="guide rv"><img src="/static/presenters/helena.png" alt="Helena, guia virtual da ATC."><figcaption><b>Helena</b><span class="label">Guia virtual</span></figcaption></figure>
-    <figure class="guide rv d1"><img src="/static/presenters/miguel.png" alt="Miguel, guia virtual da ATC."><figcaption><b>Miguel</b><span class="label">Guia virtual</span></figcaption></figure>
+    <figure class="guide rv">
+      <img src="/static/presenters/helena.png" alt="Helena, guia virtual da ATC.">
+      <div class="guide-stage">
+        <video class="guide-video" playsinline preload="none" src="/plataforma/helena/boas-vindas.mp4"><track kind="subtitles" srclang="pt" label="Português" src="/plataforma/helena/boas-vindas.vtt" default></video>
+        <p class="guide-sub" aria-live="polite"></p>
+      </div>
+      <figcaption>
+        <div class="guide-meta"><b>Helena</b><span class="label">Guia virtual da ATC</span></div>
+        <button type="button" class="guide-play" data-guide-play data-label="▶ Ouvir a Helena">▶ Ouvir a Helena</button>
+      </figcaption>
+    </figure>
+    <figure class="guide rv d1">
+      <img src="/static/presenters/miguel.png" alt="Miguel, guia virtual da ATC.">
+      <div class="guide-stage">
+        <video class="guide-video" playsinline preload="none" src="/plataforma/miguel/boas-vindas.mp4"><track kind="subtitles" srclang="pt" label="Português" src="/plataforma/miguel/boas-vindas.vtt" default></video>
+        <p class="guide-sub" aria-live="polite"></p>
+      </div>
+      <figcaption>
+        <div class="guide-meta"><b>Miguel</b><span class="label">Guia virtual da ATC</span></div>
+        <button type="button" class="guide-play" data-guide-play data-label="▶ Ouvir o Miguel">▶ Ouvir o Miguel</button>
+      </figcaption>
+    </figure>
   </div>
-  <small>Personagens virtuais criadas para a ATC.</small>
+  <small>Personagens virtuais criadas para a ATC. Clique em «Ouvir» para conhecer a voz de cada guia.</small>
 </section>
 
 <section class="paths" id="percursos">
@@ -1757,10 +1835,12 @@ def home(r):
         label = "Continuar a aprender" if p["pct"] or (lesson and r.con.execute("SELECT 1 FROM lesson_progress WHERE user_id=? AND lesson_id=? AND position>0", (r.user["id"], lesson["id"])).fetchone()) else "Começar a aprender"
         if p["complete"]:
             label = "Rever o curso"
+        guia_key = selected_presenter(r, target["id"]) or "helena"
+        guia_nome = PRESENTERS[guia_key]["name"]
         feature = f'''<section class="featured"><div class="featured-copy"><span class="eyebrow">O SEU PERCURSO · INFORMÁTICA E TECNOLOGIA</span>
 <h2>{h(target['title'])}</h2><p>{h(("A seguir: " + prox["titulo"]) if prox else 'Reveja os conteúdos e consulte o seu progresso.')}</p>
 <a class="btn" href="{h(url)}">{label} <span aria-hidden="true">↗</span></a><div class="feature-progress"><span>{p['pct']}% concluído</span><span>{p['lessons_done']} de {p['lessons']} aulas</span>{bar(p['pct'])}</div></div>
-<div class="featured-art" aria-hidden="true"><div class="orbit orbit-one"></div><div class="orbit orbit-two"></div><div class="art-window"><div class="window-dots">● ● ●</div><span class="art-symbol">⌘</span><div class="art-line"></div><div class="art-line short"></div><span class="art-label">O conhecimento abre portas.</span></div><span class="art-badge">ATC / ACADEMIA DIGITAL</span></div></section>'''
+<div class="featured-art" aria-hidden="true"><div class="orbit orbit-one"></div><div class="orbit orbit-two"></div><div class="art-window"><div class="window-dots">● ● ●</div><div class="art-guide"><img src="/static/presenters/{guia_key}.png" alt="">{ring_svg(p['pct'], 62, dark=True)}</div><div class="art-meta"><b>Com {"a" if guia_key == "helena" else "o"} {guia_nome}</b><span>{h(prox["titulo"] if prox else "Curso concluído ✓")}</span></div><span class="art-label">O conhecimento abre portas.</span></div><span class="art-badge">ATC / ACADEMIA DIGITAL</span></div></section>'''
     else:
         feature = '<section class="welcome-empty card"><span class="eyebrow">O SEU PERCURSO COMEÇA AQUI</span><h2>Novas competências. Novas possibilidades.</h2><p>Explore a oferta de formação e fale com a ATC para se inscrever.</p><a class="btn" href="#catalogo">Explorar catálogo ↗</a></section>'
     ate = acesso_ate(r.con, r.user["id"])
@@ -1866,8 +1946,10 @@ def guide_panel(slug, key, names, title):
     return f'<section class="guide-panel"><h2>{h(title)}</h2><div class="guide-clips"{ordem}>{"".join(clips)}</div></section>' if clips else ""
 
 
-@route("GET", r"/plataforma/(helena|miguel)/([a-z0-9-]+\.(?:mp4|vtt))", "user")
+@route("GET", r"/plataforma/(helena|miguel)/([a-z0-9-]+\.(?:mp4|vtt))")
 def platform_clip(r, key, filename):
+    if not r.user and not filename.startswith("boas-vindas."):
+        raise Redirect("/entrar?seguinte=" + urllib.parse.quote(r.path))
     r.serve_file(PLATAFORMA_DIR / key / filename, ctype="text/vtt; charset=utf-8" if filename.endswith(".vtt") else "video/mp4")
 
 
@@ -2124,7 +2206,7 @@ def course_page(r, slug):
     return r.render(c["title"], f"""<p class="crumbs"><a href="/">Os meus cursos</a></p>
 <section class="hero curso-topo"><div><span class="eyebrow">O SEU CURSO</span><h1>{h(c['title'])}</h1><p class="lead">{h(c['subtitle'])}</p>
 <div class="actions">{cont}{staff}</div>{onde}</div>
-<aside class="card"><h3>O seu progresso</h3>{bar(p['pct'])}<p><b>{p['pct']}%</b>{f" · {p['lessons_done']}/{p['lessons']} aulas" if p['lessons'] else ""}{f" · {p['quizzes_done']}/{p['quizzes']} questionários" if p['quizzes'] else ""}</p>{cert_html}</aside></section>
+<aside class="card progresso-card"><div class="progresso-topo"><div><h3>O seu progresso</h3><p><b>{p['pct']}%</b>{f" · {p['lessons_done']}/{p['lessons']} aulas" if p['lessons'] else ""}{f" · {p['quizzes_done']}/{p['quizzes']} questionários" if p['quizzes'] else ""}</p></div>{ring_svg(p['pct'], 64)}</div>{bar(p['pct'])}{cert_html}</aside></section>
 <section class="card"><h2>O seu percurso</h2><p class="muted">Siga os passos pela ordem. Cada passo abre quando terminar o anterior.</p>{path_html(passos)}</section>
 <details class="card sobre-curso"><summary>Sobre este curso</summary><p>{h(c['description'])}</p><p class="muted">{hours}</p><p class="actions">{extras}</p></details>""")
 
@@ -2178,10 +2260,17 @@ def lesson_page(r, slug, lslug):
     poster = f' poster="/media/{slug}/{h(l["poster"])}"' if l["poster"] else ""
     if medium["key"] != "original" and not l["poster"]:
         poster = f' poster="/static/presenters/{medium["key"]}.png"'
-    transcript_text = l["transcript"] or ""
-    if medium["key"] != "original":
-        transcript_text = "\n".join(t for _, _, t in parse_subtitles((COURSES_DIR / slug / medium["subtitles"]).read_text(encoding="utf-8-sig"))) if medium["subtitles"] else ""
-    transcript = "".join(f"<p>{h(t)}</p>" for t in transcript_text.split("\n") if t)
+    sub_rel = medium["subtitles"] if medium["key"] != "original" else l["subtitles"]
+    sub_file = (COURSES_DIR / slug / sub_rel) if sub_rel else None
+    cues = parse_subtitles(sub_file.read_text(encoding="utf-8-sig")) if sub_file and sub_file.is_file() else []
+    if cues:
+        transcript = "".join(
+            f'<button type="button" class="cue" data-start="{ts_seconds(a):.2f}" data-end="{ts_seconds(b):.2f}">'
+            f'<span class="cue-time">{fmt_ts(ts_seconds(a))}</span><span class="cue-text">{h(t)}</span></button>'
+            for a, b, t in cues if t)
+    else:
+        transcript_text = l["transcript"] or ""
+        transcript = "".join(f"<p>{h(t)}</p>" for t in transcript_text.split("\n") if t)
     comments = r.con.execute("""SELECT cm.*, u.name, u.role FROM comments cm JOIN users u ON u.id=cm.user_id
                                 WHERE cm.lesson_id=? ORDER BY cm.created""", (l["id"],)).fetchall()
 
@@ -2207,7 +2296,8 @@ def lesson_page(r, slug, lslug):
         assistant = f"""<section class="card voz" id="voz" data-lesson="{l['id']}"><div class="voz-topo">
 <img src="/static/presenters/{guia}.png" alt=""><div><span class="eyebrow">GUIA POR VOZ</span><h2>Pergunte {"à" if guia == "helena" else "ao"} {nome}</h2>
 <p class="muted">Carregue no microfone, faça a pergunta em voz alta e carregue outra vez para enviar.</p></div></div>
-<button type="button" class="voz-mic" aria-pressed="false"><span class="voz-icone" aria-hidden="true">🎙</span><span class="voz-rotulo">Falar</span></button>
+<div class="voz-palco"><canvas class="voz-onda" width="220" height="220" aria-hidden="true"></canvas>
+<button type="button" class="voz-mic" aria-pressed="false"><span class="voz-icone" aria-hidden="true">🎙</span><span class="voz-rotulo">Falar</span></button></div>
 <p class="voz-estado muted" aria-live="polite"></p><ol class="voz-conversa"><li class="voz-resposta voz-saudacao">{h(voz["linhas"]["saudacao"])} <button type="button" class="linkbtn">▶ Ouvir</button></li></ol>
 <form class="voz-escrever"><input name="q" maxlength="300" placeholder="Ou escreva a pergunta…" aria-label="Escrever a pergunta"><button class="btn small ghost">Perguntar</button></form></section>"""
     elif ollama_available():
@@ -2229,7 +2319,7 @@ def lesson_page(r, slug, lslug):
 <source src="/media/{slug}/video/amostra-windows-atc.mp4" type="video/mp4">O seu navegador não suporta vídeo.</video></div></section>"""
     prev_link = f'<a class="anterior" href="/cursos/{slug}/aula/{h(prev["slug"])}">← Aula anterior: {h(prev["title"])}</a>' if prev else ""
     return r.render(l["title"], f"""<p class="crumbs"><a href="/">Os meus cursos</a> › <a href="/cursos/{slug}">{h(c['title'])}</a>{f" › Passo {n} de {len(passos)}" if n else ""}</p>
-<div class="aula-topo"><div><span class="eyebrow">{f"PASSO {n} DE {len(passos)} · " if n else ""}MÓDULO {m['num']}</span><h1>{h(l['title'])}</h1></div>{som_escolha()}</div>
+<div class="aula-topo"><div><span class="eyebrow">{f"PASSO {n} DE {len(passos)} · " if n else ""}MÓDULO {m['num']}</span><h1>{h(l['title'])}</h1></div><div class="aula-controlos">{som_escolha()}<button type="button" class="cinema-btn" id="cinema-toggle" aria-pressed="false" title="Expandir leitor de vídeo">⤢ Modo cinema</button></div></div>
 <div class="player"><video id="v" class="aula-video" controls preload="metadata" playsinline{poster} data-lesson="{l['id']}" data-media="{medium['key']}" data-pos="{pos}" data-seen="{h(seen)}">
 <source src="/media/{slug}/{h(medium['video'])}">{track}O seu navegador não suporta vídeo.</video></div>
 <p id="status" class="{'okmsg' if feita else 'muted'}">{'✓ Aula concluída' if feita else 'Veja a aula até ao fim para a marcar como concluída.'}</p>
@@ -2242,7 +2332,7 @@ def lesson_page(r, slug, lslug):
 <ul class="comments">{thread(None) or '<li class="muted">Ainda não há perguntas sobre esta aula.</li>'}</ul>
 <form method="post" action="/cursos/{slug}/aula/{lslug}/comentar">{csrf_field(r.csrf)}
 <textarea name="body" rows="3" required placeholder="Escreva a sua pergunta…"></textarea><button class="btn small">Publicar pergunta</button></form></details>
-<script src="/static/player.js?v=4"></script>{'<script src="/static/voz.js?v=1"></script>' if voz else ''}""")
+<script src="/static/player.js?v=5"></script>{'<script src="/static/voz.js?v=2"></script>' if voz else ''}""")
 
 
 @route("POST", "/cursos/([a-z0-9-]+)/aula/([a-z0-9-]+)/comentar", "user")
@@ -2570,6 +2660,25 @@ def cert_issue(r, slug):
     raise Redirect(f"/certificado/{code}")
 
 
+def cert_matrix_svg(code):
+    bits = bin(int(hashlib.sha256(code.encode()).hexdigest(), 16))[2:].zfill(256)
+    rects = ['<rect x="0" y="0" width="5" height="5" fill="none" stroke="currentColor" stroke-width="1"/>',
+             '<rect x="1.5" y="1.5" width="2" height="2" fill="currentColor"/>',
+             '<rect x="8" y="0" width="5" height="5" fill="none" stroke="currentColor" stroke-width="1"/>',
+             '<rect x="9.5" y="1.5" width="2" height="2" fill="currentColor"/>',
+             '<rect x="0" y="8" width="5" height="5" fill="none" stroke="currentColor" stroke-width="1"/>',
+             '<rect x="1.5" y="9.5" width="2" height="2" fill="currentColor"/>']
+    idx = 0
+    for y in range(13):
+        for x in range(13):
+            if (x < 6 and y < 6) or (x > 6 and y < 6) or (x < 6 and y > 6):
+                continue
+            if bits[idx % len(bits)] == "1":
+                rects.append(f'<rect x="{x}" y="{y}" width=".92" height=".92" rx=".15" fill="currentColor"/>')
+            idx += 1
+    return f'<svg class="cert-qr" viewBox="-1 -1 15 15" aria-hidden="true">{"".join(rects)}</svg>'
+
+
 @route("GET", "/certificado/([A-Z0-9-]+)")
 def cert_page(r, code):
     row = r.con.execute("""SELECT ce.*, u.name, co.title, co.hours_video, co.hours_class FROM certificates ce
@@ -2583,14 +2692,19 @@ def cert_page(r, code):
     hours = row["hours_class"] or row["hours_video"]
     esquema = "https" if r.headers.get("X-Forwarded-Proto") == "https" else "http"   # atrás do nginx com HTTPS
     verify = f"{esquema}://{r.headers.get('Host', 'localhost')}/verificar?codigo={code}"
+    rosette = "".join(f'<ellipse cx="200" cy="200" rx="170" ry="62" transform="rotate({deg} 200 200)" fill="none" stroke="currentColor" stroke-width="0.7"/>' for deg in range(0, 180, 15))
     return f"""<!doctype html><html lang="pt-PT"><head><meta charset="utf-8"><title>Certificado {h(code)}</title>
-<meta name="viewport" content="width=device-width, initial-scale=1"><link rel="stylesheet" href="/static/atc.css?v=15"></head>
+<meta name="viewport" content="width=device-width, initial-scale=1"><link rel="stylesheet" href="/static/atc.css?v=17"></head>
 <body class="certbody"><div class="noprint certbar"><a href="/">← Voltar</a> <button onclick="print()" class="btn small">Imprimir / guardar PDF</button></div>
-<div class="cert"><div class="certin"><img src="/static/logo-600.png" alt="ATC"><p class="k">Certificado de conclusão</p>
-<p>Certifica-se que</p><h1>{h(row['name'])}</h1><p>concluiu com aproveitamento o curso</p><h2>{h(row['title'])}</h2>
-<p>{f"com a duração de {fmt_h(hours)} horas, " if hours else ""}na plataforma de formação online da ATC – Angbu Training Centre.</p>
-<div class="certfoot"><div><span>{date}</span><small>Data de emissão</small></div><div><span>&nbsp;</span><small>A Direção da ATC</small></div>
-<div><span>{h(code)}</span><small>Código · {h(verify)}</small></div></div></div></div></body></html>"""
+<div class="cert"><div class="certin">
+<svg class="cert-guilloche" viewBox="0 0 400 400" aria-hidden="true">{rosette}<circle cx="200" cy="200" r="182" fill="none" stroke="currentColor" stroke-width="0.8" stroke-dasharray="3 3"/></svg>
+<span class="cert-corner tl" aria-hidden="true"></span><span class="cert-corner tr" aria-hidden="true"></span><span class="cert-corner bl" aria-hidden="true"></span><span class="cert-corner br" aria-hidden="true"></span>
+<img src="/static/logo-600.png" alt="ATC"><p class="k">Certificado de conclusão</p>
+<p class="cert-lead">Certifica-se que</p><h1>{h(row['name'])}</h1><p class="cert-lead">concluiu com aproveitamento o curso</p><h2>{h(row['title'])}</h2>
+<p class="cert-desc">{f"com a duração de {fmt_h(hours)} horas, " if hours else ""}na plataforma de formação online da ATC – Angbu Training Centre, em Cabinda, Angola.</p>
+<div class="certfoot"><div><span>{date}</span><small>Data de emissão</small></div>
+<div class="cert-seal-col"><div class="cert-seal" aria-hidden="true"><svg viewBox="0 0 80 80"><circle cx="40" cy="40" r="36" fill="none" stroke="currentColor" stroke-width="1.5" stroke-dasharray="3 2"/><circle cx="40" cy="40" r="29" fill="none" stroke="currentColor" stroke-width="1"/><text x="40" y="38" text-anchor="middle" font-size="11" font-weight="700" letter-spacing="2" fill="currentColor">ATC</text><text x="40" y="49" text-anchor="middle" font-size="6.5" letter-spacing="1.4" fill="currentColor">CABINDA</text></svg></div><span>A Direção da ATC</span><small>Angbu Training Centre</small></div>
+<div class="cert-verify"><a href="/verificar?codigo={h(code)}" class="cert-qr-wrap" title="Verificar autenticidade">{cert_matrix_svg(code)}<div><span>{h(code)}</span><small>Código · {h(verify)}</small></div></a></div></div></div></div></body></html>"""
 
 
 @route("GET", "/verificar")

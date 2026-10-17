@@ -52,12 +52,12 @@
                 [
                   "MAN",
                   "Uma cidade",
-                  "Ligação entre as delegações de Luanda"
+                  "Ligação entre as delegações de Cabinda"
                 ],
                 [
                   "WAN",
                   "Países e continentes",
-                  "A Internet; a ligação Luanda–Lisboa de uma empresa"
+                  "A Internet; a ligação Cabinda–Luanda–Lisboa de uma empresa"
                 ]
               ]
             },
@@ -232,7 +232,7 @@
               ]
             },
             {
-              "p": "O **DNS** traduz nomes fáceis de lembrar (por exemplo, atc-lda.com) em endereços IP. Sem DNS, teria de escrever o endereço IP de cada site."
+              "p": "O **DNS** traduz nomes fáceis de lembrar (por exemplo, grupoangbu.com) em endereços IP. Sem DNS, teria de escrever o endereço IP de cada site."
             },
             {
               "tip": "No Windows, o comando **ipconfig /all** mostra o endereço IP, o gateway, o servidor DNS e se o endereço veio do DHCP."
@@ -389,7 +389,7 @@
           "Indique se o endereço é privado ou público e a que intervalo pertence.",
           "Confirme se o endereço foi atribuído por DHCP (linha «DHCP Ativado»).",
           "Escreva **ping 127.0.0.1** e explique o que está a testar.",
-          "Escreva **nslookup atc-lda.com** e anote o endereço IP devolvido pelo DNS."
+          "Escreva **nslookup grupoangbu.com** e anote o endereço IP devolvido pelo DNS."
         ]
       },
       "summary": [
@@ -399,6 +399,68 @@
         "DHCP em quatro passos: Discover, Offer, Request, Acknowledge.",
         "Portas essenciais: 22 SSH, 53 DNS, 80 HTTP, 443 HTTPS, 3389 RDP.",
         "Switch: endereços MAC (camada 2). Router: endereços IP (camada 3)."
+      ],
+      "quiz": [
+        {
+          "q": "Em que camada do modelo OSI operam os endereços IP e os routers?",
+          "options": [
+            "Camada 1 — Física",
+            "Camada 2 — Ligação de dados",
+            "Camada 3 — Rede",
+            "Camada 7 — Aplicação"
+          ],
+          "answer": 2
+        },
+        {
+          "q": "Se um computador apresentar o endereço IPv4 169.254.45.12 (APIPA), o que significa?",
+          "options": [
+            "Está ligado diretamente à fibra ótica do operador",
+            "Não conseguiu obter um endereço a partir do servidor DHCP",
+            "O servidor DNS traduziu o nome com sucesso",
+            "A placa de rede está avariada fisicamente"
+          ],
+          "answer": 1
+        },
+        {
+          "q": "Qual é a sequência correta das quatro mensagens utilizadas pelo protocolo DHCP?",
+          "options": [
+            "Discover, Offer, Request, Acknowledge (DORA)",
+            "Send, Receive, Confirm, Close",
+            "Ping, Trace, Lookup, Route",
+            "Request, Offer, Discover, Accept"
+          ],
+          "answer": 0
+        },
+        {
+          "q": "Que protocolo e porta são utilizados para carregar páginas web com ligação segura e cifrada?",
+          "options": [
+            "HTTP — porta 80 TCP",
+            "HTTPS — porta 443 TCP",
+            "SSH — porta 22 TCP",
+            "DNS — porta 53 UDP"
+          ],
+          "answer": 1
+        },
+        {
+          "q": "Qual é o papel principal do serviço DNS numa rede?",
+          "options": [
+            "Atribuir cabos de rede aos computadores",
+            "Traduzir nomes de domínio (como grupoangbu.com) em endereços IP",
+            "Bloquear vírus no navegador",
+            "Alimentar pontos de acesso Wi-Fi por PoE"
+          ],
+          "answer": 1
+        },
+        {
+          "q": "Que equipamento liga os computadores dentro da mesma LAN e encaminha tramas com base no endereço MAC (camada 2)?",
+          "options": [
+            "Switch (comutador)",
+            "Modem analógico",
+            "Repetidor ótico",
+            "Servidor de correio"
+          ],
+          "answer": 0
+        }
       ]
     }
   ],

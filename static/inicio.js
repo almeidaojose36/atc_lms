@@ -11,9 +11,98 @@
     p.addEventListener('mouseleave', () => thumb.classList.remove('on'));
     p.addEventListener('mousemove', (e) => { thumb.style.left = e.clientX + 'px'; thumb.style.top = e.clientY + 'px'; });
   });
-  // Destaque: o PC desmonta-se com o scroll (e volta a montar-se ao subir); os módulos acendem um a um.
+  // Relógio e data em direto no ecrã do computador (/entrar).
+  const pcClock = document.getElementById('pc-clock'), pcDate = document.getElementById('pc-date');
+  if (pcClock) {
+    const tickClock = () => {
+      const d = new Date();
+      pcClock.textContent = d.toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' });
+      if (pcDate) pcDate.textContent = d.toLocaleDateString('pt-PT', { weekday: 'short', day: '2-digit', month: 'short' });
+    };
+    tickClock();
+    setInterval(tickClock, 15000);
+  }
+  // Guias na página inicial: ouvir a apresentação da Helena ou do Miguel em direto no cartão.
+  const guideCards = [...document.querySelectorAll('.guide')];
+  guideCards.forEach((card) => {
+    const btn = card.querySelector('[data-guide-play]'), vid = card.querySelector('.guide-video'), sub = card.querySelector('.guide-sub');
+    if (!btn || !vid) return;
+    const syncTrack = () => {
+      const tr = vid.textTracks && vid.textTracks[0];
+      if (!tr) return;
+      if (tr.mode !== 'hidden') tr.mode = 'hidden';
+      const active = tr.activeCues && tr.activeCues.length ? tr.activeCues[0].text : '';
+      if (sub) sub.textContent = active;
+    };
+    if (vid.textTracks && vid.textTracks[0]) {
+      vid.textTracks[0].mode = 'hidden';
+      vid.textTracks[0].addEventListener('cuechange', syncTrack);
+    }
+    vid.addEventListener('loadedmetadata', syncTrack);
+    vid.addEventListener('timeupdate', syncTrack);
+    const stopCard = (c) => {
+      const v = c.querySelector('.guide-video'), b = c.querySelector('[data-guide-play]'), s = c.querySelector('.guide-sub');
+      if (v) { v.pause(); v.currentTime = 0; }
+      if (s) s.textContent = '';
+      c.classList.remove('playing');
+      if (b) b.textContent = b.dataset.label || '▶ Ouvir';
+    };
+    const toggle = () => {
+      if (card.classList.contains('playing')) { stopCard(card); return; }
+      guideCards.forEach((other) => { if (other !== card) stopCard(other); });
+      card.classList.add('playing');
+      btn.textContent = '❚❚ Parar';
+      vid.muted = false;
+      syncTrack();
+      vid.play().catch(() => { stopCard(card); });
+    };
+    btn.addEventListener('click', toggle);
+    vid.addEventListener('click', toggle);
+    vid.addEventListener('ended', () => stopCard(card));
+  });
+
+  // Destaque: o PC desmonta-se com o scroll (ou alterna para CompTIA Network+); clicar num módulo salta para essa etapa.
   const feat = document.getElementById('feature');
   if (!feat) return;
+  const TRACKS = {
+    aplus: {
+      eyebrow: 'Percurso em destaque · Hardware',
+      title: 'CompTIA A+',
+      desc: 'Monte, configure e repare computadores. Do processador à rede sem fios, aprende o que um técnico faz todos os dias.',
+      modules: ['Componentes e montagem', 'Dispositivos móveis', 'Redes e conectividade', 'Segurança e resolução de problemas']
+    },
+    netplus: {
+      eyebrow: 'Percurso em destaque · Redes',
+      title: 'CompTIA Network+',
+      desc: 'Projete, configure e mantenha redes empresariais. Dos cabos e switches ao encaminhamento IP e segurança de rede.',
+      modules: ['Arquitetura e topologias de rede', 'Switching, VLANs e cablagem estruturada', 'Endereçamento IPv4/IPv6 e routing', 'Segurança, monitorização e diagnóstico']
+    }
+  };
+  const tabs = [...feat.querySelectorAll('.feature-tab')];
+  const feyebrow = document.getElementById('feyebrow'), ftitle = document.getElementById('ftitle'), fdesc = document.getElementById('fdesc');
+  const netVideo = feat.querySelector('.feature-net');
+  const items = [...feat.querySelectorAll('.modules li')], count = document.getElementById('fcount');
+  tabs.forEach((tab) => tab.addEventListener('click', () => {
+    const key = tab.dataset.track, data = TRACKS[key];
+    if (!data) return;
+    tabs.forEach((t) => { t.classList.toggle('on', t === tab); t.setAttribute('aria-selected', String(t === tab)); });
+    feat.classList.toggle('mode-net', key === 'netplus');
+    if (feyebrow) feyebrow.textContent = data.eyebrow;
+    if (ftitle) ftitle.textContent = data.title;
+    if (fdesc) fdesc.textContent = data.desc;
+    items.forEach((li, i) => { const b = li.querySelector('b'); if (b && data.modules[i]) b.textContent = data.modules[i]; });
+    if (netVideo) { if (key === 'netplus') netVideo.play().catch(() => {}); else netVideo.pause(); }
+  }));
+  items.forEach((li, idx) => {
+    const jump = () => {
+      const total = feat.offsetHeight - innerHeight;
+      if (total <= 0) return;
+      const targetY = window.scrollY + feat.getBoundingClientRect().top + ((idx + 0.15) / items.length) * total;
+      window.scrollTo({ top: targetY, behavior: 'smooth' });
+    };
+    li.addEventListener('click', jump);
+    li.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); jump(); } });
+  });
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (reduce) { feat.classList.add('no-motion'); feat.style.height = 'auto'; return; }
   const canvas = feat.querySelector('canvas'), ctx = canvas.getContext('2d');
@@ -23,7 +112,6 @@
   const load = (k) => { if (!frames[k]) { const im = new Image(); im.src = url(k); im.onload = () => draw(); frames[k] = im; } return frames[k]; };
   for (let k = n; k > n - 20; k--) load(k);             // o PC montado (fim da sequência) primeiro
   new IntersectionObserver((es, o) => { if (es[0].isIntersecting) { for (let k = n; k >= 1; k--) load(k); o.disconnect(); } }, { rootMargin: '150% 0px' }).observe(feat);
-  const items = [...feat.querySelectorAll('.modules li')], count = document.getElementById('fcount');
   let p = 0;
   function fit() { const r = canvas.getBoundingClientRect(), d = Math.min(devicePixelRatio || 1, 2); canvas.width = r.width * d; canvas.height = r.height * d; draw(); }
   function draw() {

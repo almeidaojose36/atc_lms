@@ -20,6 +20,29 @@
       if (pos > 5 && pos < v.duration - 5) v.currentTime = pos;
       last = v.currentTime;
     });
+    var cues = [].slice.call(document.querySelectorAll('.transcript .cue'));
+    cues.forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var st = parseFloat(btn.dataset.start);
+        if (!isNaN(st)) {
+          v.currentTime = st;
+          v.play().catch(function () {});
+        }
+      });
+    });
+    function syncCues(t) {
+      if (!cues.length) return;
+      for (var i = 0; i < cues.length; i++) {
+        var s = parseFloat(cues[i].dataset.start), e = parseFloat(cues[i].dataset.end);
+        var on = t >= s && t <= e;
+        if (on !== cues[i].classList.contains('ativo')) {
+          cues[i].classList.toggle('ativo', on);
+          if (on && cues[i].closest('details[open]')) {
+            cues[i].scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+          }
+        }
+      }
+    }
     function send() {
       if (!v.duration) return;
       lastSent = Date.now();
@@ -27,7 +50,12 @@
       for (var i = 0; i < Math.ceil(v.duration); i++) s += seen[i] === '1' ? '1' : '0';
       post('/api/progresso', { lesson: lesson, media: v.dataset.media || "original", pos: v.currentTime, seen: s, dur: v.duration })
         .then(function (r) {
-          if (r.completed && !done) { done = true; status.textContent = '✓ Aula concluída'; status.className = 'okmsg'; document.dispatchEvent(new Event('aula-concluida')); }
+          if (r.completed && !done) {
+            done = true;
+            status.textContent = '✓ Aula concluída — muito bem!';
+            status.className = 'okmsg celebrar';
+            document.dispatchEvent(new Event('aula-concluida'));
+          }
         }).catch(function () {});
     }
     // Só conta o que foi realmente reproduzido: saltos para a frente não marcam segundos como vistos.
@@ -37,13 +65,23 @@
         for (var i = Math.floor(last); i <= Math.floor(t); i++) seen[i] = '1';
       }
       last = t;
+      syncCues(t);
       if (Date.now() - lastSent > 10000) send();
     });
-    v.addEventListener('seeking', function () { last = v.currentTime; });
-    v.addEventListener('seeked', function () { last = v.currentTime; });
+    v.addEventListener('seeking', function () { last = v.currentTime; syncCues(v.currentTime); });
+    v.addEventListener('seeked', function () { last = v.currentTime; syncCues(v.currentTime); });
     v.addEventListener('pause', send);
     v.addEventListener('ended', send);
     window.addEventListener('pagehide', send);
+  }
+
+  var cinemaBtn = document.getElementById('cinema-toggle');
+  if (cinemaBtn) {
+    cinemaBtn.addEventListener('click', function () {
+      var on = document.body.classList.toggle('cinema');
+      cinemaBtn.setAttribute('aria-pressed', String(on));
+      cinemaBtn.textContent = on ? '⤡ Sair do cinema' : '⤢ Modo cinema';
+    });
   }
 
   var form = document.getElementById('ask');

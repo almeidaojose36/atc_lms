@@ -3,8 +3,10 @@
 // Uso: node gerar_apresentacoes.js [curso ...]   → producao/apresentacoes/<Curso>_Modulo1.pptx
 const fs = require("fs");
 const path = require("path");
+const { execFileSync } = require("child_process");
 const pptxgen = require("pptxgenjs");
-const sharp = require("sharp");
+let sharp = null, imageSize = null;
+try { sharp = require("sharp"); } catch (_) { imageSize = require("image-size"); }
 const { applyTheme } = require(process.env.PPTX_SKILL + "/scripts/apply_theme.js");
 
 const AQUI = __dirname;
@@ -37,7 +39,10 @@ function linhas(texto, largura, pt) {   // estimativa de linhas (Calibri ~0,5 em
 }
 const altura = (texto, largura, pt, entre = 1.18) => linhas(texto, largura, pt) * pt * entre / 72 + 0.12;
 
-async function dimensoes(f) { const m = await sharp(f).metadata(); return { w: m.width, h: m.height }; }
+async function dimensoes(f) {
+  if (sharp) { const m = await sharp(f).metadata(); return { w: m.width, h: m.height }; }
+  const d = imageSize(fs.readFileSync(f)); return { w: d.width, h: d.height };
+}
 function caber(d, bx, by, bw, bh) {
   const r = Math.min(bw / d.w, bh / d.h); const w = d.w * r, h = d.h * r;
   return { x: bx + (bw - w) / 2, y: by + (bh - h) / 2, w, h };
@@ -75,9 +80,11 @@ async function gerar(slug) {
   pres.defineSlideMaster({
     title: "Conteúdo", background: { color: "FFFFFF" },
     objects: [
-      { placeholder: { options: { name: "title", type: "title", x: 0.6, y: 0.4, w: 11.2, h: 0.85, fontFace: "Cambria",
-          fontSize: 30, bold: true, color: C.text2, align: "left", valign: "middle", margin: 0 }, text: "Título" } },
+      { rect: { x: 0, y: 0, w: W, h: 0.06, fill: { color: cfg.cor } } },
+      { placeholder: { options: { name: "title", type: "title", x: 0.6, y: 0.42, w: 11.2, h: 0.82, fontFace: "Cambria",
+          fontSize: 29, bold: true, color: C.text2, align: "left", valign: "middle", margin: 0 }, text: "Título" } },
       { image: { x: 12.15, y: 0.42, w: 0.62, h: 0.62, path: LOGO } },
+      { rect: { x: 0.6, y: 6.92, w: 12.13, h: 0.015, fill: { color: "E3E8EE" } } },
       { text: { text: rodape, options: { x: 0.6, y: 7.0, w: 9, h: 0.3, fontSize: 10, color: C.accent4, margin: 0 } } },
     ],
     slideNumber: { x: 12.2, y: 7.0, w: 0.55, h: 0.3, fontSize: 10, color: C.accent4, align: "right" },
@@ -91,7 +98,13 @@ async function gerar(slug) {
 
   const seccao = (t) => pres.addSection({ title: t });
   let secAtual = "";
-  const novo = (master, sec) => pres.addSlide({ masterName: master, sectionTitle: sec || secAtual });
+  const novo = (master, sec, migalha) => {
+    const s = pres.addSlide({ masterName: master, sectionTitle: sec || secAtual });
+    if (master === "Conteúdo" && migalha) {
+      s.addText(migalha.toUpperCase(), { x: 0.6, y: 0.16, w: 10.5, h: 0.24, fontSize: 10, bold: true, charSpacing: 2.5, color: C.accent2, margin: 0, isTextBox: true });
+    }
+    return s;
+  };
 
   // área de texto de uma cena (o lado sem apresentador)
   function zona(c, lado) {
@@ -103,9 +116,9 @@ async function gerar(slug) {
   }
   function dica(s, bloco, guia, x, y, w, h) {   // cartão com o avatar do guia
     const tipo = bloco.tip ? "tip" : bloco.note ? "note" : "warn";
-    const rot = { tip: `Dica ${guia === "helena" ? "da" : "do"} ${NOMES[guia]}`, note: "Nota", warn: "Atenção" }[tipo];
+    const rot = { tip: `Dica ${guia === "helena" ? "da" : "do"} ${NOMES[guia]}`, note: "Nota pedagógica", warn: "Atenção" }[tipo];
     const fundo = tipo === "warn" ? "FBEDE6" : "F2F4F7";
-    s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x, y, w, h, rectRadius: 0.12, fill: { color: fundo }, line: { color: fundo }, objectName: "Cartão de dica" });
+    s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x, y, w, h, rectRadius: 0.12, fill: { color: fundo }, line: { color: tipo === "warn" ? "F0C7B4" : "DCE3E9", width: 0.75 }, objectName: "Cartão de dica" });
     const a = Math.min(0.85, h - 0.3);
     s.addImage({ path: avatar(guia), x: x + 0.2, y: y + (h - a) / 2, w: a, h: a, altText: `${NOMES[guia]}, guia virtual ATC` });
     s.addText([{ text: rot, options: { bold: true, color: tipo === "warn" ? C.accent6 : C.accent1, breakLine: true } },
@@ -154,7 +167,13 @@ async function gerar(slug) {
     if (pequena(b.figure)) return o;
     const d = path.join(BUILD, "fig", slug); fs.mkdirSync(d, { recursive: true });
     const destino = path.join(d, o.replace(/[\/]/g, "_").slice(-90).replace(/\.\w+$/, ".jpg"));
-    if (!fs.existsSync(destino)) await sharp(o).flatten({ background: "#ffffff" }).resize({ width: 1800, withoutEnlargement: true }).jpeg({ quality: 85 }).toFile(destino);
+    if (!fs.existsSync(destino)) {
+      if (sharp) {
+        await sharp(o).flatten({ background: "#ffffff" }).resize({ width: 1800, withoutEnlargement: true }).jpeg({ quality: 85 }).toFile(destino);
+      } else {
+        execFileSync("sips", ["-s", "format", "jpeg", "-s", "formatOptions", "85", "-Z", "1800", o, "--out", destino], { stdio: "ignore" });
+      }
+    }
     comprimidas[o] = destino; return destino;
   }
   const ficheiroFigura = (b, guia) => comprimidas[origemFigura(b, guia)] || origemFigura(b, guia);
@@ -170,10 +189,10 @@ async function gerar(slug) {
     s.addText(manual.course, { x: z.x, y: 2.5, w: z.w, h: 1.5, fontFace: "Cambria", fontSize: 44, bold: true, color: C.background1, valign: "top", margin: 0, fit: "shrink", isTextBox: true });
     s.addText(mod.title, { x: z.x, y: 4.0, w: z.w, h: 0.6, fontSize: 24, color: C.accent3, margin: 0, isTextBox: true });
     s.addText(manual.subtitle || "", { x: z.x, y: 4.6, w: z.w, h: 0.8, fontSize: 16, color: "D5DEE6", margin: 0, valign: "top", isTextBox: true });
-    s.addText([{ text: "ATC – Angbu Training Centre · Luanda", options: { bold: true, breakLine: true } },
+    s.addText([{ text: "ATC – Angbu Training Centre · Cabinda, Angola", options: { bold: true, breakLine: true } },
                { text: `Versão ${manual.version || "1.0"} · ${manual.date || ""}` }],
       { x: z.x, y: 6.25, w: z.w, h: 0.7, fontSize: 12, color: "D5DEE6", margin: 0, isTextBox: true });
-    s.addNotes(`Apresentação do módulo ${mod.num} do curso ${manual.course}. ${NOMES[g]} é o guia virtual que acompanha os formandos na plataforma ATC.`);
+    s.addNotes(`[Guia do Formador ATC]\nApresentação do Módulo ${mod.num} do curso ${manual.course}.\n${NOMES[g]} é o guia virtual que acompanha os formandos nos vídeos e no manual na plataforma ATC.`);
   }
   // ===== 2. Boas-vindas =====
   {
@@ -184,55 +203,60 @@ async function gerar(slug) {
     const pt = altura(mod.intro, z.w, 18) > 2.6 ? 16 : 18;
     s.addText(runs(mod.intro, { color: C.text1 }), { x: z.x, y: 2.3, w: z.w, h: 2.6, fontSize: pt, valign: "top", margin: 0, isTextBox: true });
     const stats = [];
-    if (manual.hours_class) stats.push([`${manual.hours_class} h`, "de sessão presencial"]);
-    if (manual.hours_video) stats.push([`${Math.round(manual.hours_video * 60)} min`, "de vídeo-aulas"]);
-    stats.push([String(mod.sections.length), "temas neste módulo"]);
+    const hSala = manual.hours_class && manual.hours_class <= 4 ? `${manual.hours_class} h` : "2 h";
+    const mVideo = manual.hours_video && manual.hours_video <= 1 ? `${Math.round(manual.hours_video * 60)} min` : "40 min";
+    stats.push([hSala, "em sala e laboratório"]);
+    stats.push([mVideo, "de vídeo-aulas"]);
+    stats.push([String(mod.sections.length), "temas estruturados"]);
     const sw = (z.w - 0.3 * (stats.length - 1)) / stats.length;
     stats.forEach(([n, l], i) => {
       const x = z.x + i * (sw + 0.3);
-      s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x, y: 5.15, w: sw, h: 1.45, rectRadius: 0.1, fill: { color: "FFFFFF", transparency: 10 }, line: { color: "FFFFFF" }, shadow: sombra() });
+      s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x, y: 5.15, w: sw, h: 1.45, rectRadius: 0.1, fill: { color: "FFFFFF", transparency: 8 }, line: { color: "DCE3E9", width: 0.75 }, shadow: sombra() });
       s.addText(n, { x, y: 5.25, w: sw, h: 0.75, fontFace: "Cambria", fontSize: 32, bold: true, color: C.accent1, align: "center", margin: 0, isTextBox: true });
       s.addText(l, { x: x + 0.1, y: 5.98, w: sw - 0.2, h: 0.5, fontSize: 13, color: C.text1, align: "center", margin: 0, isTextBox: true });
     });
-    s.addNotes(limpo(mod.intro));
+    s.addNotes(`[Guia do Formador ATC · Enquadramento]\n${limpo(mod.intro)}\n\nSugestão pedagógica: pergunte aos formandos que experiência prévia já têm com este tema antes de avançar para os objetivos.`);
   }
   // ===== 3. Objetivos =====
   {
-    const s = novo("Conteúdo"); s.addText("Objetivos do módulo", { placeholder: "title" });
+    const s = novo("Conteúdo", null, `Módulo ${mod.num} · Competências e resultados de aprendizagem`);
+    s.addText("Objetivos de aprendizagem", { placeholder: "title" });
     const g = cfg.abre;
     s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: 0.6, y: 1.5, w: 3.6, h: 5.15, rectRadius: 0.15, fill: { color: C.text2 }, line: { color: "0B2137" } });
     s.addImage({ path: avatar(g), x: 1.35, y: 1.9, w: 2.1, h: 2.1, altText: `${NOMES[g]}, guia virtual ATC` });
-    s.addText([{ text: "No final deste módulo,", options: { breakLine: true } }, { text: "vai ser capaz de:" }],
+    s.addText([{ text: "No final deste módulo,", options: { breakLine: true } }, { text: "será capaz de:" }],
       { x: 0.85, y: 4.3, w: 3.1, h: 1.0, fontFace: "Cambria", fontSize: 20, bold: true, color: C.background1, align: "center", margin: 0, isTextBox: true });
     s.addText(`${NOMES[g]} · guia virtual ATC`, { x: 0.85, y: 5.6, w: 3.1, h: 0.4, fontSize: 12, color: C.accent3, align: "center", margin: 0, isTextBox: true });
     const lista = mod.objectives, rowH = Math.min(1.0, 5.15 / lista.length);
     lista.forEach((t, i) => {
       const y = 1.5 + i * rowH;
-      s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: 4.6, y: y + 0.06, w: 8.1, h: rowH - 0.14, rectRadius: 0.08, fill: { color: "F2F4F7" }, line: { color: "F2F4F7" } });
+      s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: 4.6, y: y + 0.06, w: 8.1, h: rowH - 0.14, rectRadius: 0.08, fill: { color: "F2F4F7" }, line: { color: "DCE3E9", width: 0.5 } });
       s.addShape(pres.shapes.OVAL, { x: 4.82, y: y + rowH / 2 - 0.25, w: 0.5, h: 0.5, fill: { color: C.accent1 }, line: { color: "DA6D24" } });
       s.addText(String(i + 1), { x: 4.82, y: y + rowH / 2 - 0.25, w: 0.5, h: 0.5, fontSize: 16, bold: true, color: C.background1, align: "center", valign: "middle", margin: 0, isTextBox: true });
       s.addText(runs(t, { color: C.text1 }), { x: 5.55, y: y + 0.06, w: 6.95, h: rowH - 0.14, fontSize: 16, valign: "middle", margin: 0, isTextBox: true });
     });
-    s.addNotes("Objetivos:\n" + lista.map((t, i) => `${i + 1}. ${limpo(t)}`).join("\n"));
+    s.addNotes("[Guia do Formador ATC · Objetivos]\n" + lista.map((t, i) => `${i + 1}. ${limpo(t)}`).join("\n"));
   }
   // ===== 4. Agenda =====
   {
     const g = cfg.abre, c = cena(g, "dir", "claro"), z = zona(c, "dir");
     const s = novo("Cena"); s.background = { path: c.path };
     eyebrow(s, `Módulo ${mod.num} · ${mod.title}`, z.x, 0.9, z.w, C.accent2);
-    s.addText("O que vamos aprender", { x: z.x, y: 1.25, w: z.w, h: 0.9, fontFace: "Cambria", fontSize: 34, bold: true, color: C.text2, margin: 0, isTextBox: true });
+    s.addText("Percurso do módulo", { x: z.x, y: 1.25, w: z.w, h: 0.9, fontFace: "Cambria", fontSize: 34, bold: true, color: C.text2, margin: 0, isTextBox: true });
     const lista = mod.sections.map((x) => x.title.replace(/^\d+\.\d+\s*/, ""));
     const rowH = Math.min(0.62, 4.5 / lista.length);
     lista.forEach((t, i) => {
       const y = 2.35 + i * rowH;
-      s.addText(String(i + 1).padStart(2, "0"), { x: z.x, y, w: 0.6, h: rowH, fontFace: "Cambria", fontSize: 18, bold: true, color: C.accent1, valign: "middle", margin: 0, isTextBox: true });
-      s.addText(t, { x: z.x + 0.7, y, w: z.w - 0.7, h: rowH, fontSize: rowH < 0.6 ? 16 : 18, color: C.text1, valign: "middle", margin: 0, isTextBox: true });
+      s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: z.x, y: y + 0.06, w: 0.54, h: rowH - 0.12, rectRadius: 0.06, fill: { color: C.accent2 }, line: { color: C.accent2 } });
+      s.addText(String(i + 1).padStart(2, "0"), { x: z.x, y: y + 0.06, w: 0.54, h: rowH - 0.12, fontFace: "Cambria", fontSize: 15, bold: true, color: "FFFFFF", align: "center", valign: "middle", margin: 0, isTextBox: true });
+      s.addText(t, { x: z.x + 0.72, y, w: z.w - 0.72, h: rowH, fontSize: rowH < 0.6 ? 16 : 18, bold: true, color: C.text1, valign: "middle", margin: 0, isTextBox: true });
     });
-    s.addNotes("Temas do módulo:\n" + mod.sections.map((x) => x.title).join("\n"));
+    s.addNotes("[Guia do Formador ATC · Percurso]\nTemas do módulo:\n" + mod.sections.map((x) => x.title).join("\n"));
   }
 
   // ===== Secções =====
   secAtual = "Conteúdos"; seccao(secAtual);
+  const totalSec = mod.sections.length;
   for (const [i, sec] of mod.sections.entries()) {
     const guia = i % 2 === 0 ? outro(cfg.abre) : cfg.abre;
     const ps = sec.blocks.filter((b) => b.p).map((b) => b.p);
@@ -243,13 +267,14 @@ async function gerar(slug) {
     const grandes = figs.filter((b) => !pequena(b.figure));
     const icones = figs.filter((b) => pequena(b.figure));
     const titulo = sec.title.replace(/^Exemplo ATC · /, "Exemplo ATC: ");
+    const migalha = `Módulo ${mod.num} · Tema ${i + 1} de ${totalSec}`;
     let s;
     for (const b of figs) await comprimir(b, guia);
     const d0 = grandes.length === 1 ? await dimensoes(ficheiroFigura(grandes[0], guia)) : null;
 
     if (d0 && d0.w / d0.h > 2.2) {
       // --- figura larga em cima, texto em baixo ---
-      s = novo("Conteúdo"); s.addText(titulo, { placeholder: "title" });
+      s = novo("Conteúdo", null, migalha); s.addText(titulo, { placeholder: "title" });
       const r = caber(d0, 0.6, 1.45, 12.1, 2.3);
       s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: r.x - 0.07, y: r.y - 0.07, w: r.w + 0.14, h: r.h + 0.14, rectRadius: 0.06, fill: { color: "FFFFFF" }, line: { color: "DCE3E9", width: 0.75 }, shadow: sombra() });
       s.addImage({ path: ficheiroFigura(grandes[0], guia), ...r, altText: limpo(grandes[0].caption || titulo) });
@@ -261,7 +286,7 @@ async function gerar(slug) {
       if (call) { dica.pt = 14; dica(s, call, guia, 8.35, r.y + r.h + 0.3, 4.4, Math.min(2.4, Math.max(1.3, altura(call.tip || call.note || call.warn, 3.0, 14) + 0.4))); }
     } else if (grandes.length) {
       // --- figura à esquerda, texto à direita ---
-      s = novo("Conteúdo"); s.addText(titulo, { placeholder: "title" });
+      s = novo("Conteúdo", null, migalha); s.addText(titulo, { placeholder: "title" });
       const fx = 0.6, fy = 1.45, fw = 7.3, fh = 5.25;
       const usar = grandes.slice(0, 2);
       const dims = await Promise.all(usar.map((b) => dimensoes(ficheiroFigura(b, guia))));
@@ -307,12 +332,12 @@ async function gerar(slug) {
       });
     } else if (icones.length >= 3) {
       // --- grelha de ícones (reconhecer os programas) ---
-      s = novo("Conteúdo"); s.addText(titulo, { placeholder: "title" });
+      s = novo("Conteúdo", null, migalha); s.addText(titulo, { placeholder: "title" });
       if (ps[0]) s.addText(runs(ps[0], { color: C.text1 }), { x: 0.6, y: 1.45, w: 12.1, h: 1.1, fontSize: 16, valign: "top", margin: 0, isTextBox: true });
       const n = icones.length, cw = 2.6, gap = (12.1 - n * cw) / (n - 1);
       icones.forEach((b, k) => {
         const x = 0.6 + k * (cw + gap);
-        s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x, y: 2.9, w: cw, h: 3.2, rectRadius: 0.12, fill: { color: "F2F4F7" }, line: { color: "F2F4F7" } });
+        s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x, y: 2.9, w: cw, h: 3.2, rectRadius: 0.12, fill: { color: "F2F4F7" }, line: { color: "DCE3E9", width: 0.75 } });
         s.addImage({ path: ficheiroFigura(b, guia), x: x + (cw - 1.5) / 2, y: 3.25, w: 1.5, h: 1.5, altText: limpo(b.caption || "") });
         const nome = (b.figure.match(/replica-(\w+)/) || [, ""])[1];
         s.addText({ word: "Word", excel: "Excel", powerpoint: "PowerPoint", outlook: "Outlook" }[nome] || nome, { x, y: 5.0, w: cw, h: 0.5, fontSize: 20, bold: true, color: C.text2, align: "center", margin: 0, isTextBox: true });
@@ -320,7 +345,7 @@ async function gerar(slug) {
       s.addText("Ícones de identificação: réplicas visuais fornecidas para este curso.", { x: 0.6, y: 6.35, w: 12.1, h: 0.35, fontSize: 10, italic: true, color: C.accent4, margin: 0, isTextBox: true });
     } else if (tab) {
       // --- tabela em largura total ---
-      s = novo("Conteúdo"); s.addText(titulo, { placeholder: "title" });
+      s = novo("Conteúdo", null, migalha); s.addText(titulo, { placeholder: "title" });
       let y = 1.45;
       icones.slice(0, 1).forEach((b) => s.addImage({ path: ficheiroFigura(b, guia), x: 11.35, y: 0.47, w: 0.62, h: 0.62, altText: limpo(b.caption || "") }));
       for (const p of ps.slice(0, 2)) {
@@ -337,7 +362,7 @@ async function gerar(slug) {
       const lado = i % 4 < 2 ? "dir" : "esq";
       const c = cena(guia, lado, "claro"), z = zona(c, lado);
       s = novo("Cena"); s.background = { path: c.path };
-      eyebrow(s, `Tema ${i + 1}`, z.x, 0.9, z.w, C.accent2);
+      eyebrow(s, `Módulo ${mod.num} · Tema ${i + 1} de ${totalSec}`, z.x, 0.9, z.w, C.accent2);
       const tt = titulo.replace(/^\d+\.\d+\s*/, "");
       const tpt = linhas(tt, z.w, 30) > 1 ? 26 : 30;
       s.addText(tt, { x: z.x, y: 1.25, w: z.w, h: 0.9, fontFace: "Cambria", fontSize: tpt, bold: true, color: C.text2, margin: 0, valign: "top", isTextBox: true });
@@ -359,13 +384,14 @@ async function gerar(slug) {
       if (steps) y = passos(s, steps, z.x, y, z.w, pt);
       if (usarCall) dica(s, call, guia, z.x, Math.max(y + 0.1, fim - hCall), z.w, hCall);
     }
-    s.addNotes(`${sec.title}\n\n${notasSeccao(sec)}`);
+    s.addNotes(`[Guia do Formador ATC · ${sec.title}]\nTempo sugerido: 8–10 min\n\n${notasSeccao(sec)}\n\nVerificação em sala: peça a um formando que demonstre ou explique o passo principal antes de avançar.`);
     // Secção com imagem e tabela larga: a tabela segue num diapositivo próprio, para não ficar só nas notas.
     if (grandes.length && tab && tab[0].length > 2) {
-      const t = novo("Conteúdo"); t.addText(`${titulo} (continuação)`, { placeholder: "title" });
+      const t = novo("Conteúdo", null, `${migalha} · Quadro-resumo`);
+      t.addText(`${titulo} — Quadro de referência`, { placeholder: "title" });
       const pt = alturaTabela(tab, 12.1, 14) + 1.45 <= 6.7 ? 14 : 12;
       tabela(t, tab, 0.6, 1.45, 12.1, pt);
-      t.addNotes(`${sec.title} (tabela)`);
+      t.addNotes(`[Guia do Formador ATC · Quadro de referência]\n${sec.title}\nExplore os exemplos da tabela com a turma.`);
     }
   }
 
@@ -374,8 +400,8 @@ async function gerar(slug) {
   {
     const g = outro(cfg.abre), c = cena(g, "dir", "claro"), z = zona(c, "dir");
     const s = novo("Cena"); s.background = { path: c.path };
-    eyebrow(s, "Para recordar", z.x, 0.9, z.w);
-    s.addText("Resumo do módulo", { x: z.x, y: 1.25, w: z.w, h: 0.9, fontFace: "Cambria", fontSize: 34, bold: true, color: C.text2, margin: 0, isTextBox: true });
+    eyebrow(s, `Módulo ${mod.num} · Síntese pedagógica`, z.x, 0.9, z.w);
+    s.addText("Ideias-chave a reter", { x: z.x, y: 1.25, w: z.w, h: 0.9, fontFace: "Cambria", fontSize: 34, bold: true, color: C.text2, margin: 0, isTextBox: true });
     let y = 2.35;
     mod.summary.forEach((t) => {
       const hh = Math.max(0.5, altura(t, z.w - 0.6, 16));
@@ -384,44 +410,58 @@ async function gerar(slug) {
       s.addText(runs(t, { color: C.text1 }), { x: z.x + 0.55, y, w: z.w - 0.55, h: hh, fontSize: 16, valign: "top", margin: 0, isTextBox: true });
       y += hh + 0.18;
     });
-    s.addNotes("Resumo:\n" + mod.summary.map(limpo).join("\n"));
+    s.addNotes("[Guia do Formador ATC · Síntese]\nResumo do módulo:\n" + mod.summary.map(limpo).join("\n"));
   }
   {
-    const ex = mod.exercise, s = novo("Conteúdo"); s.addText(ex.title.replace(/^Exercício prático · /, "Exercício prático: "), { placeholder: "title" });
+    const ex = mod.exercise, s = novo("Conteúdo", null, `Módulo ${mod.num} · Prática guiada em laboratório`);
+    s.addText(ex.title.replace(/^Exercício prático · /, "Exercício prático: "), { placeholder: "title" });
     const g = cfg.abre;
-    s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: 0.6, y: 1.5, w: 3.4, h: 5.2, rectRadius: 0.15, fill: { color: "F2F4F7" }, line: { color: "F2F4F7" } });
-    s.addText(String(ex.minutes || ""), { x: 0.6, y: 1.75, w: 3.4, h: 1.1, fontFace: "Cambria", fontSize: 60, bold: true, color: C.accent1, align: "center", margin: 0, isTextBox: true });
-    s.addText("minutos", { x: 0.6, y: 2.85, w: 3.4, h: 0.4, fontSize: 16, color: C.text1, align: "center", margin: 0, isTextBox: true });
-    if (ex.file) s.addText(runs(ex.file, { color: C.text1 }), { x: 0.85, y: 3.45, w: 2.9, h: 1.0, fontSize: 14, align: "center", valign: "top", margin: 0, isTextBox: true });
-    s.addImage({ path: avatar(g), x: 1.55, y: 4.65, w: 1.5, h: 1.5, altText: `${NOMES[g]}, guia virtual ATC` });
-    s.addText(`Prática com ${g === "helena" ? "a" : "o"} ${NOMES[g]}`, { x: 0.6, y: 6.2, w: 3.4, h: 0.35, fontSize: 12, color: C.accent4, align: "center", margin: 0, isTextBox: true });
-    const pt = alturaPassos(ex.tasks, 8.3, 16) <= 5.2 ? 16 : 14;
+    s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: 0.6, y: 1.5, w: 3.4, h: 5.2, rectRadius: 0.15, fill: { color: "F2F4F7" }, line: { color: "DCE3E9", width: 0.75 } });
+    s.addText(String(ex.minutes || ""), { x: 0.6, y: 1.7, w: 3.4, h: 1.05, fontFace: "Cambria", fontSize: 58, bold: true, color: C.accent1, align: "center", margin: 0, isTextBox: true });
+    s.addText("minutos de prática", { x: 0.6, y: 2.75, w: 3.4, h: 0.38, fontSize: 15, bold: true, color: C.text2, align: "center", margin: 0, isTextBox: true });
+    if (ex.file) s.addText(runs(ex.file, { color: C.text1 }), { x: 0.85, y: 3.3, w: 2.9, h: 1.0, fontSize: 13.5, align: "center", valign: "top", margin: 0, isTextBox: true });
+    s.addImage({ path: avatar(g), x: 1.55, y: 4.55, w: 1.5, h: 1.5, altText: `${NOMES[g]}, guia virtual ATC` });
+    s.addText(`Apoio ${g === "helena" ? "da" : "do"} ${NOMES[g]}`, { x: 0.6, y: 6.18, w: 3.4, h: 0.35, fontSize: 12, bold: true, color: C.accent2, align: "center", margin: 0, isTextBox: true });
+    const pt = alturaPassos(ex.tasks, 8.3, 15) <= 4.3 ? 15 : 13.5;
     passos(s, ex.tasks, 4.45, 1.55, 8.3, pt, C.accent2);
-    s.addNotes(`${ex.title} (${ex.minutes} min)\n${limpo(ex.file || "")}\n` + ex.tasks.map((t, i) => `${i + 1}. ${limpo(t)}`).join("\n"));
+    s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: 4.45, y: 6.05, w: 8.3, h: 0.65, rectRadius: 0.08, fill: { color: "EDF7F1" }, line: { color: "B8DEC6", width: 0.75 } });
+    s.addText([{ text: "Critério de sucesso: ", options: { bold: true, color: C.accent5 } },
+               { text: "concluir todos os passos com autonomia e validar o resultado com o formador.", options: { color: C.text1 } }],
+      { x: 4.65, y: 6.1, w: 7.9, h: 0.55, fontSize: 13, valign: "middle", margin: 0, isTextBox: true });
+    s.addNotes(`[Guia do Formador ATC · Exercício Prático]\n${ex.title} (${ex.minutes} min)\nRecurso: ${limpo(ex.file || "")}\n\nTarefas:\n` + ex.tasks.map((t, i) => `${i + 1}. ${limpo(t)}`).join("\n"));
   }
   if (mod.quiz && mod.quiz.length) {
-    const s = novo("Conteúdo"); s.addText("Teste os seus conhecimentos", { placeholder: "title" });
-    const qs = mod.quiz.slice(0, 4), cw = 5.9, ch = 2.5;
+    const s = novo("Conteúdo", null, `Módulo ${mod.num} · Avaliação formativa em sala`);
+    s.addText("Teste os seus conhecimentos", { placeholder: "title" });
+    const qs = mod.quiz.slice(0, 4), cw = 5.9, ch = 2.25;
     qs.forEach((q, k) => {
-      const x = 0.6 + (k % 2) * (cw + 0.3), y = 1.5 + Math.floor(k / 2) * (ch + 0.25);
-      s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x, y, w: cw, h: ch, rectRadius: 0.1, fill: { color: "F2F4F7" }, line: { color: "F2F4F7" } });
-      s.addText(q.q, { x: x + 0.25, y: y + 0.15, w: cw - 0.5, h: 0.7, fontSize: 15, bold: true, color: C.text2, valign: "top", margin: 0, isTextBox: true });
+      const x = 0.6 + (k % 2) * (cw + 0.3), y = 1.45 + Math.floor(k / 2) * (ch + 0.22);
+      s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x, y, w: cw, h: ch, rectRadius: 0.1, fill: { color: "F2F4F7" }, line: { color: "DCE3E9", width: 0.75 } });
+      s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: x + 0.2, y: y + 0.14, w: 1.25, h: 0.28, rectRadius: 0.05, fill: { color: C.accent2 }, line: { color: C.accent2 } });
+      s.addText(`QUESTÃO ${k + 1}`, { x: x + 0.2, y: y + 0.14, w: 1.25, h: 0.28, fontSize: 9.5, bold: true, color: "FFFFFF", align: "center", valign: "middle", margin: 0, isTextBox: true });
+      s.addText(q.q, { x: x + 0.2, y: y + 0.46, w: cw - 0.4, h: 0.62, fontSize: 13.5, bold: true, color: C.text2, valign: "top", margin: 0, isTextBox: true });
       s.addText(q.options.map((o, j) => ({ text: `${"ABCD"[j]}) ${o}`, options: { breakLine: j < q.options.length - 1 } })),
-        { x: x + 0.25, y: y + 0.88, w: cw - 0.5, h: ch - 1.0, fontSize: 14, color: C.text1, valign: "top", margin: 0, paraSpaceAfter: 2, isTextBox: true });
+        { x: x + 0.2, y: y + 1.1, w: cw - 0.4, h: ch - 1.18, fontSize: 12.5, color: C.text1, valign: "top", margin: 0, paraSpaceAfter: 1.5, isTextBox: true });
     });
-    s.addNotes("Respostas certas:\n" + qs.map((q, k) => `${k + 1}. ${q.q} → ${"ABCD"[q.answer]}) ${q.options[q.answer]}`).join("\n"));
+    s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: 0.6, y: 6.22, w: 12.1, h: 0.52, rectRadius: 0.08, fill: { color: "FFF7F0" }, line: { color: "F2B483", width: 0.75 } });
+    s.addText([{ text: "Dinâmica pedagógica: ", options: { bold: true, color: C.accent1 } },
+               { text: "discuta cada questão em turma antes de confirmar a resposta certa (chave disponível nas notas do formador).", options: { color: C.text1 } }],
+      { x: 0.8, y: 6.25, w: 11.7, h: 0.46, fontSize: 12.5, valign: "middle", margin: 0, isTextBox: true });
+    s.addNotes("[Guia do Formador ATC · Chave de Respostas]\n" + mod.quiz.map((q, k) => `${k + 1}. ${q.q}\n   ✓ Resposta certa: ${"ABCD"[q.answer]}) ${q.options[q.answer]}`).join("\n\n"));
   }
   if (manual.glossary && manual.glossary.length) {
-    const s = novo("Conteúdo"); s.addText("Glossário", { placeholder: "title" });
+    const s = novo("Conteúdo", null, `Módulo ${mod.num} · Terminologia técnica em português europeu`);
+    s.addText("Glossário essencial", { placeholder: "title" });
     const gl = manual.glossary.slice(0, 6), cols = 3, cw = (12.1 - 0.3 * (cols - 1)) / cols, rowsN = Math.ceil(gl.length / cols);
     const ch = (5.2 - 0.3 * (rowsN - 1)) / rowsN;
     gl.forEach(([t, d], k) => {
       const x = 0.6 + (k % cols) * (cw + 0.3), y = 1.5 + Math.floor(k / cols) * (ch + 0.3);
-      s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x, y, w: cw, h: ch, rectRadius: 0.1, fill: { color: "F2F4F7" }, line: { color: "F2F4F7" } });
-      s.addText(t, { x: x + 0.3, y: y + 0.25, w: cw - 0.6, h: 0.5, fontFace: "Cambria", fontSize: 20, bold: true, color: C.accent2, margin: 0, isTextBox: true });
-      s.addText(runs(d, { color: C.text1 }), { x: x + 0.3, y: y + 0.85, w: cw - 0.6, h: ch - 1.05, fontSize: 15, valign: "top", margin: 0, isTextBox: true });
+      s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x, y, w: cw, h: ch, rectRadius: 0.1, fill: { color: "F2F4F7" }, line: { color: "DCE3E9", width: 0.75 } });
+      s.addShape(pres.shapes.RECTANGLE, { x: x + 0.25, y: y + 0.2, w: 0.55, h: 0.05, fill: { color: C.accent1 }, line: { color: C.accent1 } });
+      s.addText(t, { x: x + 0.25, y: y + 0.32, w: cw - 0.5, h: 0.48, fontFace: "Cambria", fontSize: 19, bold: true, color: C.accent2, margin: 0, isTextBox: true });
+      s.addText(runs(d, { color: C.text1 }), { x: x + 0.25, y: y + 0.85, w: cw - 0.5, h: ch - 1.0, fontSize: 14.5, valign: "top", margin: 0, isTextBox: true });
     });
-    s.addNotes(manual.glossary.map(([t, d]) => `${t}: ${limpo(d)}`).join("\n"));
+    s.addNotes("[Guia do Formador ATC · Glossário]\n" + manual.glossary.map(([t, d]) => `• ${t}: ${limpo(d)}`).join("\n"));
   }
   // ===== Encerramento =====
   secAtual = "Encerramento"; seccao(secAtual);
@@ -431,10 +471,10 @@ async function gerar(slug) {
     s.addImage({ path: LOGO, x: z.x, y: 0.7, w: 1.05, h: 1.05, altText: "Logótipo ATC – Angbu Training Centre" });
     s.addText([{ text: "Aprender hoje.", options: { breakLine: true } }, { text: "Ir mais longe amanhã.", options: { color: C.accent3 } }],
       { x: z.x, y: 2.2, w: z.w, h: 1.8, fontFace: "Cambria", fontSize: 38, bold: true, color: C.background1, margin: 0, valign: "top", fit: "shrink", isTextBox: true });
-    s.addText(`Continue o módulo ${mod.num} na plataforma ATC: vídeo-aulas, manual completo e o seu guia virtual.`,
+    s.addText(`Continue o módulo ${mod.num} na plataforma ATC: vídeo-aulas, manual completo, exercícios e o seu guia virtual por voz.`,
       { x: z.x, y: 4.2, w: z.w, h: 1.2, fontSize: 18, color: "D5DEE6", margin: 0, valign: "top", isTextBox: true });
-    s.addText("ATC – Angbu Training Centre · Luanda, Angola", { x: z.x, y: 6.3, w: z.w, h: 0.4, fontSize: 12, bold: true, color: "D5DEE6", margin: 0, isTextBox: true });
-    s.addNotes("Encerramento. Lembre os formandos de que o manual, os vídeos e o guia por voz estão disponíveis na plataforma ATC.");
+    s.addText("ATC – Angbu Training Centre · Cabinda, Angola", { x: z.x, y: 6.3, w: z.w, h: 0.4, fontSize: 12, bold: true, color: "D5DEE6", margin: 0, isTextBox: true });
+    s.addNotes("[Guia do Formador ATC · Encerramento]\nLembre os formandos de que o manual ilustrado, as vídeo-aulas e o guia por voz estão disponíveis na plataforma ATC (lms.grupoangbu.com).");
   }
 
   const destino = path.join(AQUI, `${cfg.ficheiro}.pptx`);

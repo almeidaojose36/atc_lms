@@ -12,14 +12,10 @@ Uma apresentação por manual do formando, feita a partir de `cursos/<curso>/man
 | `CompTIA_A+_Modulo1.pptx` | CompTIA A+ · Dispositivos móveis | polo |
 | `CompTIA_Network+_Modulo1.pptx` | CompTIA Network+ · Conceitos de redes | casaco |
 
-Estrutura: capa, boas-vindas, objetivos, o que vamos aprender, um diapositivo por tema do manual, resumo, exercício prático, questionário (quando o manual o tem), glossário e encerramento. O texto completo de cada tema está nas **notas do orador**, para o formador. As imagens do manual que mudam com o guia aparecem com o guia desse diapositivo.
+Estrutura: capa, boas-vindas, objetivos de aprendizagem, percurso do módulo, um diapositivo por tema do manual (com quadros de referência adicionais nas tabelas largas), ideias-chave a reter, exercício prático em laboratório (com critério de sucesso), avaliação formativa («Teste os seus conhecimentos» com 4 questões em sala), glossário essencial (6 termos) e encerramento. O guia do formador e a chave de respostas completa estão nas **notas do orador** de cada diapositivo.
 
 ## Voltar a gerar (depois de alterar um manual)
 ```
 python3 preparar_imagens.py                 # cenas dos avatares, retratos redondos e figuras SVG → _build/
-node gerar_apresentacoes.js [curso ...]     # requer pptxgenjs e sharp
+node gerar_apresentacoes.js [curso ...]     # requer pptxgenjs e sharp (ou image-size + sips no macOS)
 ```
-
-As apresentações CompTIA ainda não têm imagens: as figuras estão a ser geradas a partir de `producao/imagens-comptia/PROMPTS.md`. Depois de as gravar em `cursos/<curso>/manual/figures/`, acrescente-as ao manual e volte a gerar.
-
-Na sessão local (Mac): `preparar_imagens.py` precisa de `opencv-python-headless==4.10.0.84` (a versão 5 já não tem o detetor de rostos) e `gerar_apresentacoes.js` precisa de `PPTX_SKILL` a apontar para a pasta da skill pptx.

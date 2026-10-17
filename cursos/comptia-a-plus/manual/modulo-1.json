@@ -285,6 +285,68 @@
         "Bluetooth: ativar, emparelhar, escolher, confirmar o PIN, testar.",
         "Hotspot e tethering partilham os dados móveis; o NFC atua a centímetros.",
         "A sincronização mantém correio, contactos e calendário iguais."
+      ],
+      "quiz": [
+        {
+          "q": "Antes de tocar na placa principal ou retirar a memória RAM de um portátil, o que deve fazer para evitar descargas eletrostáticas (ESD)?",
+          "options": [
+            "Ligar o carregador à tomada e manter o portátil em suspensão",
+            "Desligar a fonte de energia/bateria e colocar a pulseira antiestática ligada à terra",
+            "Limpar os contactos com água corrente",
+            "Aumentar o brilho do ecrã ao máximo"
+          ],
+          "answer": 1
+        },
+        {
+          "q": "Que formato de módulo de memória RAM é utilizado na maioria dos computadores portáteis com memória substituível?",
+          "options": [
+            "DIMM de 288 pinos",
+            "SO-DIMM",
+            "SATA de 2,5 polegadas",
+            "Mini PCIe"
+          ],
+          "answer": 1
+        },
+        {
+          "q": "Qual das seguintes opções oferece a maior velocidade de leitura e escrita num portátil compatível?",
+          "options": [
+            "Disco rígido mecânico (HDD) SATA de 2,5\"",
+            "SSD SATA de 2,5\"",
+            "SSD M.2 NVMe (via barramento PCIe)",
+            "Cartão microSD"
+          ],
+          "answer": 2
+        },
+        {
+          "q": "Ao substituir uma placa sem fios M.2 num portátil, a que pormenor deve ter especial atenção?",
+          "options": [
+            "Aos pequenos conectores dos cabos de antena (normalmente MAIN e AUX)",
+            "À capacidade em gigabytes da placa sem fios",
+            "À formatação do disco rígido",
+            "À resolução da câmara web"
+          ],
+          "answer": 0
+        },
+        {
+          "q": "Que tecnologia de curto alcance (poucos centímetros) é utilizada para pagamentos por aproximação com o telemóvel?",
+          "options": [
+            "NFC (Near Field Communication)",
+            "Tethering USB",
+            "Hotspot Wi-Fi",
+            "WWAN 5G"
+          ],
+          "answer": 0
+        },
+        {
+          "q": "Durante a configuração da sincronização de correio num telemóvel de um cliente, como deve proceder quanto à palavra-passe?",
+          "options": [
+            "Anotar a palavra-passe na ficha de serviço para futuras intervenções",
+            "Pedir ao próprio cliente que introduza a sua palavra-passe sem a revelar nem anotar",
+            "Definir uma palavra-passe igual para todos os clientes",
+            "Desativar o bloqueio de ecrã permanentemente"
+          ],
+          "answer": 1
+        }
       ]
     }
   ],

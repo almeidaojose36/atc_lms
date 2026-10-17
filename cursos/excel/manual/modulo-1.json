@@ -247,6 +247,68 @@
         "Enter ou Tab confirma uma entrada e move a seleção.",
         "Selecionar dois valores permite ao preenchimento automático continuar uma série.",
         "Fórmulas, gráficos e formatação condicional ajudam a analisar e comunicar dados."
+      ],
+      "quiz": [
+        {
+          "q": "Como se chama o espaço onde se cruzam a coluna B e a linha 4 numa folha de cálculo?",
+          "options": [
+            "Folha B4",
+            "Célula B4",
+            "Livro 4B",
+            "Separador B4"
+          ],
+          "answer": 1
+        },
+        {
+          "q": "Que tecla confirma o valor introduzido numa célula e avança para a célula imediatamente à direita?",
+          "options": [
+            "Tab",
+            "Esc",
+            "Espaço",
+            "BackSpace"
+          ],
+          "answer": 0
+        },
+        {
+          "q": "Para prolongar a sequência «Jan, Fev» até junho com a alça de preenchimento, o que deve fazer primeiro?",
+          "options": [
+            "Selecionar apenas a célula onde escreveu Jan",
+            "Selecionar as duas células (Jan e Fev) para indicar o padrão ao Excel",
+            "Apagar Fev e escrever Jun",
+            "Clicar no botão Soma Automática"
+          ],
+          "answer": 1
+        },
+        {
+          "q": "Qual das seguintes expressões representa uma fórmula que soma os valores do intervalo de D2 até D4?",
+          "options": [
+            "SOMA(D2-D4)",
+            "=SOMA(D2:D4)",
+            "=TOTAL(D2;D4)",
+            "+D2:D4"
+          ],
+          "answer": 1
+        },
+        {
+          "q": "Que recurso do Excel permite realçar automaticamente com cores as despesas que ultrapassam um limite?",
+          "options": [
+            "Alça de preenchimento",
+            "Formatação condicional",
+            "Barra de fórmulas",
+            "Verificação ortográfica"
+          ],
+          "answer": 1
+        },
+        {
+          "q": "Qual é a diferença entre um livro e uma folha no Microsoft Excel?",
+          "options": [
+            "São exatamente a mesma coisa",
+            "O livro é o ficheiro (.xlsx) e pode conter várias folhas de cálculo",
+            "A folha guarda vários livros dentro dela",
+            "O livro serve apenas para gráficos e a folha para números"
+          ],
+          "answer": 1
+        }
       ]
     }
   ],
@@ -260,16 +322,20 @@
       "Unidade individual da grelha, identificada pela coluna e linha."
     ],
     [
-      "Livro",
-      "Ficheiro do Excel que pode conter uma ou mais folhas de cálculo."
-    ],
-    [
       "Folha de cálculo",
       "Grelha de linhas e colunas onde se organizam os dados."
     ],
     [
       "Formatação condicional",
       "Regras visuais que realçam células consoante os seus valores."
+    ],
+    [
+      "Intervalo",
+      "Conjunto de células contíguas, identificado pelos cantos (por exemplo, B2:B8)."
+    ],
+    [
+      "Livro",
+      "Ficheiro do Excel (.xlsx) que pode conter uma ou mais folhas de cálculo."
     ]
   ]
 }

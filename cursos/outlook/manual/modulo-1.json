@@ -129,7 +129,7 @@
             {
               "steps": [
                 "Escreva a saudação: **Olá,**.",
-                "Escreva uma frase de contexto: **A sessão de formação em Microsoft Outlook terá lugar em Luanda.**",
+                "Escreva uma frase de contexto: **A sessão de formação em Microsoft Outlook terá lugar em Cabinda.**",
                 "Escreva **Objetivos da sessão:** e crie uma lista com três pontos.",
                 "Termine com **Com os melhores cumprimentos,**, o seu nome e a ATC."
               ]
@@ -201,6 +201,68 @@
         "Um assunto claro resume o conteúdo da mensagem.",
         "Parágrafos curtos e listas tornam a mensagem fácil de ler.",
         "Reveja sempre os destinatários e o texto antes de enviar."
+      ],
+      "quiz": [
+        {
+          "q": "Em que campo deve colocar o endereço de alguém que deve receber uma cópia sem que os restantes destinatários o vejam?",
+          "options": [
+            "Para",
+            "Cc",
+            "Bcc",
+            "Assunto"
+          ],
+          "answer": 2
+        },
+        {
+          "q": "Qual dos seguintes é um bom exemplo de assunto para uma mensagem profissional?",
+          "options": [
+            "URGENTE LEIA JÁ!!!",
+            "ATC — Convite para a sessão de formação Outlook",
+            "(deixar o campo em branco)",
+            "Olá"
+          ],
+          "answer": 1
+        },
+        {
+          "q": "O que acontece a uma mensagem escrita quando ainda não carregou no botão Enviar?",
+          "options": [
+            "É apagada imediatamente",
+            "Fica guardada como rascunho",
+            "É enviada automaticamente para todos os contactos",
+            "Transforma-se num evento de calendário"
+          ],
+          "answer": 1
+        },
+        {
+          "q": "Para que serve o campo Cc numa mensagem de correio eletrónico?",
+          "options": [
+            "Para escrever o título da mensagem",
+            "Para incluir pessoas que recebem uma cópia a título informativo",
+            "Para anexar ficheiros grandes",
+            "Para escolher o tipo de letra"
+          ],
+          "answer": 1
+        },
+        {
+          "q": "Em que separador da janela de mensagem se encontram os botões para aplicar negrito, itálico e listas com marcas?",
+          "options": [
+            "Formatar texto",
+            "Calendário",
+            "Contactos",
+            "Ajuda"
+          ],
+          "answer": 0
+        },
+        {
+          "q": "Por que razão deve rever os destinatários e o texto antes de carregar em Enviar?",
+          "options": [
+            "Porque o botão Enviar só funciona à segunda tentativa",
+            "Porque depois de enviada a mensagem segue imediatamente para os destinatários",
+            "Porque o Outlook obriga a mudar a cor do texto",
+            "Porque o assunto desaparece ao enviar"
+          ],
+          "answer": 1
+        }
       ]
     }
   ],

@@ -204,13 +204,87 @@
         "Use uma ideia principal por diapositivo.",
         "Escolha elementos visuais pela sua utilidade e mantenha o texto legível.",
         "Ensaie, reveja e teste a apresentação antes de a apresentar."
+      ],
+      "quiz": [
+        {
+          "q": "Qual deve ser o primeiro passo antes de escolher cores ou criar diapositivos no PowerPoint?",
+          "options": [
+            "Inserir animações em todos os ecrãs",
+            "Definir numa frase clara o que o público deve compreender ou fazer no final",
+            "Copiar um texto longo de um relatório para o primeiro diapositivo",
+            "Escolher o maior número possível de tipos de letra"
+          ],
+          "answer": 1
+        },
+        {
+          "q": "Quantas ideias principais deve comunicar cada diapositivo para manter a clareza?",
+          "options": [
+            "Uma ideia principal por diapositivo",
+            "Pelo menos quatro temas diferentes por ecrã",
+            "Todo o discurso palavra por palavra",
+            "Apenas imagens sem qualquer título"
+          ],
+          "answer": 0
+        },
+        {
+          "q": "Como deve ser escrito o título de um diapositivo eficaz?",
+          "options": [
+            "Deve comunicar a conclusão ou ideia-chave desse diapositivo",
+            "Deve ter pelo menos cinco linhas de texto",
+            "Deve usar uma cor quase igual à do fundo",
+            "Deve conter apenas um número sem palavras"
+          ],
+          "answer": 0
+        },
+        {
+          "q": "Por que razão se deve evitar colocar parágrafos extensos num diapositivo?",
+          "options": [
+            "Porque o PowerPoint não aceita mais de três linhas",
+            "Porque o público passa a ler o ecrã em vez de ouvir e acompanhar quem apresenta",
+            "Porque o ficheiro deixa de poder ser guardado",
+            "Porque impede o uso de imagens"
+          ],
+          "answer": 1
+        },
+        {
+          "q": "Em que três partes se organiza a estrutura lógica de uma apresentação?",
+          "options": [
+            "Capa, índice e bibliografia",
+            "Abertura, desenvolvimento e conclusão",
+            "Título, tabela e gráfico",
+            "Rascunho, revisão e impressão"
+          ],
+          "answer": 1
+        },
+        {
+          "q": "O que deve verificar durante o ensaio antes da sessão?",
+          "options": [
+            "Apenas a cor do primeiro diapositivo",
+            "A sequência lógica, o tempo, a legibilidade e o funcionamento dos elementos multimédia",
+            "Somente o nome do ficheiro na pasta",
+            "Se todos os diapositivos têm efeitos sonoros"
+          ],
+          "answer": 1
+        }
       ]
     }
   ],
   "glossary": [
     [
+      "Contraste visual",
+      "Diferença clara entre a cor do texto e a cor do fundo para garantir leitura à distância."
+    ],
+    [
       "Diapositivo",
-      "Cada ecrã individual de uma apresentação."
+      "Cada ecrã individual que compõe uma apresentação."
+    ],
+    [
+      "Mensagem principal",
+      "Ideia central que o público deve compreender e recordar no final."
+    ],
+    [
+      "Miniatura",
+      "Vista reduzida de cada diapositivo no painel esquerdo, usada para ordenar a sequência."
     ],
     [
       "Modelo",
@@ -219,10 +293,6 @@
     [
       "Tema",
       "Conjunto coordenado de cores, tipos de letra e efeitos visuais."
-    ],
-    [
-      "Mensagem principal",
-      "Ideia que o público deve compreender e recordar."
     ]
   ]
 }
