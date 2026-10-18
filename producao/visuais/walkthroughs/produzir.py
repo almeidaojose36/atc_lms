@@ -254,6 +254,65 @@ def a5(g):
     g.submeter(".entry-form .btn", zoom=1.25)
     g.foco(xy=(VW * 0.56, VH * 0.5), zoom=1.08, segura=3.2, antes=0.2); g.ir_a(".verify-ok", ms=700); g.esperar(3000)
 
+# --- Galeria 3D ---
+def g_carregar(g, slug=None):
+    t = g.t()
+    if slug: g.pg.evaluate("(s)=>{location.hash=s}", slug)
+    g.esperar(150)
+    g.pg.wait_for_function("document.getElementById('g-carregar').hidden && document.querySelectorAll('.g-marca').length>0", timeout=60000)
+    g.esperar(200); g.cortes.append((t, g.t()))
+
+def g_parar(g):   # pára a rotação automática para os números ficarem quietos
+    g.pg.evaluate("()=>{const b=document.getElementById('g-rodar'); if(b.getAttribute('aria-pressed')==='true') b.click()}"); g.esperar(900)
+
+def g1(g):
+    g.ir("/galeria#placa-mae"); g_carregar(g)
+    g.foco(".g-palco", zoom=1.12, segura=4.0, antes=0.2); g.mover(VW * 0.4, VH * 0.55, ms=1200); g.esperar(4200)
+
+def g2(g):
+    g.clicar(".g-aba[data-slug='placa-grafica'], .g-aba[data-slug='cooler']", zoom=1.2, segura=0.8); g_carregar(g)
+    x, y = g.centro("#g-canvas")
+    g.foco(xy=(x, y), zoom=1.15, segura=5.0, antes=0.1)
+    g.mover(x - 120, y, ms=600); g.pg.mouse.down()
+    for k in range(60): g.pg.mouse.move(x - 120 + k * 6, y + (k % 30) * 0.8); g.esperar(22)
+    g.pg.mouse.up(); g.x, g.y = x + 240, y; g.esperar(300)
+    g.mover(x, y, ms=500)
+    for _ in range(8): g.pg.mouse.wheel(0, -120); g.esperar(70)
+    g.esperar(1200)
+    for _ in range(8): g.pg.mouse.wheel(0, 120); g.esperar(70)
+    g.esperar(600)
+
+def g3(g):
+    g.clicar(".g-aba[data-slug='placa-mae']", zoom=1.2, segura=0.8); g_carregar(g); g.esperar(800); g_parar(g)
+    g.clicar(".g-marca >> nth=0", zoom=1.35, segura=1.4); g.esperar(1400)
+    g.foco(".g-info", zoom=1.3, segura=2.4, antes=0.1); g.esperar(2200)
+    g.clicar("#g-seg", zoom=1.35, segura=1.6); g.esperar(1800)
+    g.clicar("#g-seg", zoom=1.35, segura=1.6); g.esperar(1800)
+
+def g4(g):
+    for slug in ("teclado", "rato", "monitor", "auscultadores"):
+        g.clicar(f".g-aba[data-slug='{slug}']", zoom=1.18, segura=0.7); g_carregar(g)
+        g.foco(".g-palco", zoom=1.1, segura=1.6, antes=0.1); g.esperar(1500)
+
+def g5(g):
+    g.clicar(".g-aba[data-slug='caixa']", zoom=1.2, segura=0.7); g_carregar(g)
+    g.clicar("#g-ecra", zoom=1.3, segura=0.9); g.esperar(1200); g_parar(g)
+    g.clicar(".g-marca >> nth=1", zoom=1.2, segura=1.2); g.esperar(2600)
+    g.clicar(".g-marca >> nth=0", zoom=1.2, segura=1.2); g.esperar(2400)
+    g.pg.keyboard.press("Escape"); g.esperar(400)
+
+def g6(g):
+    g.ir("/cursos/informatica/aula/aula-1-1")
+    if "/apresentador" in g.pg.url:          # escolhe a Helena fora de cena (o carregamento é cortado)
+        t = g.t(); g.pg.check("input[name=presenter][value=helena]")
+        with g.pg.expect_navigation(wait_until="domcontentloaded"): g.pg.click(".presenter-submit .btn")
+        g.pronto(t)
+    g.esperar(400)
+    g.rolar_ate("a:has-text('Ver em 3D')", 430, ms=1100)
+    g.foco("a:has-text('Ver em 3D')", zoom=1.35, segura=1.8, antes=0.1); g.esperar(1600)
+    with g.pg.expect_navigation(wait_until="domcontentloaded"): g.clicar("a:has-text('Ver em 3D')", zoom=1.35)
+    g_carregar(g); g.foco(".g-palco", zoom=1.1, segura=2.2, antes=0.1); g.esperar(2400)
+
 PLANO = {
     "formando": {"f1": (None, f1), "f2": (None, f2), "f3": ("seguir", f3), "f4": ("seguir", f4), "f5": ("seguir", f5),
                  "f6": ("seguir", f6), "f7": ("seguir", f7), "f8": ("seguir", f8), "f9": (("joana.mbala@exemplo.ao", "demo-formando-2026"), f9)},
@@ -261,6 +320,8 @@ PLANO = {
                  {"t1": t1, "t2": t2, "t3": t3, "t4": t4, "t5": t5}.items()},
     "admin": {k: (("admin@atc.ao", "admin123") if k == "a1" else "seguir", f) for k, f in
               {"a1": a1, "a2": a2, "a3": a3, "a4": a4, "a5": a5}.items()},
+    "galeria": {k: (("formando@atc.ao", "formando123") if k == "g1" else "seguir", f) for k, f in
+                {"g1": g1, "g2": g2, "g3": g3, "g4": g4, "g5": g5, "g6": g6}.items()},
 }[VIDEO]
 
 def sessao(b, email, pw):
@@ -441,7 +502,7 @@ def main():
         if s["texto"]: vozes.append((len(pecas), vo))
         if s["id"] not in gravacoes:              # fecho
             fim = TMP / "fim.mp4"
-            gravar_cartao("Angbu Training Centre · Cabinda", "Aprender hoje.<br><em>Ir mais longe amanhã.</em>" if VIDEO == "formando" else "ATC <em>Formação.</em>",
+            gravar_cartao("Angbu Training Centre · Cabinda", "Aprender hoje.<br><em>Ir mais longe amanhã.</em>" if VIDEO == "formando" else ("Galeria <em>3D.</em>" if VIDEO == "galeria" else "ATC <em>Formação.</em>"),
                           "lms.grupoangbu.com", fim, dv + 2.4)
             pecas.append(fim); continue
         webm, focos, fs, cortes = gravacoes[s["id"]]

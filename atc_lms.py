@@ -1061,7 +1061,7 @@ def galeria(r):
     scripts = ('<link rel="stylesheet" href="/static/galeria.css?v=3">'
                '<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.181.2/build/three.module.js",'
                '"three/addons/":"https://cdn.jsdelivr.net/npm/three@0.181.2/examples/jsm/"}}</script>'
-               '<script type="module" src="/static/galeria.js?v=9"></script>')
+               '<script type="module" src="/static/galeria.js?v=10"></script>')
     return r.render("Galeria 3D", body, wide=True, scripts=scripts, body_class="pg-galeria")
 
 
@@ -1747,7 +1747,8 @@ def admin_codes_csv(r):
 APRESENTACAO_VIDEOS = [  # (ficheiro, título, descrição, duração)
                        ("formando", "Formandos", "Da inscrição ao certificado: criar conta, pagar, escolher o guia, aprender e certificar.", "2:00"),
                        ("formador", "Formadores", "Responder a dúvidas, acompanhar a turma, inscrever formandos e confirmar pagamentos.", "1:01"),
-                       ("admin", "Administração", "Contas, pagamentos com comprovativo, códigos de acesso, cursos e certificados.", "0:59")]
+                       ("admin", "Administração", "Contas, pagamentos com comprovativo, códigos de acesso, cursos e certificados.", "0:59"),
+                       ("galeria", "Galeria 3D", "As peças do computador em 3D: rodar, aproximar, tocar nos números e ligar às aulas.", "1:15")]
 
 
 @route("GET", "/apresentacao")

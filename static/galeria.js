@@ -91,8 +91,8 @@ function calcularPontos(p, pivot) {
   const centro = b.getCenter(new THREE.Vector3());
   return p.pontos.map((pt) => {
     if (pt.parte) {   // o ponto fica no centro das malhas cujo nome começa por "parte"
-      const chave = pt.parte.replace(/\s+/g, "_"), caixa = new THREE.Box3();
-      pivot.traverse((o) => { if (o.isMesh && o.name.replace(/\s+/g, "_").startsWith(chave)) caixa.expandByObject(o); });
+      const norm = (x) => x.replace(/[\[\]\.:\/]/g, "").replace(/\s+/g, "_"), chave = norm(pt.parte), caixa = new THREE.Box3();
+      pivot.traverse((o) => { if (o.isMesh && norm(o.name).startsWith(chave)) caixa.expandByObject(o); });
       if (!caixa.isEmpty()) {
         let pos;
         if (pt.em) {   // posição dentro da parte (0–1 em cada eixo), para afastar pontos vizinhos
@@ -106,7 +106,8 @@ function calcularPontos(p, pivot) {
         return { ...pt, pos, normal: normal.normalize() };
       }
     }
-    const alvo = new THREE.Vector3(b.min.x + pt.p[0] * size.x, b.min.y + pt.p[1] * size.y, b.min.z + pt.p[2] * size.z);
+    const q = pt.p || [0.5, 0.5, 0.5];
+    const alvo = new THREE.Vector3(b.min.x + q[0] * size.x, b.min.y + q[1] * size.y, b.min.z + q[2] * size.z);
     let pos = alvo.clone(), normal = null;
     if (pt.dir) {
       const d = new THREE.Vector3(...pt.dir).normalize();

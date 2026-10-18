@@ -426,6 +426,269 @@
           "texto": "Liga-se a um conector FAN da placa-mãe. A ficha de 4 pinos (PWM) permite controlar a velocidade."
         }
       ]
+    },
+    {
+      "slug": "monitor",
+      "nome": "Monitor",
+      "ficheiro": "monitor.glb",
+      "escala": 10,
+      "vista": [
+        0.5,
+        0.35,
+        1
+      ],
+      "resumo": "Mostra a imagem produzida pela placa gráfica. Tamanho, resolução e frequência de atualização definem a qualidade.",
+      "pontos": [
+        {
+          "parte": "LCD active display",
+          "titulo": "Ecrã (LCD/LED)",
+          "texto": "A área que mostra a imagem. A resolução (ex.: 1920×1080, Full HD) é o número de pontos de imagem."
+        },
+        {
+          "parte": "Control button",
+          "titulo": "Botões de menu",
+          "texto": "Ajustam brilho, contraste e a entrada de vídeo. Se o ecrã diz «sem sinal», confirme aqui a entrada certa."
+        },
+        {
+          "parte": "Power LED",
+          "titulo": "Luz de energia",
+          "texto": "Acesa: ligado. Intermitente ou cor laranja: em espera ou sem sinal de vídeo."
+        },
+        {
+          "parte": "Display input connector",
+          "titulo": "Entradas de vídeo",
+          "texto": "Na traseira: HDMI, DisplayPort ou VGA. Ligue o cabo à placa gráfica do computador."
+        },
+        {
+          "parte": "Weighted stand base",
+          "titulo": "Base e suporte",
+          "texto": "Muitos permitem inclinar o ecrã. Os furos VESA atrás servem para o fixar a um braço ou à parede."
+        }
+      ]
+    },
+    {
+      "slug": "teclado",
+      "nome": "Teclado",
+      "ficheiro": "keyboard.glb",
+      "escala": 10,
+      "vista": [
+        0.2,
+        1,
+        0.9
+      ],
+      "resumo": "O principal dispositivo de entrada de texto. A disposição mais comum em Portugal é a QWERTY portuguesa (PT).",
+      "pontos": [
+        {
+          "parte": "Keycap Q",
+          "titulo": "Teclas alfanuméricas",
+          "texto": "Letras e números na disposição QWERTY. Em português há teclas próprias, como o «ç»."
+        },
+        {
+          "parte": "Keyboard base",
+          "titulo": "Base do teclado",
+          "texto": "Liga-se por USB ou sem fios (Bluetooth ou recetor USB). Pode ter pés para inclinar.",
+          "em": [
+            0.92,
+            0.5,
+            1
+          ]
+        },
+        {
+          "parte": "Brushed deck",
+          "titulo": "Estrutura",
+          "texto": "Suporta as teclas. Limpe o pó com ar comprimido e o teclado desligado.",
+          "em": [
+            0.6,
+            1,
+            0.12
+          ]
+        },
+        {
+          "parte": "Keycap -",
+          "titulo": "Teclas de símbolos",
+          "texto": "Pontuação e símbolos. Algumas precisam de Shift ou Alt Gr para o segundo símbolo."
+        }
+      ]
+    },
+    {
+      "slug": "rato",
+      "nome": "Rato",
+      "ficheiro": "mouse.glb",
+      "escala": 10,
+      "vista": [
+        0.6,
+        0.9,
+        1
+      ],
+      "resumo": "Move o cursor no ecrã. Os ratos óticos usam um sensor de luz para detetar o movimento.",
+      "pontos": [
+        {
+          "parte": "Left click button",
+          "titulo": "Botão esquerdo",
+          "texto": "Seleciona e abre. Duplo clique abre ficheiros e programas."
+        },
+        {
+          "parte": "Right click button",
+          "titulo": "Botão direito",
+          "texto": "Abre o menu de contexto com mais opções."
+        },
+        {
+          "parte": "Rubber scroll wheel",
+          "titulo": "Roda de deslocamento",
+          "texto": "Desloca a página. Carregar na roda funciona como terceiro botão."
+        },
+        {
+          "parte": "Thumb button",
+          "titulo": "Botão lateral",
+          "texto": "Programável; muitas vezes serve para «Voltar» no navegador."
+        },
+        {
+          "parte": "Optical sensor window",
+          "titulo": "Sensor ótico",
+          "texto": "Por baixo: lê o movimento sobre a superfície. Superfícies de vidro ou brilhantes podem falhar."
+        }
+      ]
+    },
+    {
+      "slug": "colunas",
+      "nome": "Colunas",
+      "ficheiro": "speakers.glb",
+      "escala": 10,
+      "vista": [
+        0.4,
+        0.4,
+        1
+      ],
+      "resumo": "Reproduzem o som do computador. Ligam-se à saída de áudio (verde) ou por USB/Bluetooth.",
+      "pontos": [
+        {
+          "parte": "Speaker dust cap",
+          "titulo": "Altifalante",
+          "texto": "O cone vibra e cria o som. Volume muito alto durante muito tempo pode danificá-lo."
+        },
+        {
+          "parte": "Volume knob",
+          "titulo": "Botão de volume",
+          "texto": "Controla o volume diretamente nas colunas, além do controlo no Windows."
+        },
+        {
+          "parte": "Power indicator",
+          "titulo": "Luz de energia",
+          "texto": "Confirma que as colunas estão ligadas: um passo útil quando «não há som»."
+        },
+        {
+          "parte": "Speaker connection cable",
+          "titulo": "Cabo de ligação",
+          "texto": "Ficha de 3,5 mm na saída verde do PC; algumas usam USB para energia."
+        }
+      ]
+    },
+    {
+      "slug": "webcam",
+      "nome": "Câmara web",
+      "ficheiro": "webcam.glb",
+      "escala": 10,
+      "vista": [
+        0.4,
+        0.4,
+        1
+      ],
+      "resumo": "Capta vídeo para videochamadas e aulas online. Muitas têm microfone incorporado.",
+      "pontos": [
+        {
+          "parte": "Optical front element",
+          "titulo": "Lente",
+          "texto": "Capta a imagem. Limpe-a com um pano de microfibra para evitar imagem baciada."
+        },
+        {
+          "parte": "Activity indicator",
+          "titulo": "Luz de atividade",
+          "texto": "Acende quando a câmara está a filmar: um sinal importante de privacidade."
+        },
+        {
+          "parte": "Microphone aperture",
+          "titulo": "Microfone",
+          "texto": "Orifício do microfone incorporado. Confirme nas definições de som qual o microfone ativo."
+        },
+        {
+          "parte": "Monitor clip upper jaw",
+          "titulo": "Mola de fixação",
+          "texto": "Prende a câmara no topo do monitor ou portátil."
+        },
+        {
+          "parte": "USB cable plug",
+          "titulo": "Ficha USB",
+          "texto": "Liga-se a uma porta USB. O Windows instala o controlador automaticamente."
+        }
+      ]
+    },
+    {
+      "slug": "auscultadores",
+      "nome": "Auscultadores com microfone",
+      "ficheiro": "headset.glb",
+      "escala": 10,
+      "vista": [
+        0.6,
+        0.4,
+        1
+      ],
+      "resumo": "Som e microfone num só dispositivo: ideal para aulas online, chamadas e trabalho em espaços partilhados.",
+      "pontos": [
+        {
+          "parte": "Over ear cup shell",
+          "titulo": "Conchas",
+          "texto": "Cobrem as orelhas e isolam o ruído exterior."
+        },
+        {
+          "parte": "Padded headband cushion",
+          "titulo": "Arco ajustável",
+          "texto": "Ajusta-se ao tamanho da cabeça para maior conforto."
+        },
+        {
+          "parte": "Microphone foam windscreen",
+          "titulo": "Microfone",
+          "texto": "A espuma reduz o ruído da respiração. Posicione-o perto da boca, de lado."
+        },
+        {
+          "parte": "3.5 mm plug",
+          "titulo": "Ficha de 3,5 mm",
+          "texto": "Liga à saída de áudio (verde) e à entrada de microfone (rosa), ou a uma porta combinada."
+        }
+      ]
+    },
+    {
+      "slug": "pen-usb",
+      "nome": "Pen USB",
+      "ficheiro": "usb-flash-drive.glb",
+      "escala": 10,
+      "vista": [
+        0.6,
+        0.8,
+        1
+      ],
+      "resumo": "Armazenamento portátil com memória flash, como um SSD em miniatura. Ideal para transportar ficheiros.",
+      "pontos": [
+        {
+          "parte": "Gold USB contact",
+          "titulo": "Conector USB",
+          "texto": "Encaixa numa porta USB. Antes de a retirar, use «Ejetar» para não perder dados."
+        },
+        {
+          "parte": "Activity LED",
+          "titulo": "Luz de atividade",
+          "texto": "Pisca quando há leitura ou escrita. Não retire a pen enquanto pisca."
+        },
+        {
+          "parte": "Anodised USB drive body",
+          "titulo": "Corpo",
+          "texto": "Guarda o chip de memória flash e o controlador. Capacidades comuns: 16 a 256 GB."
+        },
+        {
+          "parte": "Keyring eye",
+          "titulo": "Argola",
+          "texto": "Para prender a um porta-chaves e não perder a pen."
+        }
+      ]
     }
   ]
 }

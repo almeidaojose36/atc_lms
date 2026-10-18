@@ -309,7 +309,7 @@ class GaleriaTests(unittest.TestCase):
         html = pedido("/galeria", headers={"Cookie": cookie})["body"].decode()
         self.assertIn('href="/galeria"', html)
         dados = json.loads(html.split('<script id="galeria-dados" type="application/json">')[1].split("</script>")[0])
-        self.assertEqual(len(dados), 9)
+        self.assertEqual(len(dados), 16)
         for p in dados:
             self.assertTrue(p["pontos"], p["slug"])
             self.assertTrue((passenger_wsgi.atc_lms.GALERIA_DIR / "modelos" / p["ficheiro"]).is_file(), p["ficheiro"])

@@ -3,40 +3,169 @@
     "titulo": "Para formandos",
     "subtitulo": "Da inscrição ao certificado",
     "secoes": [
-      {"id": "f1", "capitulo": "", "texto": "Bem-vindo à ATC Formação: formação em informática, hardware e redes, em português, para formandos de todo o país."},
-      {"id": "f2", "capitulo": "01 / Criar conta", "texto": "Criar conta demora menos de um minuto: o nome, o telemóvel, o email e a sua província."},
-      {"id": "f3", "capitulo": "02 / Escolher um plano", "texto": "Depois, escolha um plano e a forma de pagar: Multicaixa Express, referência, transferência ou na loja. Quem tem internet do Grupo Angbu ativa o acesso com um código."},
-      {"id": "f4", "capitulo": "", "texto": "Com o Multicaixa Express, confirma o pagamento no telemóvel e o acesso fica ativo no mesmo instante."},
-      {"id": "f5", "capitulo": "03 / O seu guia virtual", "texto": "A seguir, escolha quem o acompanha: a Helena ou o Miguel. O seu guia apresenta cada aula e fala consigo."},
-      {"id": "f6", "capitulo": "04 / Aulas com demonstração", "texto": "Cada aula junta a explicação do guia a uma demonstração prática, passo a passo, com legendas."},
-      {"id": "f7", "capitulo": "05 / Dúvidas na própria aula", "texto": "Tem uma dúvida? Escreva-a na própria aula, ou pergunte em voz ao seu guia. O formador responde no mesmo sítio."},
-      {"id": "f8", "capitulo": "06 / Manuais ilustrados", "texto": "Para rever, cada módulo tem um manual ilustrado, com imagens do seu guia, que pode ler na plataforma ou descarregar."},
-      {"id": "f9", "capitulo": "07 / Questionário e certificado", "texto": "No fim, um questionário confirma o que aprendeu. Ao concluir o curso, recebe um certificado com um código que qualquer empresa pode verificar."},
-      {"id": "f10", "capitulo": "", "texto": "Aprender hoje. Ir mais longe amanhã. Comece hoje o seu percurso com a ATC Formação."}
+      {
+        "id": "f1",
+        "capitulo": "",
+        "texto": "Bem-vindo à ATC Formação: formação em informática, hardware e redes, em português, para formandos de todo o país."
+      },
+      {
+        "id": "f2",
+        "capitulo": "01 / Criar conta",
+        "texto": "Criar conta demora menos de um minuto: o nome, o telemóvel, o email e a sua província."
+      },
+      {
+        "id": "f3",
+        "capitulo": "02 / Escolher um plano",
+        "texto": "Depois, escolha um plano e a forma de pagar: Multicaixa Express, referência, transferência ou na loja. Quem tem internet do Grupo Angbu ativa o acesso com um código."
+      },
+      {
+        "id": "f4",
+        "capitulo": "",
+        "texto": "Com o Multicaixa Express, confirma o pagamento no telemóvel e o acesso fica ativo no mesmo instante."
+      },
+      {
+        "id": "f5",
+        "capitulo": "03 / O seu guia virtual",
+        "texto": "A seguir, escolha quem o acompanha: a Helena ou o Miguel. O seu guia apresenta cada aula e fala consigo."
+      },
+      {
+        "id": "f6",
+        "capitulo": "04 / Aulas com demonstração",
+        "texto": "Cada aula junta a explicação do guia a uma demonstração prática, passo a passo, com legendas."
+      },
+      {
+        "id": "f7",
+        "capitulo": "05 / Dúvidas na própria aula",
+        "texto": "Tem uma dúvida? Escreva-a na própria aula, ou pergunte em voz ao seu guia. O formador responde no mesmo sítio."
+      },
+      {
+        "id": "f8",
+        "capitulo": "06 / Manuais ilustrados",
+        "texto": "Para rever, cada módulo tem um manual ilustrado, com imagens do seu guia, que pode ler na plataforma ou descarregar."
+      },
+      {
+        "id": "f9",
+        "capitulo": "07 / Questionário e certificado",
+        "texto": "No fim, um questionário confirma o que aprendeu. Ao concluir o curso, recebe um certificado com um código que qualquer empresa pode verificar."
+      },
+      {
+        "id": "f10",
+        "capitulo": "",
+        "texto": "Aprender hoje. Ir mais longe amanhã. Comece hoje o seu percurso com a ATC Formação."
+      }
     ]
   },
   "formador": {
     "titulo": "Para formadores",
     "subtitulo": "Acompanhar cada turma, num só lugar",
     "secoes": [
-      {"id": "t1", "capitulo": "", "texto": "Para os formadores, a ATC Formação reúne num só lugar tudo o que é preciso para acompanhar cada turma."},
-      {"id": "t2", "capitulo": "01 / Perguntas dos formandos", "texto": "As dúvidas dos formandos chegam a uma lista própria. Abre a pergunta, responde na aula, e o formando vê a resposta no mesmo sítio."},
-      {"id": "t3", "capitulo": "02 / Progresso da turma", "texto": "O relatório mostra, para cada formando, as aulas concluídas, o resultado do questionário e o certificado. E pode exportá-lo para Excel."},
-      {"id": "t4", "capitulo": "03 / Inscrever formandos", "texto": "Para inscrever uma turma inteira, basta colar a lista de nomes e emails. As contas ficam criadas e inscritas de uma só vez."},
-      {"id": "t5", "capitulo": "04 / Pagamentos na loja", "texto": "Quando um formando paga na loja ou envia um comprovativo, o formador confirma o pagamento e o acesso é ativado de imediato."},
-      {"id": "t6", "capitulo": "", "texto": "Menos papel, mais tempo para ensinar. ATC Formação."}
+      {
+        "id": "t1",
+        "capitulo": "",
+        "texto": "Para os formadores, a ATC Formação reúne num só lugar tudo o que é preciso para acompanhar cada turma."
+      },
+      {
+        "id": "t2",
+        "capitulo": "01 / Perguntas dos formandos",
+        "texto": "As dúvidas dos formandos chegam a uma lista própria. Abre a pergunta, responde na aula, e o formando vê a resposta no mesmo sítio."
+      },
+      {
+        "id": "t3",
+        "capitulo": "02 / Progresso da turma",
+        "texto": "O relatório mostra, para cada formando, as aulas concluídas, o resultado do questionário e o certificado. E pode exportá-lo para Excel."
+      },
+      {
+        "id": "t4",
+        "capitulo": "03 / Inscrever formandos",
+        "texto": "Para inscrever uma turma inteira, basta colar a lista de nomes e emails. As contas ficam criadas e inscritas de uma só vez."
+      },
+      {
+        "id": "t5",
+        "capitulo": "04 / Pagamentos na loja",
+        "texto": "Quando um formando paga na loja ou envia um comprovativo, o formador confirma o pagamento e o acesso é ativado de imediato."
+      },
+      {
+        "id": "t6",
+        "capitulo": "",
+        "texto": "Menos papel, mais tempo para ensinar. ATC Formação."
+      }
     ]
   },
   "admin": {
     "titulo": "Para a administração",
     "subtitulo": "Formandos, pagamentos e acessos, sob controlo",
     "secoes": [
-      {"id": "a1", "capitulo": "", "texto": "A administração tem uma visão completa da plataforma: formandos, cursos, pagamentos e acessos."},
-      {"id": "a2", "capitulo": "01 / Contas e perfis", "texto": "Gere as contas de formandos, formadores e administradores: o perfil, as inscrições e o estado de cada conta."},
-      {"id": "a3", "capitulo": "02 / Pagamentos", "texto": "Todos os pagamentos ficam registados. Os automáticos, por Multicaixa Express e referência, e os que precisam de confirmação, com o comprovativo à vista."},
-      {"id": "a4", "capitulo": "03 / Códigos de acesso", "texto": "Crie códigos de acesso em lote, por exemplo para oferecer a formação com a internet do Grupo Angbu, e descarregue-os numa folha de cálculo."},
-      {"id": "a5", "capitulo": "04 / Cursos e certificados", "texto": "Publique cada curso quando estiver pronto. E qualquer pessoa pode confirmar, sem conta, se um certificado é verdadeiro."},
-      {"id": "a6", "capitulo": "", "texto": "Uma plataforma pensada para crescer em todo o país. ATC Formação."}
+      {
+        "id": "a1",
+        "capitulo": "",
+        "texto": "A administração tem uma visão completa da plataforma: formandos, cursos, pagamentos e acessos."
+      },
+      {
+        "id": "a2",
+        "capitulo": "01 / Contas e perfis",
+        "texto": "Gere as contas de formandos, formadores e administradores: o perfil, as inscrições e o estado de cada conta."
+      },
+      {
+        "id": "a3",
+        "capitulo": "02 / Pagamentos",
+        "texto": "Todos os pagamentos ficam registados. Os automáticos, por Multicaixa Express e referência, e os que precisam de confirmação, com o comprovativo à vista."
+      },
+      {
+        "id": "a4",
+        "capitulo": "03 / Códigos de acesso",
+        "texto": "Crie códigos de acesso em lote, por exemplo para oferecer a formação com a internet do Grupo Angbu, e descarregue-os numa folha de cálculo."
+      },
+      {
+        "id": "a5",
+        "capitulo": "04 / Cursos e certificados",
+        "texto": "Publique cada curso quando estiver pronto. E qualquer pessoa pode confirmar, sem conta, se um certificado é verdadeiro."
+      },
+      {
+        "id": "a6",
+        "capitulo": "",
+        "texto": "Uma plataforma pensada para crescer em todo o país. ATC Formação."
+      }
+    ]
+  },
+  "galeria": {
+    "titulo": "Para explorar em 3D",
+    "subtitulo": "Galeria 3D · as peças do computador, por dentro",
+    "secoes": [
+      {
+        "id": "g1",
+        "capitulo": "",
+        "texto": "A Galeria 3D é uma das grandes novidades da ATC Formação: as peças do computador, em três dimensões, prontas a explorar."
+      },
+      {
+        "id": "g2",
+        "capitulo": "01 / Rodar e aproximar",
+        "texto": "Escolha uma peça, rode-a com o rato ou com o dedo, e aproxime para ver cada pormenor."
+      },
+      {
+        "id": "g3",
+        "capitulo": "02 / Tocar nos números",
+        "texto": "Cada número abre uma explicação curta, em português. A câmara vai até ao sítio certo, e pode avançar ponto a ponto."
+      },
+      {
+        "id": "g4",
+        "capitulo": "03 / Dezasseis peças",
+        "texto": "Da placa-mãe à fonte de alimentação, e também os periféricos: monitor, teclado, rato, câmara web e auscultadores."
+      },
+      {
+        "id": "g5",
+        "capitulo": "04 / Ecrã inteiro",
+        "texto": "Em ecrã inteiro, a peça ocupa todo o espaço, e a explicação continua à vista."
+      },
+      {
+        "id": "g6",
+        "capitulo": "05 / Ligada às aulas",
+        "texto": "Nas aulas, o botão Ver em 3D abre a peça certa na galeria. A teoria ganha forma."
+      },
+      {
+        "id": "g7",
+        "capitulo": "",
+        "texto": "Para aprender a montar um computador, comece por conhecê-lo. Galeria 3D, na ATC Formação."
+      }
     ]
   }
 }
