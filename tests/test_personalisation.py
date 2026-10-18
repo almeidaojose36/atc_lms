@@ -46,7 +46,7 @@ class PersonalisationTests(unittest.TestCase):
     def test_idempotent_schema_and_existing_identity(self):
         self.con.commit();app.init_db();app.init_db()
         self.assertEqual(self.con.execute('SELECT name FROM users WHERE id=?',(self.uid,)).fetchone()[0],'Nome Certificado')
-        self.assertEqual(self.con.execute('SELECT COUNT(*) FROM lessons').fetchone()[0],2)
+        self.assertEqual(self.con.execute('SELECT COUNT(*) FROM lessons').fetchone()[0],3)
 
     def test_profile_persists_escapes_and_preserves_certificate_name(self):
         self.r.data={'display_name':'<Ana>','occupation':'Administração','goal':'Aprender <Excel>','color':'green'}

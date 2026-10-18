@@ -1,5 +1,6 @@
 """Adaptador WSGI (alojamento cPanel/Passenger): o mesmo LMS, servido sem socket próprio."""
 import io
+import json
 import os
 import sys
 import tempfile
@@ -292,3 +293,28 @@ class ApresentacaoTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class GaleriaTests(unittest.TestCase):
+    """Galeria 3D: só com sessão iniciada; os modelos também ficam protegidos."""
+
+    def test_gallery_and_models_need_a_session(self):
+        r = pedido("/galeria")
+        self.assertTrue(r["status"].startswith("30"), r["status"])
+        r = pedido("/galeria/modelos/motherboard.glb")
+        self.assertFalse(r["status"].startswith("200"), r["status"])
+
+    def test_learner_sees_every_piece_and_can_load_a_model(self):
+        cookie = pedido("/entrar", "POST", b"email=formando%40atc.ao&pw=formando123")["h"]["set-cookie"].split(";")[0]
+        html = pedido("/galeria", headers={"Cookie": cookie})["body"].decode()
+        self.assertIn('href="/galeria"', html)
+        dados = json.loads(html.split('<script id="galeria-dados" type="application/json">')[1].split("</script>")[0])
+        self.assertEqual(len(dados), 9)
+        for p in dados:
+            self.assertTrue(p["pontos"], p["slug"])
+            self.assertTrue((passenger_wsgi.atc_lms.GALERIA_DIR / "modelos" / p["ficheiro"]).is_file(), p["ficheiro"])
+        r = pedido("/galeria/modelos/motherboard.glb", headers={"Cookie": cookie})
+        self.assertTrue(r["status"].startswith("200"), r["status"])
+        self.assertEqual(r["h"]["content-type"], "model/gltf-binary")
+        self.assertEqual(r["body"][:4], b"glTF")
+        self.assertFalse(pedido("/galeria/modelos/..%2Fpecas.json", headers={"Cookie": cookie})["status"].startswith("200"))

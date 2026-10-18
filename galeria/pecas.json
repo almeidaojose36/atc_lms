@@ -1,0 +1,431 @@
+{
+  "_nota": "Galeria 3D com os modelos genéricos da ATC (PC-Components-Realistic v2). Cada ponto aponta para uma parte do modelo pelo nome (\"parte\" = início do nome das malhas). Os modelos estão em metros; escala 10 passa para a unidade da galeria (1 = 10 cm).",
+  "pecas": [
+    {
+      "slug": "caixa",
+      "nome": "Caixa do computador",
+      "ficheiro": "computer-case.glb",
+      "escala": 10,
+      "vista": [
+        -0.8,
+        0.5,
+        1
+      ],
+      "resumo": "A caixa (torre) protege e organiza as peças: tem o tabuleiro da placa-mãe, baías para discos e ventilação.",
+      "pontos": [
+        {
+          "parte": "Power button",
+          "titulo": "Botão de ligar",
+          "texto": "Liga-se à placa-mãe pelos cabos do painel frontal (front panel). Uma pressão longa (cerca de 5 s) força o desligar."
+        },
+        {
+          "parte": "Front USB port",
+          "titulo": "Portas USB frontais",
+          "texto": "Ligam-se a um conector interno da placa-mãe. São práticas para pens e teclados, sem ir à parte de trás."
+        },
+        {
+          "parte": "Open honeycomb ventilation",
+          "titulo": "Grelha de ventilação",
+          "texto": "Deixa entrar ar fresco. Uma caixa com pó acumulado aquece mais: limpe-a com ar comprimido, com o PC desligado."
+        },
+        {
+          "parte": "Drive bay front panel",
+          "titulo": "Baías de 5,25\"",
+          "texto": "Espaços para leitores óticos ou painéis extra. Tiram-se as tampas para instalar o dispositivo."
+        },
+        {
+          "parte": "Drive bay shelf",
+          "titulo": "Baías para discos",
+          "texto": "Prateleiras onde se fixam discos rígidos e SSD de 2,5\" ou 3,5\", com parafusos ou suportes sem ferramentas."
+        },
+        {
+          "parte": "Motherboard tray",
+          "titulo": "Tabuleiro da placa-mãe",
+          "texto": "Placa metálica onde a placa-mãe é aparafusada, sobre espaçadores (standoffs) que evitam curto-circuitos."
+        },
+        {
+          "parte": "Expansion slot cover",
+          "titulo": "Tampas das ranhuras",
+          "texto": "Na traseira. Retira-se uma por cada placa de expansão (gráfica, rede…) para as suas ligações ficarem acessíveis."
+        },
+        {
+          "parte": "Rubber foot",
+          "titulo": "Pés de borracha",
+          "texto": "Elevam a caixa para o ar circular por baixo e reduzem vibrações. Não tape a entrada de ar inferior."
+        }
+      ]
+    },
+    {
+      "slug": "placa-mae",
+      "nome": "Placa-mãe",
+      "ficheiro": "motherboard.glb",
+      "escala": 10,
+      "vista": [
+        0.3,
+        1,
+        0.8
+      ],
+      "resumo": "A base do computador: liga o processador, a memória, os discos e as placas de expansão, e leva os dados de umas peças para as outras.",
+      "pontos": [
+        {
+          "parte": "CPU socket",
+          "titulo": "Encaixe do processador",
+          "texto": "Socket onde assenta o CPU. Cada geração de processadores usa um encaixe próprio (ex.: LGA 1700, AM5): confirme a compatibilidade."
+        },
+        {
+          "parte": "ATX PCB",
+          "titulo": "Ranhuras de memória (DIMM)",
+          "texto": "Para os módulos de RAM. Com dois módulos, use as ranhuras indicadas no manual (dual channel) para mais desempenho.",
+          "em": [
+            0.754,
+            1,
+            0.352
+          ]
+        },
+        {
+          "parte": "ATX PCB",
+          "titulo": "Ranhura PCI Express x16",
+          "texto": "Para a placa gráfica. É a ranhura mais comprida e mais rápida da placa.",
+          "em": [
+            0.398,
+            1,
+            0.585
+          ]
+        },
+        {
+          "parte": "ATX PCB",
+          "titulo": "Ranhuras de expansão",
+          "texto": "Para placas de rede, som ou captura. As mais antigas são PCI; as atuais são PCIe x1.",
+          "em": [
+            0.418,
+            1,
+            0.769
+          ]
+        },
+        {
+          "parte": "ATX PCB",
+          "titulo": "Conector de 24 pinos",
+          "texto": "A principal ligação de energia da fonte à placa-mãe (ATX). Se não estiver bem encaixado, o PC não liga.",
+          "em": [
+            0.922,
+            1,
+            0.369
+          ]
+        },
+        {
+          "parte": "ATX PCB",
+          "titulo": "Portas SATA",
+          "texto": "Ligam discos rígidos, SSD de 2,5\" e leitores óticos com um cabo de dados SATA.",
+          "em": [
+            0.918,
+            1,
+            0.731
+          ]
+        },
+        {
+          "parte": "Chipset heat sink",
+          "titulo": "Chipset",
+          "texto": "Por baixo do dissipador. Gere a comunicação entre o processador, as portas USB, SATA e as ranhuras de expansão."
+        },
+        {
+          "parte": "CMOS battery",
+          "titulo": "Pilha CMOS",
+          "texto": "Pilha CR2032 que guarda a data, a hora e as definições da BIOS/UEFI. Se o relógio se atrasar sempre, troque-a."
+        },
+        {
+          "parte": "Rear IO connector",
+          "titulo": "Ligações traseiras",
+          "texto": "USB, rede, áudio e vídeo. É a parte que fica visível atrás da caixa."
+        },
+        {
+          "parte": "Capacitor",
+          "titulo": "Condensadores",
+          "texto": "Estabilizam a energia que chega ao processador. Condensadores inchados ou a verter são sinal de avaria."
+        }
+      ]
+    },
+    {
+      "slug": "processador",
+      "nome": "Processador (CPU)",
+      "ficheiro": "cpu-processor.glb",
+      "escala": 30,
+      "vista": [
+        0.4,
+        1,
+        0.9
+      ],
+      "resumo": "O cérebro do computador: executa as instruções dos programas, milhares de milhões por segundo.",
+      "pontos": [
+        {
+          "parte": "Integrated heat spreader",
+          "titulo": "Tampa metálica (IHS)",
+          "texto": "Protege o chip de silício e espalha o calor. É aqui que se aplica a pasta térmica antes de montar o cooler."
+        },
+        {
+          "parte": "Processor substrate",
+          "titulo": "Substrato",
+          "texto": "Placa verde que liga o chip aos contactos. Segure o processador sempre pelas extremidades.",
+          "em": [
+            0.96,
+            1,
+            0.5
+          ]
+        },
+        {
+          "parte": "LGA contact",
+          "titulo": "Contactos dourados",
+          "texto": "Por baixo: centenas de contactos que tocam nos pinos do encaixe. Rode o modelo para os ver.",
+          "em": [
+            0.5,
+            0,
+            0.5
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "cooler",
+      "nome": "Cooler do processador",
+      "ficheiro": "cpu-cooler.glb",
+      "escala": 10,
+      "vista": [
+        0.8,
+        0.6,
+        1
+      ],
+      "resumo": "Retira o calor do processador: tubos de calor levam-no até às alhetas e a ventoinha sopra-o para fora.",
+      "pontos": [
+        {
+          "parte": "CPU contact plate",
+          "titulo": "Base de contacto",
+          "texto": "Assenta sobre o processador, com uma camada fina de pasta térmica para melhorar a passagem do calor."
+        },
+        {
+          "parte": "Continuous copper U heat pipe",
+          "titulo": "Tubos de calor",
+          "texto": "Tubos de cobre com um líquido que evapora junto ao CPU e condensa nas alhetas, levando o calor muito depressa."
+        },
+        {
+          "parte": "Aluminium fin",
+          "titulo": "Alhetas de alumínio",
+          "texto": "Dezenas de lâminas finas aumentam a área de contacto com o ar, para o calor sair mais depressa.",
+          "em": [
+            1,
+            0.55,
+            0.5
+          ]
+        },
+        {
+          "parte": "Swept aerodynamic fan blade",
+          "titulo": "Ventoinha",
+          "texto": "Empurra o ar através das alhetas. Liga-se ao conector CPU_FAN da placa-mãe, que controla a velocidade."
+        }
+      ]
+    },
+    {
+      "slug": "memoria-ram",
+      "nome": "Memória RAM",
+      "ficheiro": "ram-modules.glb",
+      "escala": 10,
+      "vista": [
+        0.2,
+        1,
+        0.9
+      ],
+      "resumo": "Memória rápida e temporária: guarda os programas e dados em uso. Apaga-se quando o computador desliga.",
+      "pontos": [
+        {
+          "parte": "DRAM IC",
+          "titulo": "Chips de memória",
+          "texto": "Onde os dados ficam guardados enquanto o PC está ligado. A capacidade do módulo é a soma de todos os chips.",
+          "em": [
+            0.15,
+            1,
+            0.3
+          ]
+        },
+        {
+          "parte": "Edge contact",
+          "titulo": "Contactos",
+          "texto": "Encaixam na ranhura DIMM. Um entalhe fora do centro impede de montar o módulo ao contrário.",
+          "em": [
+            0.55,
+            1,
+            0.97
+          ]
+        },
+        {
+          "parte": "DIMM PCB",
+          "titulo": "Par de módulos",
+          "texto": "Usar dois módulos iguais permite o modo dual channel, que duplica a largura de banda da memória.",
+          "em": [
+            0.9,
+            1,
+            0.75
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "disco-rigido",
+      "nome": "Disco rígido (HDD)",
+      "ficheiro": "hard-drive.glb",
+      "escala": 10,
+      "vista": [
+        0.6,
+        1,
+        0.9
+      ],
+      "resumo": "Armazenamento permanente com discos magnéticos a girar. Mais lento do que um SSD, mas mais barato por cada GB.",
+      "pontos": [
+        {
+          "parte": "Steel lid",
+          "titulo": "Tampa selada",
+          "texto": "Por baixo há pratos magnéticos a girar (5400 ou 7200 rpm) e uma cabeça de leitura. Nunca abra um disco: o pó estraga-o.",
+          "em": [
+            0.2,
+            1,
+            0.2
+          ]
+        },
+        {
+          "parte": "Stamped spindle outline",
+          "titulo": "Motor dos pratos",
+          "texto": "O eixo onde rodam os pratos. Ruídos de clique ou raspar indicam avaria iminente: faça cópia de segurança."
+        },
+        {
+          "parte": "SATA data socket",
+          "titulo": "Conector de dados SATA",
+          "texto": "Liga o disco à placa-mãe com um cabo SATA (até 6 Gb/s)."
+        },
+        {
+          "parte": "SATA power socket",
+          "titulo": "Conector de energia SATA",
+          "texto": "Recebe energia da fonte. É o conector mais largo, com 15 contactos."
+        }
+      ]
+    },
+    {
+      "slug": "leitor-otico",
+      "nome": "Leitor ótico (DVD)",
+      "ficheiro": "optical-drive.glb",
+      "escala": 10,
+      "vista": [
+        0.5,
+        0.6,
+        1
+      ],
+      "resumo": "Lê e grava CD, DVD ou Blu-ray com um laser. Cada vez menos comum, mas ainda usado para instalar sistemas e programas antigos.",
+      "pontos": [
+        {
+          "parte": "Disc tray",
+          "titulo": "Gaveta do disco",
+          "texto": "Abre para colocar o disco. Não force a gaveta com a mão: use o botão ou o sistema operativo."
+        },
+        {
+          "parte": "Eject button",
+          "titulo": "Botão de ejetar",
+          "texto": "Abre e fecha a gaveta. Se o disco ficar preso, um pequeno orifício permite a abertura manual com um clipe."
+        },
+        {
+          "parte": "Activity LED",
+          "titulo": "Luz de atividade",
+          "texto": "Acende quando o leitor está a ler ou a gravar."
+        },
+        {
+          "parte": "Front bezel",
+          "titulo": "Formato de 5,25\"",
+          "texto": "Encaixa nas baías de 5,25\" da caixa e liga-se por SATA (dados e energia).",
+          "em": [
+            0.72,
+            0.95,
+            0.5
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "fonte",
+      "nome": "Fonte de alimentação",
+      "ficheiro": "power-supply.glb",
+      "escala": 10,
+      "vista": [
+        0.8,
+        0.7,
+        1
+      ],
+      "resumo": "Converte a corrente alternada da tomada (230 V) nas tensões contínuas (12 V, 5 V e 3,3 V) que as peças usam.",
+      "pontos": [
+        {
+          "parte": "Fan grille ring",
+          "titulo": "Ventoinha",
+          "texto": "Arrefece os componentes internos. Se a caixa tiver um filtro de ar no fundo, monte a fonte com a ventoinha virada para baixo."
+        },
+        {
+          "parte": "IEC inlet",
+          "titulo": "Entrada de corrente",
+          "texto": "Onde liga o cabo de 230 V. Desligue-o sempre antes de abrir o computador."
+        },
+        {
+          "parte": "Power switch",
+          "titulo": "Interruptor",
+          "texto": "Corta a energia na própria fonte. Desligue-o antes de mexer nas peças."
+        },
+        {
+          "parte": "ATX cable connector",
+          "titulo": "Cabos de alimentação",
+          "texto": "Levam energia à placa-mãe (24 pinos), ao processador (8 pinos), à placa gráfica (PCIe) e aos discos (SATA)."
+        },
+        {
+          "parte": "Open honeycomb ventilation",
+          "titulo": "Saída de ar",
+          "texto": "O ar quente sai por aqui, para fora da caixa. Mantenha a traseira do PC afastada da parede."
+        }
+      ]
+    },
+    {
+      "slug": "ventoinha",
+      "nome": "Ventoinha",
+      "ficheiro": "cooling-fan.glb",
+      "escala": 10,
+      "vista": [
+        0.4,
+        1,
+        0.9
+      ],
+      "resumo": "Move o ar dentro da caixa: umas trazem ar fresco pela frente, outras tiram o ar quente por trás e por cima.",
+      "pontos": [
+        {
+          "parte": "Swept aerodynamic fan blade",
+          "titulo": "Pás",
+          "texto": "A forma das pás define a direção do ar. Uma seta na lateral da moldura indica para onde o ar sopra.",
+          "em": [
+            0.82,
+            1,
+            0.5
+          ]
+        },
+        {
+          "parte": "Fan motor",
+          "titulo": "Motor",
+          "texto": "Faz rodar as pás. Ruídos ou vibração indicam rolamentos gastos: troque a ventoinha."
+        },
+        {
+          "parte": "Fan mount Machined screw head",
+          "titulo": "Parafusos de fixação",
+          "texto": "Prendem a ventoinha à caixa ou ao dissipador. Os furos seguem um tamanho padrão (ex.: 120 mm).",
+          "em": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "parte": "Fan plug",
+          "titulo": "Ficha",
+          "texto": "Liga-se a um conector FAN da placa-mãe. A ficha de 4 pinos (PWM) permite controlar a velocidade."
+        }
+      ]
+    }
+  ]
+}

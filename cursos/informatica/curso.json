@@ -24,7 +24,8 @@
           "subtitles": "video/aula-1-1.vtt",
           "subtitles_on": false,
           "poster": "video/aula-1-1.jpg",
-          "summary": "Hardware e software, iniciar sessão, o ambiente de trabalho, janelas e encerrar o computador."
+          "summary": "Hardware e software, iniciar sessão, o ambiente de trabalho, janelas e encerrar o computador.",
+          "galeria": "caixa"
         },
         {
           "slug": "aula-1-2",

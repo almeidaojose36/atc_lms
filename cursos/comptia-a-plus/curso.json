@@ -13,7 +13,18 @@
       "intro": "Suporte técnico de hardware, sistemas operativos e redes",
       "manual_json": "manual/modulo-1.json",
       "manual_figures": "manual/figures",
-      "lessons": [],
+      "lessons": [
+        {
+          "slug": "aula-1-0",
+          "title": "Aula 1.0 · Por dentro de um computador",
+          "video": "video/por-dentro.mp4",
+          "subtitles": "video/por-dentro.vtt",
+          "subtitles_on": true,
+          "poster": "video/por-dentro.jpg",
+          "summary": "Introdução em 3D: o computador abre-se e cada peça é apresentada — placa-mãe, processador, memória RAM, disco rígido, placa gráfica e fonte de alimentação.",
+          "galeria": "placa-mae"
+        }
+      ],
       "quiz": {
         "title": "Questionário do Módulo 1 · Dispositivos móveis",
         "gift": "quiz/modulo-1.gift.txt",

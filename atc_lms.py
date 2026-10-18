@@ -654,7 +654,7 @@ def page(title, body, user=None, csrf="", wide=False, flash="", profile=None, pr
     brand = '<a class="brand" href="/"><img src="/static/logo-200.png" alt=""><span><b>ATC</b> Formação<small>Angbu Training Centre</small></span></a>'
     sidebar = ""
     if user and not foco:
-        links = [("/", "◫", "Os meus cursos"), ("/#catalogo", "▦", "Catálogo")]
+        links = [("/", "◫", "Os meus cursos"), ("/#catalogo", "▦", "Catálogo"), ("/galeria", "◇", "Galeria 3D")]
         if user["role"] in ("admin", "formador"):
             links.append(("/admin", "▤", "Gestão"))
         if user["role"] == "formando":
@@ -1026,6 +1026,48 @@ def save_profile(r):
 def profile_save(r):
     save_profile(r)
     raise Redirect("/conta?guardado=1")
+
+
+# ---------------------------------------------------------------------------
+# Galeria 3D: peças do computador em 3D, com pontos clicáveis (só com sessão iniciada)
+# ---------------------------------------------------------------------------
+
+GALERIA_DIR = BASE / "galeria"
+
+
+@route("GET", "/galeria", "user")
+def galeria(r):
+    dados = json.loads((GALERIA_DIR / "pecas.json").read_text(encoding="utf-8"))
+    pecas = dados["pecas"]
+    abas = "".join(f'<button type="button" class="g-aba" data-slug="{h(p["slug"])}" aria-pressed="false">{h(p["nome"])}</button>' for p in pecas)
+    payload = json.dumps(pecas, ensure_ascii=False).replace("</", "<\\/")
+    body = f"""<section class="galeria" aria-label="Galeria 3D">
+  <div class="g-topo"><div><span class="eyebrow">Galeria 3D</span><h1>Conheça as peças <em>por dentro.</em></h1>
+    <p class="muted">Rode, aproxime e toque nos números para saber o que faz cada parte.</p></div></div>
+  <div class="g-abas" role="toolbar" aria-label="Peças">{abas}</div>
+  <div class="g-corpo">
+    <div class="g-palco"><canvas id="g-canvas" aria-label="Modelo 3D da peça selecionada"></canvas><div id="g-marcas" aria-hidden="false"></div>
+      <div class="g-carregar" id="g-carregar"><span>A carregar o modelo 3D…</span><div class="g-barra"><i id="g-progresso"></i></div></div>
+      <div class="g-ctrl"><button type="button" id="g-repor" title="Repor a vista">Repor vista</button><button type="button" id="g-rodar" aria-pressed="true" title="Rodar automaticamente">Rodar</button><button type="button" id="g-ecra" title="Ecrã inteiro">⛶ Ecrã inteiro</button></div><div class="g-fs-info" id="g-fs-info" hidden><b id="g-fs-titulo"></b><p id="g-fs-texto"></p></div>
+      <p class="g-dica">Arraste para rodar · role ou belisque para aproximar</p></div>
+    <aside class="g-info"><h2 id="g-nome"></h2><p id="g-resumo" class="muted"></p>
+      <div class="g-ponto" id="g-ponto" hidden><span class="g-num" id="g-ponto-num"></span><h3 id="g-ponto-titulo"></h3><p id="g-ponto-texto"></p>
+        <div class="g-nav"><button type="button" id="g-ant">← Anterior</button><button type="button" id="g-seg">Seguinte →</button></div></div>
+      <ol class="g-lista" id="g-lista"></ol>
+      <p class="g-credito" id="g-credito"></p></aside>
+  </div>
+</section>
+<script id="galeria-dados" type="application/json">{payload}</script>"""
+    scripts = ('<link rel="stylesheet" href="/static/galeria.css?v=3">'
+               '<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.181.2/build/three.module.js",'
+               '"three/addons/":"https://cdn.jsdelivr.net/npm/three@0.181.2/examples/jsm/"}}</script>'
+               '<script type="module" src="/static/galeria.js?v=9"></script>')
+    return r.render("Galeria 3D", body, wide=True, scripts=scripts, body_class="pg-galeria")
+
+
+@route("GET", r"/galeria/modelos/([a-z0-9-]+\.glb)", "user")
+def galeria_modelo(r, nome):
+    r.serve_file(GALERIA_DIR / "modelos" / nome, ctype="model/gltf-binary")
 
 
 @route("GET", "/conta", "user")
@@ -1900,6 +1942,17 @@ def platform_clip_html(key, name):
     return clip_html(key, f"/plataforma/{key}/{name}", name, meta)
 
 
+def lesson_gallery_link(slug, lslug):
+    """Botão «Ver em 3D» quando a aula indica uma peça da Galeria 3D (campo "galeria" no curso.json)."""
+    meta = read_json(COURSES_DIR / slug / "curso.json")
+    for mod in meta.get("modules", []):
+        for les in mod.get("lessons", []):
+            if les.get("slug") == lslug and les.get("galeria"):
+                return (f'<p><a class="btn ghost" href="/galeria#{h(les["galeria"])}">◇ Ver em 3D na Galeria</a> '
+                        f'<span class="muted">Rode a peça e toque nos números para explorar cada parte.</span></p>')
+    return ""
+
+
 def course_flow(slug):
     return read_json(COURSES_DIR / slug / "apresentadores" / "fluxo.json")
 
@@ -2296,7 +2349,7 @@ def lesson_page(r, slug, lslug):
 <source src="/media/{slug}/{h(medium['video'])}">{track}O seu navegador não suporta vídeo.</video></div>
 <p id="status" class="{'okmsg' if feita else 'muted'}">{'✓ Aula concluída' if feita else 'Veja a aula até ao fim para a marcar como concluída.'}</p>
 {cartao}{guide_message(slug, selected_presenter(r, c["id"]), course_flow(slug).get("aulas", {}).get(lslug, []))}{demo}
-<div class="grid2"><section class="card"><h2>Sobre esta aula</h2><p>{h(l['summary'])}</p>
+<div class="grid2"><section class="card"><h2>Sobre esta aula</h2><p>{h(l['summary'])}</p>{lesson_gallery_link(slug, lslug)}
 <details><summary>Ler o texto da aula</summary><div class="transcript">{transcript or '<p class="muted">Sem transcrição.</p>'}</div></details>
 <p class="actions">{f'<a class="btn ghost small" href="/cursos/{slug}/modulo/{m["num"]}/manual">Ler o manual do módulo</a>' if m['manual_json'] else ''}</p>{prev_link}</section>
 {assistant}</div>
